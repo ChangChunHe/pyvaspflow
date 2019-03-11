@@ -8,12 +8,15 @@ Created on Fri Mar  8 15:22:33 2019
 
 import numpy as np
 from sagar.crystal.derive import ConfigurationGenerator
-from sagar.io.vasp import read_vasp, write_vasp
+from sagar.io.vasp import read_vasp
 from sagar.crystal.structure import symbol2number as s2n
-import os
-import shutil
-from function_toolkit import generate_all_basis, refine_points
+from function_toolkit import generate_all_basis, refine_points,wirite_poscar
 from itertools import combinations
+from sagar.crystal.structure import Cell
+import os
+from shutil import rmtree
+
+
 class DefectMaker:
     def __init__(self, no_defect='POSCAR'):
         # 初始化用 POSCAR路径？
@@ -27,7 +30,7 @@ class DefectMaker:
         if isinstance(h, int):
             self.no_defect_cell = self.no_defect_cell.extend(np.array([[h,0,0],[0,h,0],[0,0,h]]))
         else:
-            self.no_defect_cell = self.no_defect_cell.extend(np.asarray(h))
+            self.no_defect_cell = self.no_defect_cell.extend(np.array(h))
         self.lattice = self.no_defect_cell.lattice
         self.positions = self.no_defect_cell.positions
         self.atoms = self.no_defect_cell.atoms
@@ -35,7 +38,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=True):
+    def get_tetrahedral_defect(self, isunique=True,purity_atom='H'):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
@@ -79,29 +82,63 @@ class DefectMaker:
         sec_tetra = refine_points(sec_tetra,extend_S,self.lattice)
         third_tetra = np.unique(np.sort(third_tetra,axis=1),axis=0)
         third_tetra = refine_points(third_tetra,extend_S,self.lattice)
-        print(first_tetra.shape,sec_tetra.shape,third_tetra.shape)
+        all_tetra = [first_tetra,sec_tetra,third_tetra]
+        if isunique:
+            folder = 'tetrahedral-unique-defect'
+            if not os.path.exists('./'+folder):
+                os.mkdir('./'+folder)
+            else:
+                rmtree('./'+folder)
+                os.mkdir('./'+folder)
+            idx = 0
+            deg = []
+            for tetra in all_tetra:
+                new_pos = np.vstack((self.positions,tetra))
+                new_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((tetra.shape[0],))))
+                new_cell = Cell(self.lattice,new_pos,new_atoms)
+                equi_atoms = new_cell.get_symmetry()['equivalent_atoms']
+                purity_atom_type = np.unique(equi_atoms[-tetra.shape[0]:])
+                for atom_type in purity_atom_type:
+                    new_uniq_pos = np.vstack((self.positions,new_pos[atom_type]))
+                    new_uniq_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((1,))))
+                    new_uniq_cell = Cell(self.lattice,new_pos,new_atoms)
+                    deg.append(len(np.where(equi_atoms == atom_type)[0]))
+                    wirite_poscar(new_uniq_cell,purity_atom,folder,idx)
+                    idx += 1
+            np.savetxt(folder+'/deg.txt',deg,fmt='%d')
+        else:
+            folder = 'tetrahedral-not-unique-defect'
+            if not os.path.exists('./'+folder):
+                os.mkdir('./'+folder)
+            else:
+                rmtree('./'+folder)
+                os.mkdir('./'+folder)
+            idx = 0
+            for tetra in all_tetra:
+                new_pos = np.vstack((self.positions,tetra))
+                new_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((tetra.shape[0],))))
+                new_cell = Cell(self.lattice,new_pos,new_atoms)
+                wirite_poscar(new_cell,purity_atom,folder,idx)
+                idx += 1
 
 
-    def get_purity_defect(self, symprec=1e-3,isunique=True,defect_atom='all',style='Vacc'):
+    def get_purity_defect(self,symprec=1e-3,isunique=True,purity_atom='all',style='Vacc'):
         cg = ConfigurationGenerator(self.no_defect_cell, symprec)
-        sites = _get_sites(list(self.atoms), l_sub=defect_atom, purity_atom=style)
-        if defect_atom == 'all':
+        sites = _get_sites(list(self.atoms), l_sub=purity_atom, purity_atom=style)
+        if purity_atom == 'all':
             confs = cg.cons_specific_cell(sites, e_num=(len(self.atoms)-1,1), symprec=symprec)
         else:
-            defect_atom_num = np.where(self.atoms==s2n(defect_atom))[0].size
-            confs = cg.cons_specific_cell(sites, e_num=(defect_atom_num-1,1), symprec=symprec)
+            purity_atom_num = np.where(self.atoms==s2n(purity_atom))[0].size
+            confs = cg.cons_specific_cell(sites, e_num=(purity_atom_num-1,1), symprec=symprec)
         folder = style + 'defect'
         if not os.path.exists('./'+folder):
             os.mkdir('./'+folder)
         else:
-            shutil.rmtree('./'+folder)
+            rmtree('./'+folder)
             os.mkdir('./'+folder)
-        comment = 'POSCAR-'+defect_atom+'-defect'
         idx = 0
         for c, _ in confs:
-            filename = '{:s}_id{:d}'.format(comment, idx)
-            file = os.path.join('./'+folder, filename)
-            write_vasp(c, file)
+            wirite_poscar(c,purity_atom,folder,idx)
             idx += 1
 
 
