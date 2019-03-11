@@ -101,7 +101,7 @@ class DefectMaker:
                 for atom_type in purity_atom_type:
                     new_uniq_pos = np.vstack((self.positions,new_pos[atom_type]))
                     new_uniq_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((1,))))
-                    new_uniq_cell = Cell(self.lattice,new_pos,new_atoms)
+                    new_uniq_cell = Cell(self.lattice,new_uniq_pos,new_uniq_atoms)
                     deg.append(len(np.where(equi_atoms == atom_type)[0]))
                     wirite_poscar(new_uniq_cell,purity_atom,folder,idx)
                     idx += 1
