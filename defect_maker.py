@@ -12,7 +12,7 @@ from sagar.io.vasp import read_vasp, write_vasp
 from sagar.crystal.structure import symbol2number as s2n
 import os
 import shutil
-from function_toolkit import generate_all_basis
+from function_toolkit import generate_all_basis, refine_points
 from itertools import combinations
 class DefectMaker:
     def __init__(self, no_defect='POSCAR'):
@@ -54,15 +54,32 @@ class DefectMaker:
         first_tetra,sec_tetra,third_tetra = [],[],[]
         for ii in range(n):
             temp_d = sorted(d[ii])
-            idx = np.where(abs(temp_d - temp_d[1])<1.5)[0]
+            idx = np.where(abs(d[ii] - temp_d[1])<1.5)[0]
             if len(idx) < 3:
                 continue
             for comb in combinations(idx,3):
-                pass
-
-
-
-
+                comb_list = list(comb)
+                tmp = d[comb_list][:,comb_list]
+                comb_list.append(ii)
+                if np.std(tmp[tmp>0]) < 0.001:
+                    if abs(tmp[0,1]-temp_d[1]) < 0.1:
+                        first_tetra.append(comb_list)
+                    else:
+                        sec_tetra.append(comb_list)
+                else:
+                    tmp = d[comb_list][:,comb_list]
+                    tmp = np.triu(tmp)
+                    tmp = sorted(tmp[tmp>0])
+                    if (np.std(tmp[0:4]) < 0.01 or np.std(tmp[1:5]) <
+                     0.01 or np.std(tmp[2:])<0.01) and np.std(tmp) < 0.5:
+                        third_tetra.append(comb_list)
+        first_tetra = np.unique(np.sort(first_tetra,axis=1),axis=0)
+        first_tetra = refine_points(first_tetra,extend_S,self.lattice)
+        sec_tetra = np.unique(np.sort(sec_tetra,axis=1),axis=0)
+        sec_tetra = refine_points(sec_tetra,extend_S,self.lattice)
+        third_tetra = np.unique(np.sort(third_tetra,axis=1),axis=0)
+        third_tetra = refine_points(third_tetra,extend_S,self.lattice)
+        print(first_tetra.shape,sec_tetra.shape,third_tetra.shape)
 
 
     def get_purity_defect(self, symprec=1e-3,isunique=True,defect_atom='all',style='Vacc'):
@@ -87,14 +104,12 @@ class DefectMaker:
             write_vasp(c, file)
             idx += 1
 
+
 def _get_sites(atoms, l_sub='all', purity_atom='Vacc'):
     if l_sub == 'all':
         return [(i, s2n(purity_atom)) for i in atoms]
     else:
         return [(i, s2n(purity_atom)) if i == s2n(l_sub) else (i,) for i in atoms]
-
-
-
 
 
 if __name__ == "__main__":
