@@ -12,10 +12,10 @@ There are three kinds of defect system you can generate, vacancy defect, purity 
 ## submit your common calculatiojobn jobs
 Here, we supply some integrated shell scripts to calculate the jobs you need.<br />
 - [x] [structure_relax](./common_calculation_shell/stru_relax.sh)<br />
-- [x][structures_optimization](./common_calculation_shell/stru_optimization.sh)<br />
-- [x][structures_self-consistent-field](./common_calculation_shell/stru_scf.sh)<br />
+- [x] [structures_optimization](./common_calculation_shell/stru_optimization.sh)<br />
+- [x] [structures_self-consistent-field](./common_calculation_shell/stru_scf.sh)<br />
 - [x] [structures_band-calculation](./common_calculation_shell/stru_band.sh)<br />
-- [x][structures_dos-calculation](./common_calculation_shell/stru_dos.sh)<br />
+- [x] [structures_dos-calculation](./common_calculation_shell/stru_dos.sh)<br />
 and a main [job scripts](./common_calculation_shell/job.sh) to submit your job.
 
 We also supply some scripts to generate the input files needed in `VASP` Calculation, such as `INCAR`, `KPOINTS`, `POTCAR`, you can also use these  scripts to generate them.
