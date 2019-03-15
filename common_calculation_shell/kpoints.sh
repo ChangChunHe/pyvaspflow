@@ -3,7 +3,11 @@
 if [ ! -n "$k_max" ];then	k_max=30;fi
 if [ ! -n "$inter_num" ];then	inter_num=30;fi
 
+if [ -f KPOINTS ]
+then
 rm KPOINTS
+fi
+
 
 if [[ $1 == "ba"* ]]
 then
@@ -19,6 +23,12 @@ done
 rm k-path
 
 else
+
+if [[ $1 =~ ^-?[0-9]+$ ]]
+then
+k_max=$1
+fi
+
 cons=`awk 'NR==2{print $1}' POSCAR`
 for iii in 1 2 3
 do

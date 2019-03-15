@@ -9,6 +9,12 @@ then
 echo "NO POTCAR found"
 fi
 
+if [ -f POSCAR ]
+then
+host_name=`awk 'NR==1' POSCAR`
+fi
+
+
 cat > INCAR <<!
 System=$host_name
 ENCUT=$encut
