@@ -21,7 +21,3 @@ and a main [job scripts](./common_calculation_shell/job.sh) to submit your job.
 We also supply some scripts to generate the input files needed in `VASP` Calculation, such as `INCAR`, `KPOINTS`, `POTCAR`, you can also use these  scripts to generate them.
 
 So in general, Your can just begin your job from a `POSCAR` and a `job.sh`.
-<<<<<<< HEAD
-=======
-
->>>>>>> 785b45cbfb850d39eaa51c85864f970260eec9d0
