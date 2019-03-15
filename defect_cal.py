@@ -35,7 +35,7 @@ class Acquire_value():
         file_pot = os.path.join(self.data_folder, 'POTCAR')
         ele_num_atom = [float(i) for i in  subprocess.run(['grep','ZVAL',file_pot],stdout=subprocess.PIPE).stdout.decode('utf-8').split()[5::9]]
         atom_num = [float(i) for i in lc.getlines(file_pos)[6].split()]
-        return np.dot(atom_num,ele_num_atom)
+        return int(np.dot(atom_num,ele_num_atom))
 
     def get_Ne_defect(self):
         #get all valance electrons number in OUTCAR
@@ -44,21 +44,15 @@ class Acquire_value():
         return int(float(grep_res.stdout.decode('utf-8').split()[2]))
 
     def get_image(self):
-
-        file_image = self.data_folder + 'image_cor/OUTCAR'
-
-        tmp_line = self._get_line(file_image,rematch='Ewald')
-        Ewald = lc.getlines(file_image)[tmp_line[0]].split()[4]
-        return Ewald
+        file_image = os.path.join(self.data_folder,'OUTCAR')
+        return float(subprocess.run(['grep','Ewald',file_image],stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')[0].split()[-1])
 
     def get_PA(self):
         # get potential alignment correlation
         file_PA = self.data_folder + 'OUTCAR'
         file_pos = self.data_folder + 'POSCAR'
-
         tmp_atom_line = round(sum(map(int,lc.getlines(file_pos)[6].split()))/5)+3
         tmp_match_line = self._get_line(file_PA,rematch='electrostatic')
-
         for line in lc.getlines(file_PA)[tmp_match_line[0]:tmp_match_line[0]+tmp_atom_line]:
             if ' '+str(self.atomic_num )+' ' in line:
                 if self.atomic_num %5==0:
@@ -99,11 +93,9 @@ class Acquire_value():
             for line in f.readlines():
                 tmp = line.split()
                 state_d.update({tmp[0]:float(tmp[1])})
-
         miu = np.zeros((3))
         for ele,state in state_d.items():
             miu +=miu_i[ele]*(-state_d[ele])
-
         return miu
 
 #%% main script
@@ -148,5 +140,5 @@ def main_Hf(files, atomic_num=None, epsilon=None):
             return diff_d
 
 if __name__ == "__main__":
-    Av = Acquire_value('./BN-plane')
-    print(Av.get_Ne_p())
+    Av = Acquire_value('./test_data')
+    print(Av.get_Ne_defect_free())
