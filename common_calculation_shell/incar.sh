@@ -4,6 +4,10 @@ while [ ! -f INCAR ]
 do
 if [ ! -n "$encut" ]
 then	encut=`grep ENMAX POTCAR |sort -k3nr|awk 'NR==1{print $3*1.3}' `;fi
+if [ ! -f POTCAR ]
+then
+echo "NO POTCAR found"
+fi
 
 cat > INCAR <<!
 System=$host_name
