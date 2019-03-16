@@ -5,9 +5,8 @@ if [ ! -n "$inter_num" ];then	inter_num=30;fi
 
 if [ -f KPOINTS ]
 then
-rm KPOINTS
+exit
 fi
-
 
 if [[ $1 == "ba"* ]]
 then

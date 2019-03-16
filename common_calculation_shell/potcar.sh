@@ -18,8 +18,14 @@ fi
 
 if [ -f POTCAR ]
 then
-rm POTCAR
+exit
 fi
+
+if [ ! -f POTCAR ]
+then
+echo No POSCAR found
+fi
+
 
 # dos2unix POSCAR > /dev/null
 ele_num=`awk 'NR==6{print NF}' POSCAR`
