@@ -8,8 +8,8 @@ then    vasp_version="vasp_std"
 fi
 
 if [ ! -z $1 ]
-then let nelect=nelect+$1;dir=charge_state_$1
-else dir=charge_state_0;fi
+then dir=charge_state_$1;q=$1
+else dir=charge_state_0;q=0;fi
 
 if [ ! -d $dir  ]
 then
@@ -35,6 +35,7 @@ paste num_atom num_ele > num_tmp
 nelect=`awk '{s+=$1*$2}END{print s}' num_tmp`
 rm num*
 
+let nelect=nelect+q
 sed -i -e '/ISIF/c ISIF=2' -e '/NSW/c NSW=60' INCAR
 if grep NELECT INCAR ;
 then  sed -i -e "/NELECT/c NELECT=$nelect" INCAR
