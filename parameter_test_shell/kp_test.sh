@@ -14,7 +14,7 @@ kp3=${kmaxs[3]}
 while [ $kp3 -ge ${kmins[3]} ]
 do
 sed -i "4c $kp1 $kp2 $kp3" KPOINTS
-stru_optimization.sh
+stru_one_step.sh
 echo $kp1 $kp2 $kp3 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
         kp3=$[$kp3-1]
 done
@@ -29,10 +29,10 @@ function kp_option2()
 kp1=${kmaxs[1]}
 while [ $kp1 -ge ${kmins[1]} ]
 do
-        sed -i "4c $kp1 $kp1 $kp1" KPOINTS
-        stru_optimization.sh
-        echo $kp1 $kp1 $kp1 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
-	kp1=$[$kp1-1]
+sed -i "4c $kp1 $kp1 $kp1" KPOINTS
+stru_one_step.sh
+echo $kp1 $kp1 $kp1 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
+kp1=$[$kp1-1]
 done
 }
 
@@ -45,7 +45,7 @@ do
 	while [ $kp2 -ge ${kmins[2]} ]
 	do
 	        sed -i "4c $kp1 $kp2 $kp2" KPOINTS
-          stru_optimization.sh
+          stru_one_step.sh
 	        echo $kp1 $kp2 $kp2 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
 		kp2=$[$kp2-1]
 	done
@@ -62,7 +62,7 @@ do
         while [ $kp2 -ge ${kmins[1]} ]
         do
         sed -i "4c $kp2 $kp1 $kp2" KPOINTS
-        stru_optimization.sh
+        stru_one_step.sh
         echo $kp2 $kp1 $kp2 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
         kp2=$[$kp2-1]
         done
@@ -79,7 +79,7 @@ do
   while [ $kp2 -ge ${kmins[1]} ]
   do
           sed -i "4c $kp2 $kp2 $kp1" KPOINTS
-          stru_optimization.sh
+          stru_one_step.sh
           echo $kp2 $kp2 $kp1 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
           kp2=$[$kp2-1]
   done
@@ -109,7 +109,6 @@ else
 	k_max=40
 fi
 kpoints.sh
-
 cons=`awk 'NR==2{print $1}' POSCAR`
 for iii in 1 2 3
 do
