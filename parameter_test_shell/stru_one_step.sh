@@ -17,3 +17,4 @@ kpoints.sh
 sed -i -e '/ISIF/c ISIF=2' -e '/NSW/c NSW=0' INCAR
 
 mpirun -n ${NSLOTS} $vasp_version
+
