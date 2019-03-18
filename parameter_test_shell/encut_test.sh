@@ -13,7 +13,9 @@ fi
 
 for val in `seq $min_encut 10 $max_encut`
 do
-sed -i -e '/NSW/c NSW=0' INCAR
-struc_one_step.sh
+incar.sh
+sed -i -e '/NSW/c NSW=0'  -e "/ENCUT/c  ENCUT=$val" INCAR
+stru_one_step.sh
 echo $val `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> encut_energy.out
 done
+
