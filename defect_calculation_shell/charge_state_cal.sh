@@ -15,7 +15,7 @@ if [ ! -d $dir  ]
 then
 mkdir $dir
 fi
-cp POSCAR $dir
+cp POSCAR POTCAR $dir
 cd $dir
 potcar.sh
 incar.sh
@@ -35,7 +35,7 @@ paste num_atom num_ele > num_tmp
 nelect=`awk '{s+=$1*$2}END{print s}' num_tmp`
 rm num*
 
-let nelect=nelect+q
+let nelect=nelect-q
 sed -i -e '/ISIF/c ISIF=2' -e '/NSW/c NSW=60' INCAR
 if grep NELECT INCAR ;
 then  sed -i -e "/NELECT/c NELECT=$nelect" INCAR
@@ -44,4 +44,15 @@ fi
 
 mpirun -n ${NSLOTS} $vasp_version
 
-cd ..
+ mkdir scf
+ cp CONTCAR scf/POSCAR
+cp POTCAR INCAR KPOINTS scf/
+cd scf/
+
+sed -i -e '/ISIF/c ISIF=2' -e '/NSW/c NSW=0' -e '/IBRION/c IBRION=-1' -e '/LWAVE/c LWAVE=T' -e '/LCHARG/c LCHARG=T' INCAR
+
+echo ISYM=-1>>INCAR
+mpirun -n ${NSLOTS} $vasp_version
+
+cd ../..
+
