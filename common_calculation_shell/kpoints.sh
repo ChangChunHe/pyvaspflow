@@ -8,6 +8,7 @@ then
 exit
 fi
 
+
 if [[ $1 == "ba"* ]]
 then
 aflow --kpath<POSCAR> k-path

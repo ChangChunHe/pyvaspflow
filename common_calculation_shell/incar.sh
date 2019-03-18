@@ -1,7 +1,10 @@
 #!/bin/bash
 
-while [ ! -f INCAR ]
-do
+if [ -f INCAR ]
+then
+exit
+fi
+
 if [ ! -n "$encut" ]
 then	encut=`grep ENMAX POTCAR |sort -k3nr|awk 'NR==1{print $3*1.3}' `;fi
 if [ ! -f POTCAR ]
@@ -18,12 +21,14 @@ fi
 cat > INCAR <<!
 System=$host_name
 ENCUT=$encut
+ISPIN=2
+NELM=240
 ISIF=2
 ISTART=0
 ICHARG=2
-NSW=80
+NSW=100
 IBRION=2
-EDIFF=1E-5
+EDIFF=1E-3
 EDIFFG=-0.05
 ISMEAR=0
 NPAR=4
@@ -33,7 +38,6 @@ LCHARG=F
 ALGO=All
 
 !
-done
 ##################################################################
 if [ -n "$vdw" ] && [ $vdw -eq 1 ]
 then    echo "LUSE_VDW = .TRUE.;AGGAC = 0.0000;BPARAM=15.7" >>INCAR;fi

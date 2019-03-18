@@ -20,3 +20,4 @@ sed -i "4s/.*/`awk 'NR==4 {print $1+4,$2+4,$3+4}' KPOINTS`/" KPOINTS
 mpirun -n ${NSLOTS} vasp_std
 
 cd ..
+

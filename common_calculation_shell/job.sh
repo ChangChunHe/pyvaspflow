@@ -1,16 +1,23 @@
 #!/bin/bash -l
-#NOTE the -l flag!
+# NOTE the -l flag!
 #
-#SBATCH -J NAME
+#SBATCH -J Si_pri
 # Default in slurm
 # Request 5 hours run time
+#SBATCH -t 5:0:0
 #
-#SBATCH -p short_q  -N 1 -n 24
+#SBATCH -p short_q -N 1 -n 24
 # NOTE Each small node has 12 cores
 #
-export NSLOTS=24
 module load vasp/5.4.4-impi-mkl
-stru_relax.sh
-stru_scf.sh
-stru_band.sh
-stru_dos.sh
+# add your job logical here!!!
+export NSLOTS=24
+
+#stru_optimization.sh
+#stru_scf.sh
+#stru_band.sh
+
+
+#charge_state_cal.sh -1
+
+kp_test.sh

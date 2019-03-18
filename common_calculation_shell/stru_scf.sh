@@ -14,7 +14,6 @@ then    mkdir scf;fi
 cp  INCAR CONTCAR POTCAR scf/
 cd scf/
 mv CONTCAR POSCAR
-
 kpoints.sh 50 # make KPOINTS denser
 sed -i -e '/ISIF/c ISIF=2' -e '/NSW/c NSW=0' -e '/IBRION/c IBRION=-1' -e '/LWAVE/c LWAVE=T' -e '/LCHARG/c LCHARG=T' INCAR
 
