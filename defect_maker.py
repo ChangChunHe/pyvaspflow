@@ -38,7 +38,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=True,purity_atom='H'):
+    def get_tetrahedral_defect(self, isunique=True, purity_in='H'):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
@@ -94,16 +94,16 @@ class DefectMaker:
             deg = []
             for tetra in all_tetra:
                 new_pos = np.vstack((self.positions,tetra))
-                new_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((tetra.shape[0],))))
+                new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
                 equi_atoms = new_cell.get_symmetry()['equivalent_atoms']
                 purity_atom_type = np.unique(equi_atoms[-tetra.shape[0]:])
                 for atom_type in purity_atom_type:
                     new_uniq_pos = np.vstack((self.positions,new_pos[atom_type]))
-                    new_uniq_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((1,))))
+                    new_uniq_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((1,))))
                     new_uniq_cell = Cell(self.lattice,new_uniq_pos,new_uniq_atoms)
                     deg.append(len(np.where(equi_atoms == atom_type)[0]))
-                    wirite_poscar(new_uniq_cell,purity_atom,folder,idx)
+                    wirite_poscar(new_uniq_cell,purity_in,folder,idx)
                     idx += 1
             np.savetxt(folder+'/deg.txt',deg,fmt='%d')
         else:
@@ -116,21 +116,21 @@ class DefectMaker:
             idx = 0
             for tetra in all_tetra:
                 new_pos = np.vstack((self.positions,tetra))
-                new_atoms = np.hstack((self.atoms,s2n(purity_atom)*np.ones((tetra.shape[0],))))
+                new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
-                wirite_poscar(new_cell,purity_atom,folder,idx)
+                wirite_poscar(new_cell,purity_in,folder,idx)
                 idx += 1
 
 
-    def get_purity_defect(self,symprec=1e-3,isunique=True,purity_atom='all',style='Vacc'):
+    def get_purity_defect(self,symprec=1e-3,isunique=True, purity_out='all',purity_in='Vacc'):
         cg = ConfigurationGenerator(self.no_defect_cell, symprec)
-        sites = _get_sites(list(self.atoms), l_sub=purity_atom, purity_atom=style)
-        if purity_atom == 'all':
+        sites = _get_sites(list(self.atoms), purity_out=purity_out, purity_in=purity_in)
+        if purity_out == 'all':
             confs = cg.cons_specific_cell(sites, e_num=(len(self.atoms)-1,1), symprec=symprec)
         else:
-            purity_atom_num = np.where(self.atoms==s2n(purity_atom))[0].size
+            purity_atom_num = np.where(self.atoms==s2n(purity_out))[0].size
             confs = cg.cons_specific_cell(sites, e_num=(purity_atom_num-1,1), symprec=symprec)
-        folder = style + 'defect'
+        folder = purity_in + '-defect'
         if not os.path.exists('./'+folder):
             os.mkdir('./'+folder)
         else:
@@ -138,17 +138,17 @@ class DefectMaker:
             os.mkdir('./'+folder)
         idx = 0
         for c, _ in confs:
-            wirite_poscar(c,purity_atom,folder,idx)
+            wirite_poscar(c,purity_in,folder,idx)
             idx += 1
 
 
-def _get_sites(atoms, l_sub='all', purity_atom='Vacc'):
-    if l_sub == 'all':
-        return [(i, s2n(purity_atom)) for i in atoms]
+def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
+    if purity_out == 'all':
+        return [(i, s2n(purity_in)) for i in atoms]
     else:
-        return [(i, s2n(purity_atom)) if i == s2n(l_sub) else (i,) for i in atoms]
+        return [(i, s2n(purity_in)) if i == s2n(purity_out) else (i,) for i in atoms]
 
 
 if __name__ == "__main__":
-    DM = DefectMaker('/home/hecc/Documents/python-package/Defect-Formation-Calculation/test_defect_maker/Fe16Y8.vasp')
-    DM.get_tetrahedral_defect()
+    DM = DefectMaker('/home/hecc/Documents/python-package/Defect-Formation-Calculation/Fe16Y8.vasp')
+    DM.get_tetrahedral_defect(isunique=False)
