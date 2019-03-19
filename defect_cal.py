@@ -8,7 +8,7 @@ import os
 import subprocess
 
 
-class Acquire_value():
+class ExtractValue():
     def __init__(self,data_folder='./',atomic_num=3):
 
         self.data_folder = data_folder
@@ -64,18 +64,50 @@ class Acquire_value():
         file_eig = os.path.join(self.data_folder,'EIGENVAL')
         line6 = np.genfromtxt(file_eig,skip_header=5,max_rows=1)
         kpt_num, eig_num = int(line6[1]), int(line6[2])
-        all_eigval = np.zeros((eig_num, kpt_num*2))
-        for ii in range(kpt_num):
-             all_eigval[:,2*ii:2*ii+2] = np.genfromtxt(file_eig,skip_header=8+eig_num*int(ii)+2*ii,\
-                                       max_rows=eig_num,usecols=(1,2))
-        elec_num =  np.mean(all_eigval[:,1::2],axis=1)
-        idx1 = np.where(elec_num > 0.9)
-        idx2 = np.where(elec_num < 0.5)
-        if idx1[0][-1] - idx2[0][0] == -1:
-            vbm = np.max(all_eigval[idx1[0][-1],::2])
-            cbm = np.min(all_eigval[idx2[0][0],::2])
-            gap = cbm - vbm
-        return cbm,vbm,gap
+        if  len(lc.getlines(file_eig)[8].split()) == 3:
+            isspin = False
+        elif len(lc.getlines(file_eig)[8].split()) == 5:
+            isspin = True
+        if not isspin:
+            all_eigval = np.zeros((eig_num, kpt_num*2))
+            for ii in range(kpt_num):
+                 all_eigval[:,2*ii:2*ii+2] = np.genfromtxt(file_eig,
+                 skip_header=8+eig_num*int(ii)+2*ii,
+                 max_rows=eig_num,usecols=(1,2))
+        else:
+            all_eigval = np.zeros((eig_num, kpt_num*4))
+            for ii in range(kpt_num):
+                 all_eigval[:,4*ii:4*ii+4] = np.genfromtxt(file_eig,
+                 skip_header=8+eig_num*int(ii)+2*ii,
+                 max_rows=eig_num,usecols=(1,2,3,4))
+        if not isspin:
+            elec_num =  np.mean(all_eigval[:,1::2],axis=1)
+            idx1 = np.where(elec_num > 0.9)
+            idx2 = np.where(elec_num < 0.5)
+            if idx1[0][-1] - idx2[0][0] == -1:
+                vbm = np.max(all_eigval[idx1[0][-1],::2])
+                cbm = np.min(all_eigval[idx2[0][0],::2])
+                gap = cbm - vbm
+            return (vbm, cbm, gap)
+        else:
+            all_eigval_up = all_eigval[:,0::2]
+            all_eigval_down = all_eigval[:,1::2]
+            elec_num_up = np.mean(all_eigval_up[:,1::2],axis=1)
+            idx1 = np.where(elec_num_up > 0.8)
+            idx2 = np.where(elec_num_up < 0.2)
+            if idx1[0][-1] - idx2[0][0] == -1:
+                vbm_up = np.max(all_eigval_up[idx1[0][-1],::2])
+                cbm_up = np.min(all_eigval_up[idx2[0][0],::2])
+                gap_up = cbm_up - vbm_up
+            elec_num_down =  np.mean(all_eigval_down[:,1::2],axis=1)
+            idx1 = np.where(elec_num_down > 0.8)
+            idx2 = np.where(elec_num_down < 0.2)
+            if idx1[0][-1] - idx2[0][0] == -1:
+                vbm_down = np.max(all_eigval_down[idx1[0][-1],::2])
+                cbm_down = np.min(all_eigval_down[idx2[0][0],::2])
+                gap_down = cbm_down - vbm_down
+            return (vbm_up, cbm_up, gap_up), (vbm_down, cbm_down, gap_down)
+
 
     def get_miu(self):
         file_value, file_out = self.data_folder + 'value', self.data_folder + 'out'
@@ -140,5 +172,5 @@ def main_Hf(files, atomic_num=None, epsilon=None):
             return diff_d
 
 if __name__ == "__main__":
-    Av = Acquire_value('./test_data')
-    print(Av.get_Ne_defect_free())
+    EV = ExtractValue('/home/hecc/Desktop/intMn')
+    print(EV.get_gap())
