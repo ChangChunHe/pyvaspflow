@@ -59,8 +59,7 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
     d = 0
     for i in _no_def_pos:
         d = d + min(np.linalg.norm(i - _one_def_pos,axis=1))
-    print('Delete the',str(ii+1),'atom in your no-defect  POSCAR,\n the two distance between the two POSCAR is',d)
-    return ii
+    return ii,d
 
 
 def generate_all_basis(N1,N2,N3):
@@ -81,7 +80,7 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     one_def_pos = one_defect.positions
     c = no_defect.lattice
     no_def_pos = np.dot(no_def_pos,c)
-    ii = get_delete_atom_num(no_defect_poscar,one_defect_poscar)
+    ii,d = get_delete_atom_num(no_defect_poscar,one_defect_poscar)
     defect_atom = no_def_pos[ii]
     d = []
     for i in range(no_def_pos.shape[0]):
@@ -90,5 +89,7 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
                     + sum(c*basis))) for basis in all_basis]))
     max_idx = np.argmax(d)
     d_ = np.linalg.norm(no_def_pos[max_idx] - np.dot(one_def_pos,c),axis=1)
-    print(np.argmin(d_), 'is the farthest position from the defect', \
-          'atom in the defect system, \n the distance is ', d[max_idx], '\n and ', max_idx, 'is the farthest in no-defect system')
+    print(np.argmin(d_)+1, 'is the farthest position from the defect', \
+          'atom in the defect system, \n the distance is ',
+          d[max_idx], '\n and ', max_idx+1,
+           'is the farthest in no-defect system')
