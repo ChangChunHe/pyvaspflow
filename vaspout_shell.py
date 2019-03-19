@@ -15,6 +15,30 @@ def cli():
 @click.argument('file_directory')
 @click.option('--attribute','-a', default='')
 def main(file_directory, attribute):
+    """
+    First parameter:
+
+    calculation directory, the dir path of your calculation
+
+    Sencond parameter:
+
+    this is an option, use this parameter to get some common
+    value in your vasp outfiles
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    vaspout_shell.py main . gap # this can read the gap and vbm, cbm
+
+    vaspout_shell.py main . fermi # this can read the fermi energy
+
+    vaspout_shell.py main . energy # this can read the total energy
+
+    vaspout_shell.py main . ele # this can read the electrons in your OUTCAR
+
+    vaspout_shell.py main . ele-free # this can get electrons number of  the defect-free system
+    """
     EV = ExtractValue(file_directory)
     if 'gap' in attribute:
         get_gap(EV)
@@ -58,6 +82,21 @@ def get_Ne_defect(EV):
 @click.argument('no_defect_poscar',nargs=1)
 @click.argument('one_defect_poscar',nargs=1)
 def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
+    """
+    First parameter:
+
+    no_defect_poscar, the path of the defece free system
+
+    Sencond parameter:
+
+    one_defect_poscar, the path of defece system with one defect
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    vaspout_shell.py get_delete_atom_num no_defect/POSCAR one_defect/POSCAR
+    """
     ii,d = ft.get_delete_atom_num(no_defect_poscar,one_defect_poscar)
     print('Delete the',str(ii+1),'atom in your no-defect  POSCAR,\n the two distance between the two POSCAR is',d)
 
@@ -66,14 +105,40 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
 @click.argument('no_defect_poscar',nargs=1)
 @click.argument('one_defect_poscar',nargs=1)
 def get_farther_atom_num(no_defect_poscar,one_defect_poscar):
+    """
+    First parameter:
+
+    no_defect_poscar, the path of the defece free system
+
+    Sencond parameter:
+
+    one_defect_poscar, the path of defece system with one defect
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    vaspout_shell.py get_farther_atom_num no_defect/POSCAR one_defect/POSCAR
+    """
     ft.get_farther_atom_num(no_defect_poscar,one_defect_poscar)
 
 
 @cli.command('get_potential_align')
 @click.argument('defect_outcar',nargs=1)
 @click.argument('number',nargs=1)
-def get_PA(defect_outcar,number):
-    # get potential alignment correlation
+def get_potential_align(defect_outcar,number):
+    """
+    First parameter: defect_outcar, the OUTCAR path of the defece system
+    Sencond parameter: number,  the farther atom number
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    vaspout_shell.py get_potential_align OUTCAR 34
+
+    # get the electrostatic energy of the 34-th atom
+    """
     number = int(number)
     tmp_match_line = _get_line(defect_outcar,rematch='electrostatic')
     rows = number // 5
