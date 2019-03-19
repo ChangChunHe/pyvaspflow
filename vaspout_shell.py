@@ -1,8 +1,11 @@
-import click
+#!usr/bin/env python3
+
+import click,subprocess
 from defect_cal import ExtractValue
 from sagar.io.vasp import  read_vasp
 import numpy as np
 import function_toolkit as ft
+import linecache as lc
 
 @click.group()
 def cli():
@@ -51,7 +54,6 @@ def get_Ne_defect(EV):
     click.echo('Number of valance electrons in your calculation system: '
     +str(EV.get_Ne_defect()))
 
-
 @cli.command('get_delete_atom_num')
 @click.argument('no_defect_poscar',nargs=1)
 @click.argument('one_defect_poscar',nargs=1)
@@ -66,6 +68,25 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
 def get_farther_atom_num(no_defect_poscar,one_defect_poscar):
     ft.get_farther_atom_num(no_defect_poscar,one_defect_poscar)
 
+
+@cli.command('get_potential_align')
+@click.argument('defect_outcar',nargs=1)
+@click.argument('number',nargs=1)
+def get_PA(defect_outcar,number):
+    # get potential alignment correlation
+    number = int(number)
+    tmp_match_line = _get_line(defect_outcar,rematch='electrostatic')
+    rows = number // 5
+    col =  number - rows * 5 - 1
+    if col == -1:
+        rows -= 1
+        col = 4
+    tmp_line = lc.getlines(defect_outcar)[tmp_match_line[0]+rows+3].split()
+    click.echo([float(i) for i in  tmp_line[2*col:2*col+2]])
+
+def _get_line(file_tmp,rematch=None):
+    grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
+    return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
 
 if __name__ == "__main__":
     cli()
