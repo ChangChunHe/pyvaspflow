@@ -47,18 +47,14 @@ class ExtractValue():
         file_image = os.path.join(self.data_folder,'OUTCAR')
         return float(subprocess.run(['grep','Ewald',file_image],stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')[0].split()[-1])
 
-    def get_PA(self):
+    def get_PA(self, number):
         # get potential alignment correlation
-        file_PA = self.data_folder + 'OUTCAR'
-        file_pos = self.data_folder + 'POSCAR'
-        tmp_atom_line = round(sum(map(int,lc.getlines(file_pos)[6].split()))/5)+3
+        file_PA = os.path.join(self.data_folder, 'OUTCAR')
         tmp_match_line = self._get_line(file_PA,rematch='electrostatic')
-        for line in lc.getlines(file_PA)[tmp_match_line[0]:tmp_match_line[0]+tmp_atom_line]:
-            if ' '+str(self.atomic_num )+' ' in line:
-                if self.atomic_num %5==0:
-                    return line.split()[9]
-                else:
-                    return line.split()[self.atomic_num %5*2-1]
+        rows = number // 5
+        col =  number - rows * 5 - 1
+        tmp_line = lc.getlines(file_PA)[tmp_match_line[0]+rows+3].split()
+        return [float(i) for i in  tmp_line[2*col:2*col+2]]
 
     def get_gap(self):
         file_eig = os.path.join(self.data_folder,'EIGENVAL')
@@ -172,5 +168,5 @@ def main_Hf(files, atomic_num=None, epsilon=None):
             return diff_d
 
 if __name__ == "__main__":
-    EV = ExtractValue('/home/hecc/Desktop/intMn')
-    print(EV.get_gap())
+    EV = ExtractValue('/home/hecc/Desktop/supercell')
+    print(EV.get_PA(24))
