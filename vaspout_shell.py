@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
 import click,subprocess
 from defect_cal import ExtractValue
@@ -53,7 +53,6 @@ def main(file_directory, attribute):
 
 def get_gap(EV):
     gap_res = EV.get_gap()
-    import pdb;pdb.set_trace()
     if len(gap_res) == 3:
         click.echo('vbm: ' + str(gap_res[0])+
         '\ncbm: '+str(gap_res[1])+'\ngap: '+str(gap_res[2]))
