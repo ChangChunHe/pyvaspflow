@@ -150,7 +150,8 @@ def get_potential_align(defect_outcar,number):
         rows -= 1
         col = 4
     tmp_line = lc.getlines(defect_outcar)[tmp_match_line[0]+rows+3].split()
-    click.echo([float(i) for i in  tmp_line[2*col:2*col+2]])
+    click.echo(' '.join([i for i in  tmp_line[2*col:2*col+2]]))
+
 
 def _get_line(file_tmp,rematch=None):
     grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
