@@ -17,18 +17,15 @@ then
 host_name=`awk 'NR==1' POSCAR`
 fi
 
-
 cat > INCAR <<!
 System=$host_name
 ENCUT=$encut
-ISPIN=2
-NELM=240
 ISIF=2
 ISTART=0
 ICHARG=2
 NSW=100
 IBRION=2
-EDIFF=1E-3
+EDIFF=1E-5
 EDIFFG=-0.05
 ISMEAR=0
 NPAR=4
