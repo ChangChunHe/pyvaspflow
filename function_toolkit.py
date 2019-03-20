@@ -74,7 +74,7 @@ def generate_all_basis(N1,N2,N3):
 
 def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     all_basis = generate_all_basis(1,1,1)
-    no_defect = read_vasp(one_defect_poscar)
+    no_defect = read_vasp(no_defect_poscar)
     one_defect = read_vasp(one_defect_poscar)
     no_def_pos = no_defect.positions
     one_def_pos = one_defect.positions
@@ -85,11 +85,12 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     d = []
     for i in range(no_def_pos.shape[0]):
         if i != ii:
-            d.append(min([np.linalg.norm(defect_atom - (no_def_pos[i] \
-                    + sum(c*basis))) for basis in all_basis]))
-    max_idx = np.argmax(d)
+            d.append([i, min([np.linalg.norm(defect_atom - (no_def_pos[i] \
+                    + sum(c*basis))) for basis in all_basis])])
+    d = np.asarray(d)
+    max_idx = int(d[np.argmax(d[:,1]),0])
     d_ = np.linalg.norm(no_def_pos[max_idx] - np.dot(one_def_pos,c),axis=1)
     print(np.argmin(d_)+1, 'is the farthest position from the defect', \
           'atom in the defect system, \n the distance is ',
-          d[max_idx], '\n and ', max_idx+1,
+          d[max_idx,1], '\n and ', max_idx+1,
            'is the farthest in no-defect system')
