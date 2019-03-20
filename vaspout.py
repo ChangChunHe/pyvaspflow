@@ -11,9 +11,10 @@ import linecache as lc
 def cli():
     pass
 
-@cli.command('main')
-@click.argument('file_directory')
-@click.option('--attribute','-a', default='')
+@cli.command('main',short_help="Get the value you want")
+@click.argument('file_directory',metavar='<Work_directory>',
+type=click.Path(exists=True))
+@click.option('--attribute','-a', default='enrgy', type=str)
 def main(file_directory, attribute):
     """
     First parameter:
@@ -29,15 +30,15 @@ def main(file_directory, attribute):
 
     module load sagar #load the necessay package
 
-    vaspout_shell.py main . gap # this can read the gap and vbm, cbm
+    vaspout.py main -a gap . # this can read the gap and vbm, cbm
 
-    vaspout_shell.py main . fermi # this can read the fermi energy
+    vaspout.py main -a fermi . # this can read the fermi energy
 
-    vaspout_shell.py main . energy # this can read the total energy
+    vaspout.py main -a energy . # this can read the total energy
 
-    vaspout_shell.py main . ele # this can read the electrons in your OUTCAR
+    vaspout.py main -a ele . # this can read the electrons in your OUTCAR
 
-    vaspout_shell.py main . ele-free # this can get electrons number of  the defect-free system
+    vaspout.py main -a ele-free . # this can get electrons number of  the defect-free system
     """
     EV = ExtractValue(file_directory)
     if 'gap' in attribute:
@@ -77,7 +78,7 @@ def get_Ne_defect(EV):
     click.echo('Number of valance electrons in your calculation system: '
     +str(EV.get_Ne_defect()))
 
-@cli.command('get_delete_atom_num')
+@cli.command('get_delete_atom_num',short_help='Get the delete atom in your defect free POSCAR')
 @click.argument('no_defect_poscar',nargs=1)
 @click.argument('one_defect_poscar',nargs=1)
 def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
@@ -94,15 +95,17 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
 
     module load sagar #load the necessay package
 
-    vaspout_shell.py get_delete_atom_num no_defect/POSCAR one_defect/POSCAR
+    vaspout.py get_delete_atom_num no_defect/POSCAR one_defect/POSCAR
     """
     ii,d = ft.get_delete_atom_num(no_defect_poscar,one_defect_poscar)
     print('Delete the',str(ii+1),'atom in your no-defect  POSCAR,\n the two distance between the two POSCAR is',d)
 
 
-@cli.command('get_farther_atom_num')
-@click.argument('no_defect_poscar',nargs=1)
-@click.argument('one_defect_poscar',nargs=1)
+@cli.command('get_farther_atom_num',short_help='Get the farther atom number from the defect position in your defect POSCAR')
+@click.argument('no_defect_poscar',nargs=1, metavar='no-defect-POSCAR',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+@click.argument('one_defect_poscar',nargs=1,metavar='one-defect-POSCAR',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
 def get_farther_atom_num(no_defect_poscar,one_defect_poscar):
     """
     First parameter:
@@ -117,14 +120,15 @@ def get_farther_atom_num(no_defect_poscar,one_defect_poscar):
 
     module load sagar #load the necessay package
 
-    vaspout_shell.py get_farther_atom_num no_defect/POSCAR one_defect/POSCAR
+    vaspout.py get_farther_atom_num no_defect/POSCAR one_defect/POSCAR
     """
     ft.get_farther_atom_num(no_defect_poscar,one_defect_poscar)
 
 
-@cli.command('get_potential_align')
-@click.argument('defect_outcar',nargs=1)
-@click.argument('number',nargs=1)
+@cli.command('get_potential_align',short_help='Get the potential alignment of the specific atom')
+@click.argument('defect_outcar',nargs=1,metavar='defect-OUTCAR',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+@click.argument('number',nargs=1,type=int)
 def get_potential_align(defect_outcar,number):
     """
     First parameter: defect_outcar, the OUTCAR path of the defece system
@@ -134,7 +138,7 @@ def get_potential_align(defect_outcar,number):
 
     module load sagar #load the necessay package
 
-    vaspout_shell.py get_potential_align OUTCAR 34
+    vaspout.py get_potential_align OUTCAR 34
 
     # get the electrostatic energy of the 34-th atom
     """
