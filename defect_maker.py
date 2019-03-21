@@ -130,7 +130,7 @@ class DefectMaker:
         else:
             purity_atom_num = np.where(self.atoms==s2n(purity_out))[0].size
             confs = cg.cons_specific_cell(sites, e_num=(purity_atom_num-1,1), symprec=symprec)
-        folder = purity_in + '-defect'
+        folder = purity_out + '-' + purity_in + '-defect'
         if not os.path.exists('./'+folder):
             os.mkdir('./'+folder)
         else:
@@ -138,7 +138,7 @@ class DefectMaker:
             os.mkdir('./'+folder)
         idx = 0
         for c, _ in confs:
-            wirite_poscar(c,purity_in,folder,idx)
+            wirite_poscar(c,purity_out+'-'+purity_in,folder,idx)
             idx += 1
 
 
@@ -147,8 +147,3 @@ def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
         return [(i, s2n(purity_in)) for i in atoms]
     else:
         return [(i, s2n(purity_in)) if i == s2n(purity_out) else (i,) for i in atoms]
-
-
-if __name__ == "__main__":
-    DM = DefectMaker('/home/hecc/Documents/python-package/Defect-Formation-Calculation/Fe16Y8.vasp')
-    DM.get_tetrahedral_defect(isunique=False)
