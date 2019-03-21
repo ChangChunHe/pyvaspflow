@@ -51,6 +51,8 @@ def main(file_directory, attribute):
         get_Ne_defect_free(EV)
     elif 'ele' in attribute.lower() and 'free' not in attribute.lower():
         get_Ne_defect(EV)
+    elif 'ima' in attribute:
+        get_image(EV)
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -77,6 +79,9 @@ def get_Ne_defect_free(EV):
 def get_Ne_defect(EV):
     click.echo('Number of valance electrons in your calculation system: '
     +str(EV.get_Ne_defect()))
+
+def get_image(EV):
+    click.echo(EV.get_image())
 
 @cli.command('get_delete_atom_num',short_help='Get the delete atom in your defect free POSCAR')
 @click.argument('no_defect_poscar',nargs=1)
