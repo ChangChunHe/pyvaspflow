@@ -16,6 +16,36 @@ There are three kinds of defect system you can generate, vacancy defect, purity 
 
 
 ## 2. submit your common calculatiojobn jobs
+
+First, we supply some shell scripts to generate those input file for VASP calculation, they are [potcar.sh](./common_calculation_shell/potcar.sh), [incar.sh](./common_calculation_shell/incar.sh), [kpoints.sh](./common_calculation_shell/kpoints.sh).
+
+Here I will simply introduce the usage of these scripts.
+
+#### potcar.sh
+There are two parameters you can input. <br >
+The first parameter is the type of potcar
+* 1 is correspondent to `PAW_PBE`
+*  2 is correspondent to `PAW_LDA`
+* 3 is correspondent to `PAW_PW91`
+the defaul of this parameter is 1.
+
+
+The second parameter is the type of atom potcar, maybe the same atom has some different type of potcar, for example, Mg atom has `Mg, Mg_GW, Mg_pv, Mg_pv_GW, Mg_sv, Mg_sv_GW` potcar, so you can specify one of them to get specify POTCAR, the defaul of this parameter is the atom itself.
+```shell
+potcar.sh 2 # this will generate the POTCAR based on your PSOCAR from  PAW_LDA directory
+potcar.sh 1 Mg_pv # noted that 1 can be omited
+```
+
+#### incar.sh
+This script is used to generate INCAR for your system, and it supposes that the POTCAR has been in your directory, because `ENCUT` should be set based on the `ENMAX` of your POTCAR.
+
+#### kpoints.sh
+This script is used to generate KPOINTS, the usage is:
+```shell
+kpoint.sh 40 # this will generate KPOINTS mesh 40/a 40/b 40/c
+kpoint.sh band # this will genrate k-path based on `aflow`
+```
+
 Here, we supply some integrated shell scripts to calculate the jobs you need.<br />
 - [x] [structure_relax](./common_calculation_shell/stru_relax.sh)<br />
 - [x] [structures_optimization](./common_calculation_shell/stru_optimization.sh)<br />
