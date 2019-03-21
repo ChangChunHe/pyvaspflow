@@ -45,13 +45,13 @@ First, we supply some shell scripts to generate those input file for VASP calcul
 __These scripts will not work if correspondent files exist, for example, incar.sh will not work if an INCAR file exists in your current directory__
 
 ### 2.1 potcar.sh
-There are two parameters you can input. <br >
-The first parameter is the type of potcar
-* 1 is correspondent to `PAW_PBE`
-*  2 is correspondent to `PAW_LDA`
-* 3 is correspondent to `PAW_PW91`
-the defaul of this parameter is 1.
+There are two parameters you can input. The first parameter is the type of potcar
 
+* 1 is correspondent to `PAW_PBE`
+* 2 is correspondent to `PAW_LDA`
+* 3 is correspondent to `PAW_PW91`
+
+the defaul of first parameter is 1.
 
 The second parameter is the type of atom potcar, maybe the same atom has some different type of potcar, for example, Mg atom has `Mg, Mg_GW, Mg_pv, Mg_pv_GW, Mg_sv, Mg_sv_GW` potcar, so you can specify one of them to get specify POTCAR, the defaul of this parameter is the atom itself.
 ```shell
@@ -77,16 +77,14 @@ kpoint.sh band # this will genrate k-path based on `aflow`
 ### 2.5 some integrated scripts
 
 Here, we supply some integrated shell scripts to calculate the jobs you need.<br />
-- [x] [structure_relax](./common_calculation_shell/stru_relax.sh)<br />
-- [x] [structures_optimization](./common_calculation_shell/stru_optimization.sh)<br />
-- [x] [structures_self-consistent-field](./common_calculation_shell/stru_scf.sh)<br />
-- [x] [structures_band-calculation](./common_calculation_shell/stru_band.sh)<br />
-- [x] [structures_dos-calculation](./common_calculation_shell/stru_dos.sh)<br />
-and a main [job scripts](./common_calculation_shell/job.sh) to submit your job.
+- [x] [stru_relax.sh](./common_calculation_shell/stru_relax.sh) (structure relax, ISIF=3)<br />
+- [x] [stru_optimization.sh](./common_calculation_shell/stru_optimization.sh) (structure optimization, ISIF=2)<br />
+- [x] [struscf.sh](./common_calculation_shell/stru_scf.sh) (structure self consistent field calculation)<br />
+- [x] [stru_band.sh](./common_calculation_shell/stru_band.sh) (band calculation)<br />
+- [x] [stru_dos.sh](./common_calculation_shell/stru_dos.sh) (density of state calculation)<br />
+and a main [job.sh](./common_calculation_shell/job.sh) to submit your job.
 
-We also supply some scripts to generate the input files needed in `VASP` Calculation, such as `INCAR`, `KPOINTS`, `POTCAR`, you can also use these  scripts to generate them.
-
-So in general, you can just begin your job from a `POSCAR` and a `job.sh`.
+We also supply some scripts to generate the input files needed in `VASP` Calculation, such as `INCAR`, `KPOINTS`, `POTCAR`, you can also use these  scripts to generate them. So in general, you can just begin your job from a `POSCAR` and a `job.sh`.
 
 ## 3. Get some calculation value in your vaspout files
 
