@@ -14,7 +14,7 @@ a=$ii
 mkdir $ii-cal
 cp $ii $ii-cal/POSCAR
 cd $ii-cal
-potcar.sh Y_sv
+potcar.sh
 kpoints.sh
 incar.sh
 stru_relax.sh
@@ -24,4 +24,4 @@ fi
 done
 ground_stru_num=`cat energy_out|sort -nk2r|head -1|awk '{print $1}'`
 b=`echo $a |cut -d'_' -f 1`
-mv ${b}_idx$ground_stru_num.vasp POSCAR_ground_stru # this is the ground state
+mv ${b}_idx${ground_stru_num}.vasp POSCAR_ground_stru # this is the ground state
