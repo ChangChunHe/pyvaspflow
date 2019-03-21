@@ -1,16 +1,10 @@
-#!/bin/bash -l
-# NOTE the -l flag!
-#
-#SBATCH -J FeY-H
-# Default in slurm
-# Request 5 hours run time
-#
-#SBATCH -p normal_q -N 1 -n 12
-# NOTE Each small node has 12 cores
-#
-module load vasp/5.4.4-impi-mkl
-# add your job logical here!!!
-export NSLOTS=24
+#!/bin/bash
+
+if [ -n "$soc" ] && [ $soc -eq 1 ]
+then    vasp_version="vasp5.4.4-ncl"
+elif [ ! -n "$vasp_version" ]
+then    vasp_version="vasp_std"
+fi
 
 for ii in `ls`
 do
