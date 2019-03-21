@@ -10,12 +10,18 @@ Table of Contents
       * [0. Installment](#0-installment)
       * [1. Generate defect structures](#1-generate-defect-structures)
       * [2. submit your common calculatiojobn jobs](#2-submit-your-common-calculatiojobn-jobs)
-            * [potcar.sh](#potcarsh)
-            * [incar.sh](#incarsh)
-            * [kpoints.sh](#kpointssh)
-            * [some test-parameters scripts](#some-test-parameters-scripts)
-            * [some integrated scripts](#some-integrated-scripts)
+         * [2.1 potcar.sh](#21-potcarsh)
+         * [2.2 incar.sh](#22-incarsh)
+         * [2.3 kpoints.sh](#23-kpointssh)
+         * [2.4 some test-parameters scripts](#24-some-test-parameters-scripts)
+         * [2.5 some integrated scripts](#25-some-integrated-scripts)
       * [3. Get some calculation value in your vaspout files](#3-get-some-calculation-value-in-your-vaspout-files)
+         * [3.1 vaspout-help](#31-vaspout-help)
+         * [3.2 vaspout-main](#32-vaspout-main)
+         * [3.2 vaspout-get_delete_atom_num](#32-vaspout-get_delete_atom_num)
+         * [3.3 vaspout-get_farther_atom_num](#33-vaspout-get_farther_atom_num)
+         * [3.3 vaspout-get_potential_align](#33-vaspout-get_potential_align)
+
 
 
 
