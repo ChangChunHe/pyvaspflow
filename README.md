@@ -26,7 +26,8 @@ Table of Contents
 
 
 ## 0. Installment
-Firstly, you should make a directory for those scripts and add its path to your `.bashrc`. For example, I make the scripts directory under my $HOME directory, so I can use the below command to add this directory to $PATH, and `source` your `.bashrc` to make it work.
+Firstly, you should make a directory for those scripts and add its path to your `.bashrc`. I divide these scripts into three directories so that you can easily know the usage of each scripts, and you can put them all into a directory in order to conveniently use them. For example, I make the `scripts` directory under my $HOME directory, so I can use the below command to add this directory to $PATH, and `source` your `.bashrc` to make it work.
+
 ```shell
 echo export PATH="$PATH:/home/hecc/scripts" >> ~/.bashrc
 source ~/.bashrc
