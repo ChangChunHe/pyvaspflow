@@ -2,6 +2,23 @@
 
 This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and withdraw necessary data to calculate defect formation energy.
 
+
+Table of Contents
+=================
+
+   * [Defect-Formation-Calculation](#defect-formation-calculation)
+      * [0. Installment](#0-installment)
+      * [1. Generate defect structures](#1-generate-defect-structures)
+      * [2. submit your common calculatiojobn jobs](#2-submit-your-common-calculatiojobn-jobs)
+            * [potcar.sh](#potcarsh)
+            * [incar.sh](#incarsh)
+            * [kpoints.sh](#kpointssh)
+            * [some test-parameters scripts](#some-test-parameters-scripts)
+            * [some integrated scripts](#some-integrated-scripts)
+      * [3. Get some calculation value in your vaspout files](#3-get-some-calculation-value-in-your-vaspout-files)
+
+
+
 ## 0. Installment
 Firstly, you should make a directory for those scripts and add its path to your `.bashrc`. For example, I make the scripts directory under my $HOME directory, so I can use the below command to add this directory to $PATH, and `source` your `.bashrc` to make it work.
 ```shell
@@ -17,11 +34,11 @@ There are three kinds of defect system you can generate, vacancy defect, purity 
 
 ## 2. submit your common calculatiojobn jobs
 
-First, we supply some shell scripts to generate those input file for VASP calculation, they are [potcar.sh](./common_calculation_shell/potcar.sh), [incar.sh](./common_calculation_shell/incar.sh), [kpoints.sh](./common_calculation_shell/kpoints.sh).
+First, we supply some shell scripts to generate those input file for VASP calculation, they are [potcar.sh](./common_calculation_shell/potcar.sh), [incar.sh](./common_calculation_shell/incar.sh), [kpoints.sh](./common_calculation_shell/kpoints.sh). Below I will simply introduce the usage of these scripts.
 
-Here I will simply introduce the usage of these scripts.
+__These scripts will not work if correspondent files exist, for example, incar.sh will not work if an INCAR file exists in your current directory__
 
-#### potcar.sh
+### 2.1 potcar.sh
 There are two parameters you can input. <br >
 The first parameter is the type of potcar
 * 1 is correspondent to `PAW_PBE`
@@ -36,15 +53,22 @@ potcar.sh 2 # this will generate the POTCAR based on your PSOCAR from  PAW_LDA d
 potcar.sh 1 Mg_pv # noted that 1 can be omited
 ```
 
-#### incar.sh
+### 2.2 incar.sh
 This script is used to generate INCAR for your system, and it supposes that the POTCAR has been in your directory, because `ENCUT` should be set based on the `ENMAX` of your POTCAR.
 
-#### kpoints.sh
+### 2.3 kpoints.sh
 This script is used to generate KPOINTS, the usage is:
 ```shell
 kpoint.sh 40 # this will generate KPOINTS mesh 40/a 40/b 40/c
 kpoint.sh band # this will genrate k-path based on `aflow`
 ```
+
+### 2.4 some test-parameters scripts
+
+[kt-test.sh](./parameter_test_shell/kp_test.sh) can test what kinds of KPOINTS you should use, and [encut_test.sh](./parameter_test_shell/encut_test.sh) can help you test what `ENCUT` is best suitable for your calculations.
+
+
+### 2.5 some integrated scripts
 
 Here, we supply some integrated shell scripts to calculate the jobs you need.<br />
 - [x] [structure_relax](./common_calculation_shell/stru_relax.sh)<br />
@@ -62,13 +86,14 @@ So in general, you can just begin your job from a `POSCAR` and a `job.sh`.
 
 Here we supply a command interface to get the value you want.
 
+### 3.1 vaspout-help
 ```shell
 module load sagar #load the necesary package
 vaspout.py --help # you can get some short help from this command
 vaspout.py main --help # get the help of a specific command  
 ```
 
-`main`  <br >
+### 3.2 vaspout-`main`
 This command is used to get some common value of your calculation system. For instance, gap, fermi energy, electrons number and so on.
 The last parameter is the directory path of your calculation system, make sure it is right or you will get wrong answer.
 ```shell
@@ -80,20 +105,20 @@ vaspout.py main -a ele-free . # this can get electrons number of  the defect-fre
 vaspout.py main -a image image_corr/ # this can get Ewald energy of your system
 ```
 
-`get_delete_atom_num` <br >
+### 3.2 vaspout-`get_delete_atom_num`
 This command is used to get which atom has been removed from the defect free system. The usage is very simple, the first parameter is the path of no defect POSCAR, the second parameter is the path of one defect POSCAR.
 ```shell
 vaspout.py get_delete_atom_num no_defect_poscar one_defect_poscar
 ```
 
-`get_farther_atom_num` <br >
+### 3.3 vaspout-`get_farther_atom_num`
 Because you will calculate the potential alignment in the process of defect calculation, so you should know where is the farther atom from the defect position. This command can help you to get the atom number.
 The two parameters is exactly the same as the `get_delete_atom_num`.
 ```shell
 vaspout.py get_farther_atom_num no_defect_poscar one_defect_poscar
 ```
 
-`get_potential_align` <br >
+### 3.3 vaspout-`get_potential_align`
 This command can get the electrostatic of the specific atom number, which can be used based on the above command `get_farther_atom_num` to get the potential alignment.
 ```shell
 num=`vaspout.py get_farther_atom_num Si-POSCAR charge_state_-1/POSCAR |awk 'NR == 1{print $1}'`
