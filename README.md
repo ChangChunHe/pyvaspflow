@@ -72,7 +72,7 @@ kpoint.sh band # this will genrate k-path based on `aflow`
 
 ### 2.4 some test-parameters scripts
 
-[kt-test.sh](./parameter_test_shell/kp_test.sh) can test what kinds of KPOINTS you should use, and [encut_test.sh](./parameter_test_shell/encut_test.sh) can help you test what `ENCUT` is best suitable for your calculations.
+[kp_test.sh](./parameter_test_shell/kp_test.sh) can test what kinds of KPOINTS you should use, and [encut_test.sh](./parameter_test_shell/encut_test.sh) can help you test what `ENCUT` is best suitable for your calculations.
 
 
 ### 2.5 some integrated scripts
@@ -83,7 +83,7 @@ Here, we supply some integrated shell scripts to calculate the jobs you need.<br
 - [x] [struscf.sh](./common_calculation_shell/stru_scf.sh) (structure self consistent field calculation)<br />
 - [x] [stru_band.sh](./common_calculation_shell/stru_band.sh) (band calculation)<br />
 - [x] [stru_dos.sh](./common_calculation_shell/stru_dos.sh) (density of state calculation)<br />
-and a main [job.sh](./common_calculation_shell/job.sh) to submit your job.
+- [x] [job.sh](./common_calculation_shell/job.sh) (submit your job)
 
 We also supply some scripts to generate the input files needed in `VASP` Calculation, such as `INCAR`, `KPOINTS`, `POTCAR`, you can also use these  scripts to generate them. So in general, you can just begin your job from a `POSCAR` and a `job.sh`.
 
