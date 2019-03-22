@@ -14,7 +14,7 @@ def cli():
 @cli.command('main',short_help="Get the value you want")
 @click.argument('file_directory',metavar='<Work_directory>',
 type=click.Path(exists=True))
-@click.option('--attribute','-a', default='enrgy', type=str)
+@click.option('--attribute','-a', default='energy', type=str)
 def main(file_directory, attribute):
     """
     First parameter:
@@ -39,6 +39,8 @@ def main(file_directory, attribute):
     vaspout.py main -a ele . # this can read the electrons in your OUTCAR
 
     vaspout.py main -a ele-free . # this can get electrons number of  the defect-free system
+
+    vaspout.py main -a  Ewald . # this can get the Ewald energy of your system
     """
     EV = ExtractValue(file_directory)
     if 'gap' in attribute:
@@ -51,8 +53,8 @@ def main(file_directory, attribute):
         get_Ne_defect_free(EV)
     elif 'ele' in attribute.lower() and 'free' not in attribute.lower():
         get_Ne_defect(EV)
-    elif 'ima' in attribute:
-        get_image(EV)
+    elif 'ima' in attribute or 'ewald' in attribute.lower():
+        get_Ewald(EV)
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -80,7 +82,7 @@ def get_Ne_defect(EV):
     click.echo('Number of valance electrons in your calculation system: '
     +str(EV.get_Ne_defect()))
 
-def get_image(EV):
+def get_Ewald(EV):
     click.echo(EV.get_image())
 
 @cli.command('get_delete_atom_num',short_help='Get the delete atom in your defect free POSCAR')
