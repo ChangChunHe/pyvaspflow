@@ -20,7 +20,7 @@ fi
 cat > INCAR <<!
 System=$host_name
 ENCUT=$encut
-ISIF=2
+ISIF=1
 ISTART=0
 ICHARG=2
 NSW=100
