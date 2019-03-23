@@ -6,7 +6,7 @@ import linecache as lc
 import numpy as np
 import os
 import subprocess
-
+from function_toolkit import get_farther_atom_num
 
 class ExtractValue():
     def __init__(self,data_folder='./',atomic_num=3):
@@ -46,15 +46,6 @@ class ExtractValue():
     def get_image(self):
         file_image = os.path.join(self.data_folder,'OUTCAR')
         return float(subprocess.run(['grep','Ewald',file_image],stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')[0].split()[-1])
-
-    def get_PA(self, number):
-        # get potential alignment correlation
-        file_PA = os.path.join(self.data_folder, 'OUTCAR')
-        tmp_match_line = self._get_line(file_PA,rematch='electrostatic')
-        rows = number // 5
-        col =  number - rows * 5 - 1
-        tmp_line = lc.getlines(file_PA)[tmp_match_line[0]+rows+3].split()
-        return [float(i) for i in  tmp_line[2*col:2*col+2]]
 
     def get_gap(self):
         file_eig = os.path.join(self.data_folder,'EIGENVAL')
@@ -103,7 +94,7 @@ class ExtractValue():
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
                 return
-                
+
             elec_num_down =  np.mean(all_eigval_down[:,1::2],axis=1)
             idx1 = np.where(elec_num_down > 0.8)
             idx2 = np.where(elec_num_down < 0.2)
@@ -139,47 +130,86 @@ class ExtractValue():
             miu +=miu_i[ele]*(-state_d[ele])
         return miu
 
+
+def get_ele_sta(no_defect_outcar,number):
+    number = int(number)
+    tmp_match_line = _get_line(no_defect_outcar,rematch='electrostatic')
+    rows = number // 5
+    col =  number - rows * 5 - 1
+    if col == -1:
+        rows -= 1
+        col = 4
+    tmp_line = lc.getlines(no_defect_outcar)[tmp_match_line[0]+rows+3].split()
+    return float(tmp_line[2*col+1])
+
+def _get_line(file_tmp,rematch=None):
+    grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
+    return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
+
+
 #%% main script
-files = ['N_Si','Vac_Si_defect','P_Si']
-def main_Hf(files, atomic_num=None, epsilon=None):
+if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+    folders = ['/home/hecc/Desktop/Si-vacancy-defect/']
+    # def main_Hf(files, atomic_num=None, epsilon=None):
     diff_d = {}
 
-    for data_folder in files:
-        SC_energy = Acquire_value('scf/').get_energy()
-        nelect_p = Acquire_value(data_folder+'/').get_Ne_p()
-        Ecbm, Evbm, gap = Acquire_value('scf/').get_gap()
-        miu = Acquire_value(data_folder+'/').get_miu()
+    for data_folder in folders:
+        SC_energy = ExtractValue(data_folder+'defect_free/scf/').get_energy()
+        nelect_p = ExtractValue(data_folder+'defect_free/').get_Ne_defect_free()
+        Evbm, Ecbm, gap = ExtractValue(data_folder+'defect_free/scf/').get_gap()
+        # miu = ExtractValue(data_folder+'/').get_miu() get chemical potential
+        miu = -5.4212
 
-        dirs = []
-        for ii in os.listdir(data_folder+'/'):
-            if 'NELECT' in ii:
-                dirs.append(ii)
-        for path in dirs:
-            nelect_d = Acquire_value(data_folder+'/'+path+'/').get_Ne_d()
-            charge_state = nelect_p - nelect_d
-            D_energy = Acquire_value(data_folder+'/'+path+'/scf/').get_energy()
-
-            if atomic_num is None:
-                V_delt = 0
-            else:
-                V_delt = Acquire_value(data_folder+'/'+path+'/scf/', atomic_num=atomic_num).get_PA() -\
-                            Acquire_value('scf/', atomic_num=atomic_num).get_PA()
-
-
-            Ewald = Acquire_value('./').get_image()
-            if epsilon is None:
-                E_imagecor = 0
-            else:
-                E_imagecor = -2/3*charge_state**2*Ewald/epsilon
+        chg_state = []
+        for chg_fd in os.listdir(data_folder):
+            if 'charge_state' in chg_fd:
+                q = chg_fd.split('_')[-1]
+                e = ExtractValue(os.path.join(data_folder,chg_fd,'scf')).get_energy()
+                num_def, num_no_def = get_farther_atom_num(data_folder+'defect_free/POSCAR', \
+                        os.path.join(data_folder+chg_fd+'/POSCAR'))
+                pa_def = get_ele_sta(os.path.join(data_folder+chg_fd+'/scf/OUTCAR'),num_def)
+                pa_no_def = get_ele_sta(os.path.join(data_folder+'defect_free/OUTCAR'),num_no_def)
+                chg_state.append([int(float(q)), e, pa_def-pa_no_def])
+        chg_state = np.asarray(chg_state)
+        Ef = np.linspace(Evbm,Ecbm,1000)
+        chg_state = np.asarray(chg_state)
+        for idx in range(np.shape(chg_state)[0]):
+            E = chg_state[idx,1]-SC_energy+miu+chg_state[idx,0]*Ef+chg_state[idx,0]*chg_state[idx,2]
+            plt.plot(Ef-Evbm,E,label='charge state: '+str(int(chg_state[idx,0])))
+        plt.legend()
+        plt.show()
 
 
-            Hf_vbm = D_energy + E_imagecor - SC_energy + miu + charge_state * (Evbm-0.5+V_delt)
-            Hf_cbm = D_energy + E_imagecor - SC_energy + miu + charge_state * (Evbm+gap+0.5+V_delt)
-            for ii in range(len(miu)):
-                diff_d[data_folder] = diff_d.get(data_folder,[])
-                diff_d[data_folder].append([charge_state, D_energy, SC_energy, V_delt, E_imagecor, miu[ii], gap, Hf_vbm[ii], Hf_cbm[ii]])
-            return diff_d
+    # dirs = []
+    # for ii in os.listdir(data_folder+'/'):
+    #     if 'NELECT' in ii:
+    #         dirs.append(ii)
+    # for path in dirs:
+    #     nelect_d = Acquire_value(data_folder+'/'+path+'/').get_Ne_d()
+    #     charge_state = nelect_p - nelect_d
+    #     D_energy = Acquire_value(data_folder+'/'+path+'/scf/').get_energy()
+    #
+    #     if atomic_num is None:
+    #         V_delt = 0
+    #     else:
+    #         V_delt = Acquire_value(data_folder+'/'+path+'/scf/', atomic_num=atomic_num).get_PA() -\
+    #                     Acquire_value('scf/', atomic_num=atomic_num).get_PA()
+    #
+    #
+    #     Ewald = Acquire_value('./').get_image()
+    #     if epsilon is None:
+    #         E_imagecor = 0
+    #     else:
+    #         E_imagecor = -2/3*charge_state**2*Ewald/epsilon
+    #
+    #
+    #     Hf_vbm = D_energy + E_imagecor - SC_energy + miu + charge_state * (Evbm-0.5+V_delt)
+    #     Hf_cbm = D_energy + E_imagecor - SC_energy + miu + charge_state * (Evbm+gap+0.5+V_delt)
+    #     for ii in range(len(miu)):
+    #         diff_d[data_folder] = diff_d.get(data_folder,[])
+    #         diff_d[data_folder].append([charge_state, D_energy, SC_energy, V_delt, E_imagecor, miu[ii], gap, Hf_vbm[ii], Hf_cbm[ii]])
 
-if __name__ == "__main__":
-    EV = ExtractValue('/home/hecc/Desktop/supercell')
-    print(EV.get_PA(24))
+# if __name__ == "__main__":
+#     EV = ExtractValue('/home/hecc/Desktop/supercell')
+#     print(EV.get_PA(24))
