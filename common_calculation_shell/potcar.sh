@@ -2,7 +2,8 @@
 path_pbe="/opt/ohpc/pub/apps/vasp/pps/paw_PBE"
 path_lda="/opt/ohpc/pub/apps/vasp/pps/paw_LDA"
 path_pw="/opt/ohpc/pub/apps/vasp/pps/paw_PW91"
-
+path_uslda="/opt/ohpc/pub/apps/vasp/pps/USPP_LDA"
+path_uspw="/opt/ohpc/pub/apps/vasp/pps/USPP_PW91"
 if [ -f POTCAR ]
 then
 exit;fi
@@ -23,6 +24,12 @@ echo using paw_LDA POTCAR
 elif [ $1 -eq 3 ]
 then	path=$path_pw
 echo using paw_PW91 POTCAR
+elif [ $1 -eq 4 ]
+then	path=$path_uslda
+echo using USPP_LDA POTCAR
+elif [ $1 -eq 5 ]
+then	path=$path_uspw
+echo using USPP_PW91 POTCAR
 fi
 fi
 path=$path_pbe
