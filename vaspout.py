@@ -6,15 +6,20 @@ from sagar.io.vasp import  read_vasp
 import numpy as np
 import function_toolkit as ft
 import linecache as lc
+from sagar.io.vasp import read_vasp, write_vasp
+import os
+
 
 @click.group()
 def cli():
     pass
 
+
 @cli.command('main',short_help="Get the value you want")
 @click.argument('file_directory',metavar='<Work_directory>',
 type=click.Path(exists=True))
 @click.option('--attribute','-a', default='energy', type=str)
+
 def main(file_directory, attribute):
     """
     First parameter:
@@ -42,6 +47,7 @@ def main(file_directory, attribute):
 
     vaspout.py main -a  Ewald . # this can get the Ewald energy of your system
     """
+
     EV = ExtractValue(file_directory)
     if 'gap' in attribute:
         get_gap(EV)
@@ -85,84 +91,61 @@ def get_Ne_defect(EV):
 def get_Ewald(EV):
     click.echo(EV.get_image())
 
-@cli.command('get_delete_atom_num',short_help='Get the delete atom in your defect free POSCAR')
-@click.argument('no_defect_poscar',nargs=1)
-@click.argument('one_defect_poscar',nargs=1)
-def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
+
+@cli.command('get_PA',short_help='Get the potential alignment correlation')
+@click.argument('no_defect',nargs=1, metavar='no-defect-dir')
+@click.argument('defect_dir',nargs=1,metavar='defect-dir')
+
+def get_PA(no_defect_dir,defect_dir):
     """
-    First parameter:
+    First parameter: no_defect_dir, the directory path of the defece free system
 
-    no_defect_poscar, the path of the defece free system
-
-    Sencond parameter:
-
-    one_defect_poscar, the path of defece system with one defect
+    Sencond parameter: defect_dir, the directory path of defect_dir
 
     Example:
 
     module load sagar #load the necessay package
 
-    vaspout.py get_delete_atom_num no_defect/POSCAR one_defect/POSCAR
+    vaspout.py get_PA defect_free/POSCAR charge_state_1
     """
-    ii,d = ft.get_delete_atom_num(no_defect_poscar,one_defect_poscar)
-    print('Delete the',str(ii+1),'atom in your no-defect  POSCAR,\n the two distance between the two POSCAR is',d)
+    num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'POSCAR'), \
+            os.path.join(defect_dir,'POSCAR'))
+    pa_def = get_ele_sta(os.path.join(defect_dir,'OUTCAR'),num_def)
+    pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'OUTCAR'),num_no_def)
+    click.echo('Electrostatic of the farther atom from defect atom in defect system is: ')
+    click.echo(pa_def)
+    click.echo('Electrostatic of the farther atom from defect atom in defect-free system is: ')
+    click.echo(pa_no_def)
+    click.echo('Potential alignment correlation is: '+str(pa_def-pa_no_def))
 
-
-@cli.command('get_farther_atom_num',short_help='Get the farther atom number from the defect position in your defect POSCAR')
-@click.argument('no_defect_poscar',nargs=1, metavar='no-defect-POSCAR',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
-@click.argument('one_defect_poscar',nargs=1,metavar='one-defect-POSCAR',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
-def get_farther_atom_num(no_defect_poscar,one_defect_poscar):
-    """
-    First parameter:
-
-    no_defect_poscar, the path of the defece free system
-
-    Sencond parameter:
-
-    one_defect_poscar, the path of defece system with one defect
-
-    Example:
-
-    module load sagar #load the necessay package
-
-    vaspout.py get_farther_atom_num no_defect/POSCAR one_defect/POSCAR
-    """
-    ft.get_farther_atom_num(no_defect_poscar,one_defect_poscar)
-
-
-@cli.command('get_potential_align',short_help='Get the potential alignment of the specific atom')
-@click.argument('defect_outcar',nargs=1,metavar='defect-OUTCAR',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
-@click.argument('number',nargs=1,type=int)
-def get_potential_align(defect_outcar,number):
-    """
-    First parameter: defect_outcar, the OUTCAR path of the defece system
-    Sencond parameter: number,  the farther atom number
-
-    Example:
-
-    module load sagar #load the necessay package
-
-    vaspout.py get_potential_align OUTCAR 34
-
-    # get the electrostatic energy of the 34-th atom
-    """
+def get_ele_sta(no_defect_outcar,number):
     number = int(number)
-    tmp_match_line = _get_line(defect_outcar,rematch='electrostatic')
+    tmp_match_line = _get_line(no_defect_outcar,rematch='electrostatic')
     rows = number // 5
     col =  number - rows * 5 - 1
     if col == -1:
         rows -= 1
         col = 4
-    tmp_line = lc.getlines(defect_outcar)[tmp_match_line[0]+rows+3].split()
-    click.echo(' '.join([i for i in  tmp_line[2*col:2*col+2]]))
-
+    tmp_line = lc.getlines(no_defect_outcar)[tmp_match_line[0]+rows+3].split()
+    return float(tmp_line[2*col+1])
 
 def _get_line(file_tmp,rematch=None):
     grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
     return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
+
+
+@cli.command('cell', short_help="Expanding primitive cell to specific range of volumes.")
+@click.argument('pcell_filename', metavar='<primitive_cell_file>',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+@click.option('--volume', '-v', nargs=3, type=int, metavar='<x> <y> <z>',default=(1,1,1),
+              help="Expand cell to supercell of dismension <x> <y> <z>")
+
+def cell(pcell_filename, volume):
+    pcell = read_vasp(pcell_filename)
+    supcell = pcell.extend(np.diag(volume))
+    write_vasp(supcell, 'supcell')
+
+
 
 if __name__ == "__main__":
     cli()
