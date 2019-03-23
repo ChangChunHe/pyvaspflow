@@ -106,7 +106,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     module load sagar #load the necessay package
 
-    vaspout.py get_PA defect_free/POSCAR charge_state_1
+    vaspout.py get_PA defect_free charge_state_1
     """
     num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'POSCAR'), \
             os.path.join(defect_dir,'POSCAR'))
