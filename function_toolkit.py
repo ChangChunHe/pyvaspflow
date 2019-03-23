@@ -90,7 +90,4 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     d = np.asarray(d)
     max_idx = int(d[np.argmax(d[:,1]),0])
     d_ = np.linalg.norm(no_def_pos[max_idx] - np.dot(one_def_pos,c),axis=1)
-    print(np.argmin(d_)+1, 'is the farthest position from the defect', \
-          'atom in the defect system, \n the distance is ',
-          d[max_idx,1], '\n and ', max_idx+1,
-           'is the farthest in no-defect system')
+    return np.argmin(d_)+1,max_idx+1
