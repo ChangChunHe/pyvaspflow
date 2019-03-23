@@ -51,8 +51,10 @@ There are two parameters you can input. The first parameter is the type of potca
 * 1 is correspondent to `PAW_PBE`
 * 2 is correspondent to `PAW_LDA`
 * 3 is correspondent to `PAW_PW91`
+* 4 is correspondent to `USPP_LDA`
+* 5 is correspondent to `USPP_PW91`
 
-the defaul of first parameter is 1.
+the defaul of first parameter is 1, and if it can uncompress `POTCAR.Z` file to `POTCAR`.
 
 The second parameter is the type of atom potcar, maybe the same atom has some different type of potcar, for example, Mg atom has `Mg, Mg_GW, Mg_pv, Mg_pv_GW, Mg_sv, Mg_sv_GW` potcar, so you can specify one of them to get specify POTCAR, the defaul of this parameter is the atom itself.
 ```shell
@@ -110,22 +112,9 @@ vaspout.py main -a ele-free . # this can get electrons number of  the defect-fre
 vaspout.py main -a image image_corr/ # this can get Ewald energy of your system
 ```
 
-### 3.2 vaspout-`get_delete_atom_num`
-This command is used to get which atom has been removed from the defect free system. The usage is very simple, the first parameter is the path of no defect POSCAR, the second parameter is the path of one defect POSCAR.
-```shell
-vaspout.py get_delete_atom_num no_defect_poscar one_defect_poscar
-```
 
-### 3.3 vaspout-`get_farther_atom_num`
-Because you will calculate the potential alignment in the process of defect calculation, so you should know where is the farther atom from the defect position. This command can help you to get the atom number.
-The two parameters is exactly the same as the `get_delete_atom_num`.
+### 3.3 vaspout-`get_PA`
+This command can get the electrostatic of your defect system and no defect system of the farther atom from defect atom
 ```shell
-vaspout.py get_farther_atom_num no_defect_poscar one_defect_poscar
-```
-
-### 3.3 vaspout-`get_potential_align`
-This command can get the electrostatic of the specific atom number, which can be used based on the above command `get_farther_atom_num` to get the potential alignment.
-```shell
-num=`vaspout.py get_farther_atom_num Si-POSCAR charge_state_-1/POSCAR |awk 'NR == 1{print $1}'`
-vaspout.py get_potential_align OUTCAR $num
+vaspout.py get_PA defect_free charge_state_1
 ```
