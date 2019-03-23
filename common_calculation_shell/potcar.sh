@@ -32,7 +32,7 @@ IFS=',' read -a pot_type <<< $tmp
 fi
 
 
-perl -i -p -e "s/\r//" POSCAR 
+perl -i -p -e "s/\r//" POSCAR
 
 ele_num=`awk 'NR==6{print NF}' POSCAR`
 
@@ -47,17 +47,22 @@ do
 
 if [[ $pot_ty =~ .*${ele}.* ]]
 then
-cat ${path}/${pot_ty}/POTCAR >> POTCAR
-is_write=true
+  if [ -e  ${path}/${pot_ty}/POTCAR ]
+  then
+    cat ${path}/${pot_ty}/POTCAR >> POTCAR
+    is_write=true
+  elif [ -e ${path}/${pot_ty}/POTCAR.Z ]
+    gunzip -f POTCAR.Z >> POTCAR
+    is_write=true
+  fi
 break
 fi
 
 done
 
-if  ! $is_write 
-then 
+if  ! $is_write
+then
 cat ${path}/${ele}/POTCAR >> POTCAR
 fi
 
 done
-
