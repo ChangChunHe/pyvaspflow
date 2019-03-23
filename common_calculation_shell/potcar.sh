@@ -57,7 +57,7 @@ then
   if [ -e  ${path}/${pot_ty}/POTCAR ]
   then
     cat ${path}/${pot_ty}/POTCAR >> POTCAR
-    is_write=trueUSPP_PW91
+    is_write=true
   elif [ -e ${path}/${pot_ty}/POTCAR.Z ]
   then
     gunzip -f POTCAR.Z >> POTCAR
