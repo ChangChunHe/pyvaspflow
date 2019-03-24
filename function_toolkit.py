@@ -1,7 +1,7 @@
 import numpy as np
 from sagar.io.vasp import  write_vasp, read_vasp
 from os import path
-
+from sagar.element.base import periodic_table_dict as ptd
 
 def generate_all_basis(N1,N2,N3):
     n1,n2,n3 = 2*N1+1, 2*N2+1, 2*N3+1
@@ -47,9 +47,9 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
     one_defect = read_vasp(one_defect_poscar)
     no_def_pos = no_defect.positions
     one_def_pos = one_defect.positions
+    no_def_pos[abs(no_def_pos-1) < 0.01] = 0
+    one_def_pos[abs(one_def_pos-1) < 0.01] = 0
     if len(no_defect.atoms)-1 == len(one_defect.atoms):
-        no_def_pos[abs(no_def_pos-1) < 0.01] = 0
-        one_def_pos[abs(one_def_pos-1) < 0.01] = 0
         num = no_def_pos.shape[0]
         for ii in range(num):
             d = np.linalg.norm(no_def_pos[ii] - one_def_pos,axis=1)
@@ -60,13 +60,32 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
         d = 0
         for i in _no_def_pos:
             d = d + min(np.linalg.norm(i - _one_def_pos,axis=1))
+        for key,val in ptd.items():
+            if val == no_defect.atoms[ii]:
+                rm_atom = key
+                break
+        print('This is a vacancy defect','atom: \n',
+              rm_atom,ii,'in the defect-free POSCAR has benn removed')
+        with open('element-in-out','w') as f:
+            f.writelines(str(rm_atom)+' '+str(-1))
         return ii,d
     elif len(no_defect.atoms) == len(one_defect.atoms):
         no_def_atoms,def_atoms = np.unique(no_defect.atoms),np.unique(one_defect.atoms)
         purity_atom = np.setdiff1d(def_atoms,no_def_atoms)
         idx = np.where(one_defect.atoms==purity_atom)[0]
         d = np.linalg.norm(one_def_pos[idx]-no_def_pos,axis=1)
-        return np.argmin(d), np.min(d)
+        ii,d = np.argmin(d), np.min(d)
+        for key,val in ptd.items():
+            if val == no_defect.atoms[ii]:
+                rm_atom = key
+            if val == purity_atom:
+                in_atom = key
+        print('This is a purity defect ','atom: \n',
+            rm_atom, ii,'in the defect-free POSCAR has benn dopped  by', in_atom)
+        with open('element-in-out','w') as f:
+            f.writelines(str(rm_atom)+' '+str(-1)+'\n')
+            f.writelines(str(in_atom)+' '+str(1)+'\n')
+        return ii, d
     else:
         print('This kind of defect is not supported here right now')
 
