@@ -1,7 +1,6 @@
 #!/bin/bash
 
 if [ ! -n "$k_max" ];then	k_max=30;fi
-if [ ! -n "$inter_num" ];then	inter_num=30;fi
 
 if [ -f KPOINTS ]
 then

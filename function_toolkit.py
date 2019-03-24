@@ -120,9 +120,3 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     max_idx = int(d[np.argmax(d[:,1]),0])
     d_ = np.linalg.norm(no_def_pos[max_idx] - np.dot(one_def_pos,c),axis=1)
     return np.argmin(d_)+1,max_idx+1
-
-if __name__ == '__main__':
-    no_defect_poscar = 'POSCAR'
-    one_defect_poscar = 'POSCAR-pur'
-    ii, d = get_delete_atom_num(no_defect_poscar,one_defect_poscar)
-    print(ii,d)

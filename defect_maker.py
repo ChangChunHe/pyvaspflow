@@ -137,7 +137,6 @@ class DefectMaker:
             rmtree('./'+folder)
             os.mkdir('./'+folder)
         idx = 0
-        charge_file = open('./'+folder+'charge_file','w')
         for c, _ in confs:
             wirite_poscar(c,purity_out+'-'+purity_in,folder,idx)
             idx += 1
