@@ -47,19 +47,29 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
     one_defect = read_vasp(one_defect_poscar)
     no_def_pos = no_defect.positions
     one_def_pos = one_defect.positions
-    no_def_pos[abs(no_def_pos-1) < 0.01] = 0
-    one_def_pos[abs(one_def_pos-1) < 0.01] = 0
-    num = no_def_pos.shape[0]
-    for ii in range(num):
-        d = np.linalg.norm(no_def_pos[ii] - one_def_pos,axis=1)
-        if min(d) > 0.1:
-            break
-    _no_def_pos = np.unique(np.delete(no_def_pos,ii,0),axis=0)
-    _one_def_pos = np.unique(one_def_pos,axis=0)
-    d = 0
-    for i in _no_def_pos:
-        d = d + min(np.linalg.norm(i - _one_def_pos,axis=1))
-    return ii,d
+    if len(no_defect.atoms)-1 == len(one_defect.atoms):
+        no_def_pos[abs(no_def_pos-1) < 0.01] = 0
+        one_def_pos[abs(one_def_pos-1) < 0.01] = 0
+        num = no_def_pos.shape[0]
+        for ii in range(num):
+            d = np.linalg.norm(no_def_pos[ii] - one_def_pos,axis=1)
+            if min(d) > 0.1:
+                break
+        _no_def_pos = np.unique(np.delete(no_def_pos,ii,0),axis=0)
+        _one_def_pos = np.unique(one_def_pos,axis=0)
+        d = 0
+        for i in _no_def_pos:
+            d = d + min(np.linalg.norm(i - _one_def_pos,axis=1))
+        return ii,d
+    elif len(no_defect.atoms) == len(one_defect.atoms):
+        no_def_atoms,def_atoms = np.unique(no_defect.atoms),np.unique(one_defect.atoms)
+        purity_atom = np.setdiff1d(def_atoms,no_def_atoms)
+        idx = np.where(one_defect.atoms==purity_atom)[0]
+        d = np.linalg.norm(one_def_pos[idx]-no_def_pos,axis=1)
+        return np.argmin(d), np.min(d)
+    else:
+        print('This kind of defect is not supported here right now')
+
 
 
 def generate_all_basis(N1,N2,N3):
@@ -91,3 +101,9 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     max_idx = int(d[np.argmax(d[:,1]),0])
     d_ = np.linalg.norm(no_def_pos[max_idx] - np.dot(one_def_pos,c),axis=1)
     return np.argmin(d_)+1,max_idx+1
+
+if __name__ == '__main__':
+    no_defect_poscar = 'POSCAR'
+    one_defect_poscar = 'POSCAR-pur'
+    ii, d = get_delete_atom_num(no_defect_poscar,one_defect_poscar)
+    print(ii,d)
