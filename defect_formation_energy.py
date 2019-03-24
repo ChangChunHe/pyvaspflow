@@ -94,7 +94,6 @@ class ExtractValue():
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
                 return
-
             elec_num_down =  np.mean(all_eigval_down[:,1::2],axis=1)
             idx1 = np.where(elec_num_down > 0.8)
             idx2 = np.where(elec_num_down < 0.2)
@@ -150,36 +149,41 @@ def _get_line(file_tmp,rematch=None):
 #%% main script
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    folders = ['/home/hecc/Desktop/Si-vacancy-defect/']
-    # def main_Hf(files, atomic_num=None, epsilon=None):
-    diff_d = {}
-
-    for data_folder in folders:
-        SC_energy = ExtractValue(data_folder+'defect_free/scf/').get_energy()
-        nelect_p = ExtractValue(data_folder+'defect_free/').get_Ne_defect_free()
-        Evbm, Ecbm, gap = ExtractValue(data_folder+'defect_free/scf/').get_gap()
-        # miu = ExtractValue(data_folder+'/').get_miu() get chemical potential
-        miu = -5.4212
-
-        chg_state = []
-        for chg_fd in os.listdir(data_folder):
-            if 'charge_state' in chg_fd:
-                q = chg_fd.split('_')[-1]
-                e = ExtractValue(os.path.join(data_folder,chg_fd,'scf')).get_energy()
-                num_def, num_no_def = get_farther_atom_num(data_folder+'defect_free/POSCAR', \
-                        os.path.join(data_folder+chg_fd+'/POSCAR'))
-                pa_def = get_ele_sta(os.path.join(data_folder+chg_fd+'/scf/OUTCAR'),num_def)
-                pa_no_def = get_ele_sta(os.path.join(data_folder+'defect_free/OUTCAR'),num_no_def)
-                chg_state.append([int(float(q)), e, pa_def-pa_no_def])
-        chg_state = np.asarray(chg_state)
-        Ef = np.linspace(Evbm,Ecbm,1000)
-        chg_state = np.asarray(chg_state)
-        for idx in range(np.shape(chg_state)[0]):
-            E = chg_state[idx,1]-SC_energy+miu+chg_state[idx,0]*Ef+chg_state[idx,0]*chg_state[idx,2]
-            plt.plot(Ef-Evbm,E,label='charge state: '+str(int(chg_state[idx,0])))
-        plt.legend()
-        plt.show()
-
+    data_folder = 'Si-Vacancy-Defect'
+    epsilon = 13.36
+    SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
+    Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()
+    miu = SC_energy / 216
+    chg_state = []
+    for chg_fd in os.listdir(data_folder):
+        if 'charge_state' in chg_fd:
+            q = chg_fd.split('_')[-1]
+            e = ExtractValue(os.path.join(data_folder,chg_fd,'scf')).get_energy()
+            no_def_poscar = os.path.join(data_folder,'supercell','POSCAR')
+            def_poscar = os.path.join(data_folder,chg_fd,'POSCAR')
+            num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
+            pa_def = get_ele_sta(os.path.join(data_folder,chg_fd,'scf','OUTCAR'),num_def)
+            pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
+            E_imagecor = ExtractValue(os.path.join(data_folder,'E_corr')).get_image()
+            chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
+    chg_state = np.asarray(chg_state)
+    Ef = np.linspace(Evbm,Ecbm,1000)
+    chg_state = np.asarray(chg_state)
+    E = []
+    for idx in range(np.shape(chg_state)[0]):
+        _E = chg_state[idx,1]-SC_energy+miu+chg_state[idx,0]*Ef \
+        +chg_state[idx,0]*chg_state[idx,2]-2/3*chg_state[idx,0]**2*chg_state[idx,3]/epsilon
+        E.append(_E)
+        # plt.plot(Ef-Evbm,_E,label='charge state: '+str(int(chg_state[idx,0])))h
+    E = np.asarray(E)
+    plt.plot(Ef-Evbm, np.min(E,axis=0),label=data_folder)
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
+    plt.xlabel(r'$E_F$ (eV)')
+    plt.ylabel(r'$\Delta E (eV)$')
+    plt.legend()
+    plt.savefig('defect_formation_energy.png',dpi=450)
+    plt.show()
 
     # dirs = []
     # for ii in os.listdir(data_folder+'/'):
