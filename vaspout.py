@@ -93,7 +93,7 @@ def get_Ewald(EV):
 
 
 @cli.command('get_PA',short_help='Get the potential alignment correlation')
-@click.argument('no_defect',nargs=1, metavar='no-defect-dir')
+@click.argument('no_defect_dir',nargs=1, metavar='no-defect-dir')
 @click.argument('defect_dir',nargs=1,metavar='defect-dir')
 
 def get_PA(no_defect_dir,defect_dir):
