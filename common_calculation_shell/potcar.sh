@@ -31,8 +31,10 @@ elif [ $1 -eq 5 ]
 then	path=$path_uspw
 echo using USPP_PW91 POTCAR
 fi
-fi
+else
 path=$path_pbe
+fi
+
 tmp="$@"
 tmp=$(printf '%s\n' "${tmp//[[:digit:]]/}")
 IFS=',' read -a pot_type <<< $tmp
@@ -49,6 +51,7 @@ ele=`awk -v i=$i 'NR==6{print $i}' POSCAR`
 
 
 is_write=false
+echo $pot_type
 for pot_ty in $pot_type
 do
 
@@ -57,20 +60,32 @@ then
   if [ -e  ${path}/${pot_ty}/POTCAR ]
   then
     cat ${path}/${pot_ty}/POTCAR >> POTCAR
-    is_write=true
+    echo ${path}/${pot_ty}/POTCAR
+  is_write=true
   elif [ -e ${path}/${pot_ty}/POTCAR.Z ]
   then
-    gunzip -f POTCAR.Z >> POTCAR
+    cp  ${path}/${pot_ty}/POTCAR.Z .
+    gzip -d < POTCAR.Z >tmp
+    cat POTCAR tmp >> POTCAR
+    rm POTCAR.Z tmp
+    echo ${path}/${pot_ty}/POTCAR.Z
     is_write=true
   fi
 break
 fi
-
 done
 
 if  ! $is_write
 then
-cat ${path}/${ele}/POTCAR >> POTCAR
+if [ -f ${path}/${ele}/POTCAR   ]
+then
+  cat ${path}/${ele}/POTCAR >> POTCAR
+elif [ -f  ${path}/${ele}/POTCAR.Z   ]
+then
+  cp  ${path}/${ele}/POTCAR.Z .
+  gzip -d < POTCAR.Z >tmp
+  cat POTCAR tmp >> POTCAR
+  rm POTCAR.Z tmp
 fi
-
+fi
 done
