@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import click,subprocess
-from defect_cal import ExtractValue
+from defect_formation_energy import ExtractValue
 from sagar.io.vasp import  read_vasp
 import numpy as np
 import function_toolkit as ft
