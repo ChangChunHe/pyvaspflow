@@ -24,12 +24,15 @@ cd $folder
 
 for pos in `ls`
 do
-mkdir ${pos}-dir
-mv $pos ${pos}-dir/POSCAR
-cd ${pos}-dir
-stru_optimization.sh
-echo $pos `tail -1 OSZICAR |awk '{print $5}'` >> ../energy_out
-cd ..
+  if [[ $pos == *"POSCAR"* ]] || [[ $pos == *"confs"* ]]
+  then
+    mkdir ${pos}-dir
+    mv $pos ${pos}-dir/POSCAR
+    cd ${pos}-dir
+    stru_optimization.sh
+    echo $pos `tail -1 OSZICAR |awk '{print $5}'` >> ../energy_out
+    cd ..
+  fi
 done
 # gd is the ground structure
 gd=`sort -k2n energy_out|awk 'NR==1{print $1}'`
