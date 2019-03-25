@@ -16,10 +16,14 @@ Table of Contents
          * [2.3 kpoints.sh](#23-kpointssh)
          * [2.4 some test-parameters scripts](#24-some-test-parameters-scripts)
          * [2.5 some integrated scripts](#25-some-integrated-scripts)
-      * [3. Get some calculation value in your vaspout files](#3-get-some-calculation-value-in-your-vaspout-files)
-         * [3.1 vaspout-help](#31-vaspout-help)
-         * [3.2 vaspout-main](#32-vaspout-main)
-         * [3.3 vaspout-get_PA](#33-vaspout-get_pa)
+      * [3. Get some calculation value in your pyvasp files](#3-get-some-calculation-value-in-your-pyvasp-files)
+         * [3.1 pyvasp-help](#31-pyvasp-help)
+         * [3.2 pyvasp-main](#32-pyvasp-main)
+         * [3.3 pyvasp-cell](#33-pyvasp-cell)
+         * [3.4 pyvasp-get_purity](#34-pyvasp-get_purity)
+         * [3.5 pyvasp-get_tetrahedral](#35-pyvasp-get_tetrahedral)
+         * [3.6 pyvasp-get_PA](#36-pyvasp-get_pa)
+
 
 
 
@@ -100,32 +104,52 @@ Here, we supply some integrated shell scripts to calculate the jobs you need.<br
 
 We also supply some scripts to generate the input files needed in `VASP` Calculation, such as `INCAR`, `KPOINTS`, `POTCAR`, you can also use these  scripts to generate them. So in general, you can just begin your job from a `POSCAR` and a `job.sh`.
 
-## 3. Get some calculation value in your vaspout files
+## 3. Get some calculation value in your pyvasp files
 
 Here we supply a command interface to get the value you want.
 
-### 3.1 vaspout-help
+### 3.1 pyvasp-help
 ```shell
 module load sagar #load the necesary package
-vaspout.py --help # you can get some short help from this command
-vaspout.py main --help # get the help of a specific command  
+pyvasp.py --help # you can get some short help from this command
+pyvasp.py main --help # get the help of a specific command  
 ```
 
-### 3.2 vaspout-`main`
+### 3.2 pyvasp-`main`
 This command is used to get some common value of your calculation system. For instance, gap, fermi energy, electrons number and so on.
 The last parameter is the directory path of your calculation system, make sure it is right or you will get wrong answer.
 ```shell
-vaspout.py main -a gap . # this can read the gap and vbm, cbm
-vaspout.py main -a fermi . # this can read the fermi energy
-vaspout.py main -a energy . # this can read the total energy
-vaspout.py main -a ele . # this can read the electrons in your OUTCAR
-vaspout.py main -a ele-free . # this can get electrons number of  the defect-free system
-vaspout.py main -a image image_corr/ # this can get Ewald energy of your system
+pyvasp.py main -a gap . # this can read the gap and vbm, cbm
+pyvasp.py main -a fermi . # this can read the fermi energy
+pyvasp.py main -a energy . # this can read the total energy
+pyvasp.py main -a ele . # this can read the electrons in your OUTCAR
+pyvasp.py main -a ele-free . # this can get electrons number of  the defect-free system
+pyvasp.py main -a image image_corr/ # this can get Ewald energy of your system
 ```
 
+### 3.3 pyvasp-`cell`
+This command is used to extend your cell and generate a supcell.vasp
+```shell
+pyvasp cell -v 2 2 2 POSCAR
+# extend your POSCAR to 2*2*2 supercell
+```
 
-### 3.3 vaspout-`get_PA`
+### 3.4 pyvasp-`get_purity`
+This command is used to get the purity structures , such Si-vacancy, Ga purity in In2O3 system, but noted that each time only one purity atom will be dopped into the system.
+```shell
+pyvasp get_purity -i Vacc -o Si Si-POSCAR # generate a vacancy
+pyvasp get_purity -i Ga -o In In2O3-POSCAR #genrate a Ga defect
+```
+
+### 3.5 pyvasp-`get_tetrahedral`
+This command is used to get the tetrahedral interstitial sites, for example, in YFe2 system, H atom can be inserted into the tetrahedral sites.
+
+```shell
+pyvasp get_tetrahedral -i H YFe2-POSCAR
+```
+
+### 3.6 pyvasp-`get_PA`
 This command can get the electrostatic of your defect system and no defect system of the farther atom from defect atom
 ```shell
-vaspout.py get_PA defect_free charge_state_1
+pyvasp.py get_PA defect_free charge_state_1
 ```
