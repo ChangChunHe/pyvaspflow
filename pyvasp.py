@@ -8,7 +8,7 @@ import function_toolkit as ft
 import linecache as lc
 from sagar.io.vasp import read_vasp, write_vasp
 import os
-from  defect_maker import DefectMaker
+from defect_maker import DefectMaker
 
 
 @click.group()
@@ -36,17 +36,17 @@ def main(file_directory, attribute):
 
     module load sagar #load the necessay package
 
-    vaspout.py main -a gap . # this can read the gap and vbm, cbm
+    pyvasp.py main -a gap . # this can read the gap and vbm, cbm
 
-    vaspout.py main -a fermi . # this can read the fermi energy
+    pyvasp.py main -a fermi . # this can read the fermi energy
 
-    vaspout.py main -a energy . # this can read the total energy
+    pyvasp.py main -a energy . # this can read the total energy
 
-    vaspout.py main -a ele . # this can read the electrons in your OUTCAR
+    pyvasp.py main -a ele . # this can read the electrons in your OUTCAR
 
-    vaspout.py main -a ele-free . # this can get electrons number of  the defect-free system
+    pyvasp.py main -a ele-free . # this can get electrons number of  the defect-free system
 
-    vaspout.py main -a  Ewald . # this can get the Ewald energy of your system
+    pyvasp.py main -a  Ewald . # this can get the Ewald energy of your system
     """
 
     EV = ExtractValue(file_directory)
@@ -107,7 +107,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     module load sagar #load the necessay package
 
-    vaspout.py get_PA defect_free charge_state_1
+    pyvasp.py get_PA defect_free charge_state_1
     """
     num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'POSCAR'), \
             os.path.join(defect_dir,'POSCAR'))
@@ -142,6 +142,17 @@ def _get_line(file_tmp,rematch=None):
               help="Expand cell to supercell of dismension <x> <y> <z>")
 
 def cell(pcell_filename, volume):
+    """
+    First parameter: no_defect_dir, the directory path of the defece free system
+
+    Sencond parameter: defect_dir, the directory path of defect_dir
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    pyvasp.py get_PA defect_free charge_state_1
+    """
     pcell = read_vasp(pcell_filename)
     supcell = pcell.extend(np.diag(volume))
     write_vasp(supcell, 'supcell')

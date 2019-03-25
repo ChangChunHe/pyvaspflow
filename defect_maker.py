@@ -91,7 +91,7 @@ class DefectMaker:
                 rmtree('./'+folder)
                 os.mkdir('./'+folder)
             idx = 0
-            deg = []
+            # deg = []
             for tetra in all_tetra:
                 new_pos = np.vstack((self.positions,tetra))
                 new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
@@ -102,10 +102,10 @@ class DefectMaker:
                     new_uniq_pos = np.vstack((self.positions,new_pos[atom_type]))
                     new_uniq_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((1,))))
                     new_uniq_cell = Cell(self.lattice,new_uniq_pos,new_uniq_atoms)
-                    deg.append(len(np.where(equi_atoms == atom_type)[0]))
+                    # deg.append(len(np.where(equi_atoms == atom_type)[0]))
                     wirite_poscar(new_uniq_cell,purity_in,folder,idx)
                     idx += 1
-            np.savetxt(folder+'/deg.txt',deg,fmt='%d')
+            # np.savetxt(folder+'/deg.txt',deg,fmt='%d')
         else:
             folder = 'tetrahedral-not-unique-defect'
             if not os.path.exists('./'+folder):
