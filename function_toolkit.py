@@ -27,9 +27,9 @@ def refine_points(tetra,extend_S,C):
             final_res.append(cen)
     final_res = np.dot(final_res,np.linalg.inv(C))
     final_res = np.unique(np.round(final_res,decimals=3),axis=0)
-    idx = np.sum((final_res <= 0.99) &(final_res >= 0.01),axis=1)
-    idx = np.where(idx == 3)[0]
-    return final_res[idx]
+    final_res[final_res>0.99] = 0
+    final_res[final_res<0.01] = 0
+    return np.unique(final_res,axis=0)
 
 
 def wirite_poscar(cell,purity_atom='',folder='.',idx=0):
