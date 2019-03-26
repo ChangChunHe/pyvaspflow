@@ -23,10 +23,9 @@ Table of Contents
          * [3.4 pyvasp-get_purity](#34-pyvasp-get_purity)
          * [3.5 pyvasp-get_tetrahedral](#35-pyvasp-get_tetrahedral)
          * [3.6 pyvasp-get_PA](#36-pyvasp-get_pa)
-
-
-
-
+      * [4. Examples to calculate defect formation energy](#4-examples-to-calculate-defect-formation-energy)
+         * [4.1 Si-vacancy-defect](#41-si-vacancy-defect)
+         * [4.2 CsGeI3-Ge-Vacancy](#42-csgei3-ge-vacancy)
 
 
 ## 0. Installment
@@ -153,3 +152,12 @@ This command can get the electrostatic of your defect system and no defect syste
 ```shell
 pyvasp.py get_PA defect_free charge_state_1
 ```
+
+## 4. Examples to calculate defect formation energy
+
+Here I will give two examples to demonstrate how this package works
+
+### 4.1 Si-vacancy-defect
+
+
+### 4.2 CsGeI3-Ge-Vacancy
