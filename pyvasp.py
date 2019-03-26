@@ -99,6 +99,9 @@ def get_Ewald(EV):
 
 def get_PA(no_defect_dir,defect_dir):
     """
+    Noted that: you should do self-consistent-field calculation,
+    so the no_defect_dir should have a subdirectory scf, and so as defect_dir
+    
     First parameter: no_defect_dir, the directory path of the defece free system
 
     Sencond parameter: defect_dir, the directory path of defect_dir
@@ -111,8 +114,8 @@ def get_PA(no_defect_dir,defect_dir):
     """
     num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'POSCAR'), \
             os.path.join(defect_dir,'POSCAR'))
-    pa_def = get_ele_sta(os.path.join(defect_dir,'OUTCAR'),num_def)
-    pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'OUTCAR'),num_no_def)
+    pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)
+    pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)
     click.echo('Electrostatic of the farther atom from defect atom in defect system is: ')
     click.echo(pa_def)
     click.echo('Electrostatic of the farther atom from defect atom in defect-free system is: ')
