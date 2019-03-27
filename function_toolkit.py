@@ -64,10 +64,10 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
             if val == no_defect.atoms[ii]:
                 rm_atom = key
                 break
-        print('This is a vacancy defect','atom: \n',
-              rm_atom,ii,'in the defect-free POSCAR has benn removed')
-        with open('element-in-out','w') as f:
-            f.writelines(str(rm_atom)+' '+str(-1))
+        # print('This is a vacancy defect','atom: \n',
+        #       rm_atom,ii,'in the defect-free POSCAR has benn removed')
+        # with open('element-in-out','w') as f:
+        #     f.writelines(str(rm_atom)+' '+str(-1))
         return ii,d
     elif len(no_defect.atoms) == len(one_defect.atoms):
         no_def_atoms,def_atoms = np.unique(no_defect.atoms),np.unique(one_defect.atoms)

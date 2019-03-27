@@ -149,20 +149,22 @@ def _get_line(file_tmp,rematch=None):
 #%% main script
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    data_folder = 'Si-Vacancy-Defect'
+    data_folder = 'Si-system-defect'
+    purity_in,purity_out = 'Vacc', 'Si'
+    defect_dir = purity_out+'-'+purity_in+'-defect'
     epsilon = 13.36
     SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
     Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()
     miu = SC_energy / 216
     chg_state = []
-    for chg_fd in os.listdir(data_folder):
+    for chg_fd in os.listdir(os.path.join(data_folder,defect_dir)):
         if 'charge_state' in chg_fd:
             q = chg_fd.split('_')[-1]
-            e = ExtractValue(os.path.join(data_folder,chg_fd,'scf')).get_energy()
-            no_def_poscar = os.path.join(data_folder,'supercell','POSCAR')
-            def_poscar = os.path.join(data_folder,chg_fd,'POSCAR')
+            e = ExtractValue(os.path.join(data_folder,defect_dir,chg_fd,'scf')).get_energy()
+            no_def_poscar = os.path.join(data_folder,'supercell','CONTCAR')
+            def_poscar = os.path.join(data_folder,defect_dir,chg_fd,'POSCAR')
             num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
-            pa_def = get_ele_sta(os.path.join(data_folder,chg_fd,'scf','OUTCAR'),num_def)
+            pa_def = get_ele_sta(os.path.join(data_folder,defect_dir,chg_fd,'scf','OUTCAR'),num_def)
             pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
             E_imagecor = ExtractValue(os.path.join(data_folder,'E_corr')).get_image()
             chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
