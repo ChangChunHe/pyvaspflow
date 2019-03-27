@@ -149,7 +149,7 @@ def _get_line(file_tmp,rematch=None):
 #%% main script
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    data_folder = 'Si-system-defect'
+    data_folder = 'Si'
     purity_in,purity_out = 'Vacc', 'Si'
     defect_dir = purity_out+'-'+purity_in+'-defect'
     epsilon = 13.36
@@ -166,7 +166,7 @@ if __name__ == '__main__':
             num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
             pa_def = get_ele_sta(os.path.join(data_folder,defect_dir,chg_fd,'scf','OUTCAR'),num_def)
             pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
-            E_imagecor = ExtractValue(os.path.join(data_folder,'E_corr')).get_image()
+            E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
             chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
     chg_state = np.asarray(chg_state)
     Ef = np.linspace(Evbm,Ecbm,1000)
