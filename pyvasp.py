@@ -146,15 +146,15 @@ def _get_line(file_tmp,rematch=None):
 
 def cell(pcell_filename, volume):
     """
-    First parameter: no_defect_dir, the directory path of the defece free system
+    First parameter: pcell_filename, the  path of your initial POSCAR
 
-    Sencond parameter: defect_dir, the directory path of defect_dir
+    Sencond parameter: volume, the volume you want to extend
 
     Example:
 
     module load sagar #load the necessay package
 
-    pyvasp.py get_PA defect_free charge_state_1
+    pyvasp.py cell -v 2 2 2 POSCAR
     """
     pcell = read_vasp(pcell_filename)
     supcell = pcell.extend(np.diag(volume))
