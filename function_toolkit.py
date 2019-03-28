@@ -67,8 +67,8 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
         print('This is a vacancy defect','atom: \n',
               rm_atom,ii,'in the defect-free POSCAR has benn removed')
         with open('element-in-out','w') as f:
-            f.writelines(str(rm_atom)+' '+str(-1)+'\n')
-            f.writelines('Vacc 1 \n')
+            f.writelines(str(rm_atom)+'='+str(1)+'\n')
+            f.writelines('Vacc=-1 \n')
         return ii,d
     elif len(no_defect.atoms) == len(one_defect.atoms):
         no_def_atoms,def_atoms = np.unique(no_defect.atoms),np.unique(one_defect.atoms)
@@ -84,8 +84,8 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
         print('This is a purity defect ','atom: \n',
             rm_atom, ii,'in the defect-free POSCAR has benn dopped  by', in_atom)
         with open('element-in-out','w') as f:
-            f.writelines(str(rm_atom)+' '+str(-1)+'\n')
-            f.writelines(str(in_atom)+' '+str(1)+'\n')
+            f.writelines(str(rm_atom)+'='+str(1)+'\n')
+            f.writelines(str(in_atom)+'='+str(-1)+'\n')
         return ii, d
     else:
         print('This kind of defect is not supported here right now')
