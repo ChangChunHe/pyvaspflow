@@ -19,9 +19,9 @@ class ExtractValue():
         return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
 
     def get_energy(self):
-        file_outcar = os.path.join(self.data_folder,'OUTCAR')
-        grep_res = subprocess.Popen(['grep','TOTEN',file_outcar],stdout=subprocess.PIPE)
-        return float(subprocess.check_output(['tail','-1'],stdin=grep_res.stdout).decode('utf-8').split()[-2])
+        file_osz = os.path.join(self.data_folder,'OSZICAR')
+        return float(subprocess.run(['tail','-1',file_osz],stdout=subprocess.PIPE).stdout.decode('utf-8').split()[4])
+
 
     def get_fermi(self):
         # read from scf calculation
@@ -145,17 +145,21 @@ def _get_line(file_tmp,rematch=None):
     grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
     return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
 
+def read_incar(incar):
+    import re
+    l1 = [item for sublist in [re.sub(r"\s+","",i.lower(),flags=re.UNICODE).split() for i in lc.getlines(incar)] for item in sublist]
+    all_para = [item for sublist in [item.split('=') for item in l1] for item in sublist]
+    return dict(zip(all_para[::2],all_para[1::2]))
+
 
 #%% main script
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    import warnings
     data_folder = 'Si'
-    purity_in,purity_out = 'Vacc', 'Si'
-    defect_dir = purity_out+'-'+purity_in+'-defect'
-    epsilon = 13.36
+    defect_dir = 'Si-Vacc-defect'
     SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
     Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()
-    miu = SC_energy / 216
     chg_state = []
     for chg_fd in os.listdir(os.path.join(data_folder,defect_dir)):
         if 'charge_state' in chg_fd:
@@ -169,16 +173,30 @@ if __name__ == '__main__':
             E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
             chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
     chg_state = np.asarray(chg_state)
+
+    # get chemical potential term
+    ele_in_out = read_incar('element-in-out')
+    incar_para = read_incar('defect-incar')
+    incar_para['mu_vacc'] = 0
+    if 'epsilon' in incar_para:
+        epsilon = float(incar_para['epsilon'])
+    else:
+        epsilon = 1e10
+        warnings.warn("You should specify epsilon in your defect-incar, here we just ignore this correlation")
+    mu = 0
+    for key,val in ele_in_out.items():
+        if 'mu_'+key in incar_para:
+            mu += float(incar_para['mu_'+key])*int(val)
+        else:
+            raise ValueError('chemical potential mu_'+key.title()+' cannot found')
     Ef = np.linspace(Evbm,Ecbm,1000)
     chg_state = np.asarray(chg_state)
     E = []
     for idx in range(np.shape(chg_state)[0]):
-        _E = chg_state[idx,1]-SC_energy+miu+chg_state[idx,0]*Ef \
-        +chg_state[idx,0]*chg_state[idx,2]-2/3*chg_state[idx,0]**2*chg_state[idx,3]/epsilon
-        E.append(_E)
-        # plt.plot(Ef-Evbm,_E,label='charge state: '+str(int(chg_state[idx,0])))h
+        E.append(chg_state[idx,1]-SC_energy+ mu+chg_state[idx,0]*Ef +chg_state[idx,0]*chg_state[idx,2]\
+        -2/3*chg_state[idx,0]**2*chg_state[idx,3]/epsilon)
     E = np.asarray(E)
-    plt.plot(Ef-Evbm, np.min(E,axis=0),label=data_folder)
+    plt.plot(Ef-Evbm,np.min(E,axis=0),label=data_folder)
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
     plt.xlabel(r'$E_F$ (eV)')
