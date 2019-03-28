@@ -156,84 +156,48 @@ def read_incar(incar):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import warnings
-    data_folder = 'Si'
-    defect_dir = 'Si-Vacc-defect'
-    SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
-    Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()
-    chg_state = []
-    for chg_fd in os.listdir(os.path.join(data_folder,defect_dir)):
-        if 'charge_state' in chg_fd:
-            q = chg_fd.split('_')[-1]
-            e = ExtractValue(os.path.join(data_folder,defect_dir,chg_fd,'scf')).get_energy()
-            no_def_poscar = os.path.join(data_folder,'supercell','CONTCAR')
-            def_poscar = os.path.join(data_folder,defect_dir,chg_fd,'POSCAR')
-            num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
-            pa_def = get_ele_sta(os.path.join(data_folder,defect_dir,chg_fd,'scf','OUTCAR'),num_def)
-            pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
-            E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
-            chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
-    chg_state = np.asarray(chg_state)
-
-    # get chemical potential term
-    ele_in_out = read_incar('element-in-out')
-    incar_para = read_incar('defect-incar')
-    incar_para['mu_vacc'] = 0
-    if 'epsilon' in incar_para:
-        epsilon = float(incar_para['epsilon'])
-    else:
-        epsilon = 1e10
-        warnings.warn("You should specify epsilon in your defect-incar, here we just ignore this correlation")
-    mu = 0
-    for key,val in ele_in_out.items():
-        if 'mu_'+key in incar_para:
-            mu += float(incar_para['mu_'+key])*int(val)
+    data_folder = 'test'
+    for defect_dir in  ['V_Mg','V_H']:
+        SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
+        Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()[0]
+        chg_state = []
+        for chg_fd in os.listdir(os.path.join(data_folder,defect_dir)):
+            if 'charge_state' in chg_fd:
+                q = chg_fd.split('_')[-1]
+                e = ExtractValue(os.path.join(data_folder,defect_dir,chg_fd,'scf')).get_energy()
+                no_def_poscar = os.path.join(data_folder,'supercell','CONTCAR')
+                def_poscar = os.path.join(data_folder,defect_dir,chg_fd,'POSCAR')
+                num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
+                pa_def = get_ele_sta(os.path.join(data_folder,defect_dir,chg_fd,'scf','OUTCAR'),num_def)
+                pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
+                E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
+                chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
+        chg_state = np.asarray(chg_state)
+        # get chemical potential term
+        ele_in_out = read_incar('element-in-out')
+        incar_para = read_incar('defect-incar')
+        incar_para['mu_vacc'] = 0
+        if 'epsilon' in incar_para:
+            epsilon = float(incar_para['epsilon'])
         else:
-            raise ValueError('chemical potential mu_'+key.title()+' cannot found')
-    Ef = np.linspace(Evbm,Ecbm,1000)
-    chg_state = np.asarray(chg_state)
-    E = []
-    for idx in range(np.shape(chg_state)[0]):
-        E.append(chg_state[idx,1]-SC_energy+ mu+chg_state[idx,0]*Ef +chg_state[idx,0]*chg_state[idx,2]\
-        -2/3*chg_state[idx,0]**2*chg_state[idx,3]/epsilon)
-    E = np.asarray(E)
-    plt.plot(Ef-Evbm,np.min(E,axis=0),label=data_folder)
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
+            epsilon = 1e10
+            warnings.warn("You should specify epsilon in your defect-incar, here we just ignore this correlation")
+        mu = 0
+        for key,val in ele_in_out.items():
+            if 'mu_'+key in incar_para:
+                mu += float(incar_para['mu_'+key])*int(val)
+            else:
+                raise ValueError('chemical potential mu_'+key.title()+' cannot found')
+        Ef = np.linspace(Evbm,Ecbm,1000)
+        chg_state = np.asarray(chg_state)
+        E = []
+        for idx in range(np.shape(chg_state)[0]):
+            E.append(chg_state[idx,1]-SC_energy+ mu+chg_state[idx,0]*Ef +chg_state[idx,0]*chg_state[idx,2]\
+            -2/3*chg_state[idx,0]**2*chg_state[idx,3]/epsilon)
+        E = np.asarray(E)
+        plt.plot(Ef-Evbm,np.min(E,axis=0),label=defect_dir)
     plt.xlabel(r'$E_F$ (eV)')
     plt.ylabel(r'$\Delta E (eV)$')
     plt.legend()
     plt.savefig('defect_formation_energy.png',dpi=450)
     plt.show()
-
-    # dirs = []
-    # for ii in os.listdir(data_folder+'/'):
-    #     if 'NELECT' in ii:
-    #         dirs.append(ii)
-    # for path in dirs:
-    #     nelect_d = Acquire_value(data_folder+'/'+path+'/').get_Ne_d()
-    #     charge_state = nelect_p - nelect_d
-    #     D_energy = Acquire_value(data_folder+'/'+path+'/scf/').get_energy()
-    #
-    #     if atomic_num is None:
-    #         V_delt = 0
-    #     else:
-    #         V_delt = Acquire_value(data_folder+'/'+path+'/scf/', atomic_num=atomic_num).get_PA() -\
-    #                     Acquire_value('scf/', atomic_num=atomic_num).get_PA()
-    #
-    #
-    #     Ewald = Acquire_value('./').get_image()
-    #     if epsilon is None:
-    #         E_imagecor = 0
-    #     else:
-    #         E_imagecor = -2/3*charge_state**2*Ewald/epsilon
-    #
-    #
-    #     Hf_vbm = D_energy + E_imagecor - SC_energy + miu + charge_state * (Evbm-0.5+V_delt)
-    #     Hf_cbm = D_energy + E_imagecor - SC_energy + miu + charge_state * (Evbm+gap+0.5+V_delt)
-    #     for ii in range(len(miu)):
-    #         diff_d[data_folder] = diff_d.get(data_folder,[])
-    #         diff_d[data_folder].append([charge_state, D_energy, SC_energy, V_delt, E_imagecor, miu[ii], gap, Hf_vbm[ii], Hf_cbm[ii]])
-
-# if __name__ == "__main__":
-#     EV = ExtractValue('/home/hecc/Desktop/supercell')
-#     print(EV.get_PA(24))

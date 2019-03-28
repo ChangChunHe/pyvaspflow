@@ -148,11 +148,11 @@ def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
     else:
         return [(i, s2n(purity_in)) if i == s2n(purity_out) else (i,) for i in atoms]
 
-charge_state = {'Vacc': 0,
-               'H': 1, 'He': 0,
-               'Li': 1, 'Be': 2, 'B': 3, 'C': 4, 'N': 5, 'O': 6, 'F': 7, 'Ne': 0,
-               'Na': 1, 'Mg': 2, 'Al': 3, 'Si': 4, 'P': 5, 'S': 6, 'Cl': 7, 'Ar': 0,
-               'K': 1, 'Ca': 2, 'Sc': 3, 'Ti': 4, 'V': 5, 'Cr': 2, 'Mn': 2, 'Fe': 2, 'Co': 2, 'Ni': 2, 'Cu': 1, 'Zn': 2, 'Ga': 3, 'Ge': 4, 'As': 5, 'Se': 6, 'Br': 7, 'Kr': 0,
-               'Rb': 1, 'Sr': 2, 'Y': 3, 'Zr': 4, 'Nb': 3, 'Mo': 3, 'Tc': 6, 'Ru': 3, 'Rh': 4, 'Pd': 2, 'Ag': 1, 'Cd': 2, 'In': 3, 'Sn': 4, 'Sb': 5, 'Te': 6, 'I': 7, 'Xe': 0,
-               'Cs': 1, 'Ba': 2, 'Hf': 4, 'Ta': 5, 'W': 6, 'Re': 2, 'Os': 3, 'Ir': 3, 'Pt': 2, 'Au': 1, 'Hg': 1, 'Tl': 1, 'Pb': 2, 'Bi': 3, 'Po': 2, 'At': 0, 'Rn': 0,
-               'Fr': 1, 'Ra': 2}
+# charge_state = {'Vacc': 0,
+#                'H': 1, 'He': 0,
+#                'Li': 1, 'Be': 2, 'B': 3, 'C': 4, 'N': 5, 'O': 6, 'F': 7, 'Ne': 0,
+#                'Na': 1, 'Mg': 2, 'Al': 3, 'Si': 4, 'P': 5, 'S': 6, 'Cl': 7, 'Ar': 0,
+#                'K': 1, 'Ca': 2, 'Sc': 3, 'Ti': 4, 'V': 5, 'Cr': 2, 'Mn': 2, 'Fe': 2, 'Co': 2, 'Ni': 2, 'Cu': 1, 'Zn': 2, 'Ga': 3, 'Ge': 4, 'As': 5, 'Se': 6, 'Br': 7, 'Kr': 0,
+#                'Rb': 1, 'Sr': 2, 'Y': 3, 'Zr': 4, 'Nb': 3, 'Mo': 3, 'Tc': 6, 'Ru': 3, 'Rh': 4, 'Pd': 2, 'Ag': 1, 'Cd': 2, 'In': 3, 'Sn': 4, 'Sb': 5, 'Te': 6, 'I': 7, 'Xe': 0,
+#                'Cs': 1, 'Ba': 2, 'Hf': 4, 'Ta': 5, 'W': 6, 'Re': 2, 'Os': 3, 'Ir': 3, 'Pt': 2, 'Au': 1, 'Hg': 1, 'Tl': 1, 'Pb': 2, 'Bi': 3, 'Po': 2, 'At': 0, 'Rn': 0,
+#                'Fr': 1, 'Ra': 2}
