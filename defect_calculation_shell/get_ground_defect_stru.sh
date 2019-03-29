@@ -38,9 +38,5 @@ done
 gd=`sort -k2n energy_out|awk 'NR==1{print $1}'`
 
 # calculate scf of the ground structure
-cp -r  $gd-dir $atom_in-defect
-cd $atom_in-defect
-stru_scf.sh
-cp scf/CONTCAR ../POSCAR
-cp scf/POTCAR ../POTCAR
-cd ../..
+cp  $gd-dir/CONTCAR ./POSCAR
+cp  $gd-dir/POTCAR  .
