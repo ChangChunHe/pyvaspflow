@@ -7,7 +7,6 @@ Table of Contents
 =================
 
    * [Defect-Formation-Calculation](#defect-formation-calculation)
-   * [Table of Contents](#table-of-contents)
       * [0. Installment](#0-installment)
       * [1. Generate defect structures](#1-generate-defect-structures)
       * [2. submit your common calculatiojobn jobs](#2-submit-your-common-calculatiojobn-jobs)
@@ -23,9 +22,11 @@ Table of Contents
          * [3.4 pyvasp-get_purity](#34-pyvasp-get_purity)
          * [3.5 pyvasp-get_tetrahedral](#35-pyvasp-get_tetrahedral)
          * [3.6 pyvasp-get_PA](#36-pyvasp-get_pa)
-      * [4. Examples to calculate defect formation energy](#4-examples-to-calculate-defect-formation-energy)
+      * [4. Examples](#4-examples)
+         * [4.0 band-dos calculation](#40-band-dos-calculation)
          * [4.1 Si-vacancy-defect](#41-si-vacancy-defect)
-         * [4.2 CsGeI3-Ge-Vacancy](#42-csgei3-ge-vacancy)
+         * [4.2 MgH2-Vacancy](#42-mgh2-vacancy)
+
 
 
 ## 0. Installment
