@@ -156,19 +156,23 @@ def read_incar(incar):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import warnings
-    data_folder = 'test'
-    for defect_dir in  ['V_Mg','V_H']:
+    import sys
+    if len(sys.argv) < 3:
+        raise ValueError('Not enough input parameters, you should input the main direcroty and the defect-directory')
+    data_folder = sys.argv[1]
+    defect_dirs = sys.argv[2:]
+    for defect_dir in  defect_dirs:
         SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
-        Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()[0]
+        Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()
         chg_state = []
-        for chg_fd in os.listdir(os.path.join(data_folder,defect_dir)):
+        for chg_fd in os.listdir(os.path.join(defect_dir)):
             if 'charge_state' in chg_fd:
                 q = chg_fd.split('_')[-1]
-                e = ExtractValue(os.path.join(data_folder,defect_dir,chg_fd,'scf')).get_energy()
+                e = ExtractValue(os.path.join(defect_dir,chg_fd,'scf')).get_energy()
                 no_def_poscar = os.path.join(data_folder,'supercell','CONTCAR')
-                def_poscar = os.path.join(data_folder,defect_dir,chg_fd,'POSCAR')
+                def_poscar = os.path.join(defect_dir,chg_fd,'POSCAR')
                 num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
-                pa_def = get_ele_sta(os.path.join(data_folder,defect_dir,chg_fd,'scf','OUTCAR'),num_def)
+                pa_def = get_ele_sta(os.path.join(defect_dir,chg_fd,'scf','OUTCAR'),num_def)
                 pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
                 E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
                 chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
