@@ -153,11 +153,76 @@ This command can get the electrostatic of your defect system and no defect syste
 pyvasp.py get_PA defect_free charge_state_1
 ```
 
-## 4. Examples to calculate defect formation energy
+## 4. Examples
+Here I will give some examples to demonstrate how this package works
+### 4.0 band-dos calculation
+Prepare your POSCAR in your work directory, if you want to use the default setting, you can just execute the command like `stru_relax.sh` to calculate your system for which can generate `INCAR, KPOINTS, POTCAR` automatic.
 
-Here I will give two examples to demonstrate how this package works
+```bash
+#!/bin/bash -l
+#NOTE the -l flag!
+#SBATCH -J job-name
+#SBATCH -p super_q  -N 1 -n 12
+# NOTE Each small node has 12 cores
+#
+export NSLOTS=$SLURM_NPROCS
+module load vasp/5.4.4-impi-mkl
+stru_relax.sh
+stru_scf.sh
+stru_band.sh
+stru_dos.sh
+```
 
 ### 4.1 Si-vacancy-defect
+First, you should supply the POSCAR of Si, and execute
+```bash
+# generate Si-vacancy structures
+pyvasp.py get_purity -i Vacc -o Si POSCAR
+```
+submit your job
+```bash
+#!/bin/bash -l
+# NOTE the -l flag!
+#
+#SBATCH -J Si
+# Default in slurm
+# Request 5 hours run time
+#SBATCH -t 5:0:0
+#
+#SBATCH -p super_q -N 1 -n 12
+# NOTE Each small node has 12 cores
+#
+module load vasp/5.4.4-impi-mkl
+# add your job logical here!!!
+
+export NSLOTS=$SLURM_NPROCS
+mkdir supercell
+cp POSCAR supercell/
+cd supercell
+stru_relax.sh
+stru_scf.sh
+cd ..
+get_ground_defect_stru.sh Si-Vacc-defect
+for q in -2 -1 0 1 2
+do
+  charge_state_cal.sh $q
+done
+image_corr_cal.sh
+```
+
+all calculations have been completed. you can get a standard hierarchy of files. Below is an example, and your files should also be like this.
+
+![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/tree_defect.png)
+
+you can execute `defect_formation_energy.py`
+to plot the figure.
+```bash
+# the first parameter is the path of  main directory
+# the second paramete is the path of your defect directory
+defect_formation_energy.py MgH2 MgH2/Mg-Vacc-defect
+```
 
 
-### 4.2 CsGeI3-Ge-Vacancy
+
+
+### 4.2 MgH2-Vacancy
