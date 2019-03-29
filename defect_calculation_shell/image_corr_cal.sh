@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -n '1,5p' POSCAR >poscar_img
+sed -n '1,5p' supercell/scf/POSCAR >poscar_img
 
 echo H >> poscar_img
 echo 1 >> poscar_img
