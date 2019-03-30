@@ -60,10 +60,10 @@ then
   if [ -e  ${path}/${pot_ty}/POTCAR ]
   then
     cat ${path}/${pot_ty}/POTCAR >> POTCAR
-    echo ${path}/${pot_ty}/POTCAR
+    echo ${path}/${pot_ty}/POTCAR   
   is_write=true
   elif [ -e ${path}/${pot_ty}/POTCAR.Z ]
-  then
+  then 
     cp  ${path}/${pot_ty}/POTCAR.Z .
     gzip -d < POTCAR.Z >tmp
     cat POTCAR tmp >> POTCAR
@@ -73,19 +73,22 @@ then
   fi
 break
 fi
+
 done
 
 if  ! $is_write
 then
+
 if [ -f ${path}/${ele}/POTCAR   ]
-then
-  cat ${path}/${ele}/POTCAR >> POTCAR
+then 
+cat ${path}/${ele}/POTCAR >> POTCAR
 elif [ -f  ${path}/${ele}/POTCAR.Z   ]
 then
-  cp  ${path}/${ele}/POTCAR.Z .
-  gzip -d < POTCAR.Z >tmp
-  cat POTCAR tmp >> POTCAR
-  rm POTCAR.Z tmp
+ cp  ${path}/${ele}/POTCAR.Z .
+    gzip -d < POTCAR.Z >tmp
+    cat POTCAR tmp >> POTCAR
+    rm POTCAR.Z tmp
 fi
 fi
+
 done
