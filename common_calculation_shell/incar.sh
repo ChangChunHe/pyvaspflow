@@ -17,22 +17,25 @@ then
 host_name=`awk 'NR==1' POSCAR`
 fi
 
+
 cat > INCAR <<!
 System=$host_name
 ENCUT=$encut
-ISIF=2
+ISPIN=1
+ISIF=1
 ISTART=0
 ICHARG=2
 NSW=100
 IBRION=2
 EDIFF=1E-5
-EDIFFG=-0.05
+EDIFFG=-0.01
 ISMEAR=0
 NPAR=4
 LREAL=Auto
 LWAVE=F
 LCHARG=F
 ALGO=All
+
 !
 ##################################################################
 if [ -n "$vdw" ] && [ $vdw -eq 1 ]
