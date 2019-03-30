@@ -54,7 +54,7 @@ defectmaker.py get_tetrahedral POSCAR -i H
 ```
 
 
-## 2. submit your common calculatiojobn jobs
+## 2. submit your common calculation jobs
 
 First, we supply some shell scripts to generate those input file for VASP calculation, they are [potcar.sh](./common_calculation_shell/potcar.sh), [incar.sh](./common_calculation_shell/incar.sh), [kpoints.sh](./common_calculation_shell/kpoints.sh). Below I will simply introduce the usage of these scripts.
 
@@ -97,7 +97,7 @@ kpoint.sh band # this will genrate k-path based on `aflow`
 Here, we supply some integrated shell scripts to calculate the jobs you need.<br />
 - [x] [stru_relax.sh](./common_calculation_shell/stru_relax.sh) (structure relax, ISIF=3)<br />
 - [x] [stru_optimization.sh](./common_calculation_shell/stru_optimization.sh) (structure optimization, ISIF=2)<br />
-- [x] [struscf.sh](./common_calculation_shell/stru_scf.sh) (structure self consistent field calculation)<br />
+- [x] [stru_scf.sh](./common_calculation_shell/stru_scf.sh) (structure self consistent field calculation)<br />
 - [x] [stru_band.sh](./common_calculation_shell/stru_band.sh) (band calculation)<br />
 - [x] [stru_dos.sh](./common_calculation_shell/stru_dos.sh) (density of state calculation)<br />
 - [x] [job.sh](./common_calculation_shell/job.sh) (submit your job)
@@ -108,6 +108,7 @@ We also supply some scripts to generate the input files needed in `VASP` Calcula
 
 Here we supply a command interface to get the value you want.
 
+__Noted that, if you get `permission denied`, please use `chmod u+x pyvasp.py` to give the execute right to the file__
 ### 3.1 pyvasp-help
 ```shell
 module load sagar #load the necesary package
@@ -164,6 +165,7 @@ Prepare your POSCAR in your work directory, if you want to use the default setti
 #NOTE the -l flag!
 #SBATCH -J job-name
 #SBATCH -p super_q  -N 1 -n 12
+#SBATCH -t 10-0:0:0
 # NOTE Each small node has 12 cores
 #
 export NSLOTS=$SLURM_NPROCS
@@ -196,6 +198,9 @@ submit your job
 module load vasp/5.4.4-impi-mkl
 # add your job logical here!!!
 
+# this is the defect directory
+defect_folder=Mg-Vacc-defect
+
 export NSLOTS=$SLURM_NPROCS
 mkdir supercell
 cp POSCAR supercell/
@@ -203,9 +208,9 @@ cd supercell
 stru_relax.sh
 stru_scf.sh
 cd ..
-get_ground_defect_stru.sh C-B-defect
-cd C-B-defect
-for q in  -1 0 1
+get_ground_defect_stru.sh $defect_folder
+cd $defect_folder
+for q in  -2 -1 0 1
 do
   charge_state_cal.sh $q
 done
@@ -221,7 +226,7 @@ you can execute `defect_formation_energy.py`
 to plot the figure.
 ```bash
 # the first parameter is the path of  main directory
-# the second paramete is the path of your defect directory
+# the second parameter is the path of your defect directory
 defect_formation_energy.py MgH2 MgH2/Mg-Vacc-defect
 ```
 
