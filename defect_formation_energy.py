@@ -150,7 +150,11 @@ if __name__ == '__main__':
         SC_energy = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_energy()
         print('Energy of supcell is: '+str(SC_energy)+' eV')
         f.write('Energy of supcell is: '+str(SC_energy)+' eV\n')
-        Evbm, Ecbm, gap = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()[0]
+        res = ExtractValue(os.path.join(data_folder,'supercell/scf/')).get_gap()
+        if len(res) == 3:
+            Evbm, Ecbm, gap = res
+        elif len(res) == 2:
+            Evbm, Ecbm, gap = res[0]
         print('Evbm, Ecbm, gap of supcell is: ', Evbm, Ecbm, gap)
         f.write('Evbm: '+str(Evbm)+' eV\n'+'Ecbm: '+str(Ecbm)+' eV\n'+'gap: '+str(gap)+' eV\n')
         chg_state = []
