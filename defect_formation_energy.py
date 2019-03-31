@@ -189,6 +189,13 @@ if __name__ == '__main__':
                 f.write('chemical potential of '+key.title()+': '+str(incar_para['mu_'+key])+' eV\n')
             else:
                 raise ValueError('chemical potential mu_'+key.title()+' cannot found')
+        os.system('rm element-in-out')
+        for key, val in ele_in_out.items():
+            if val == 1:
+                f.writelines(key.title()+' has been dopped\n')
+            else:
+                f.writelines(key.title()+' has been removed\n')
+        f.writelines('\n')
         Ef = np.linspace(Evbm,Ecbm,1000)
         chg_state = np.asarray(chg_state)
         E = []
