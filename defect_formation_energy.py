@@ -143,7 +143,7 @@ if __name__ == '__main__':
     data_folder = sys.argv[1]
     print('The main direcroty is: ', data_folder)
     defect_dirs = sys.argv[2:]
-    f = open(data_folder+'-log.txt','w')
+    f = open(data_folder+'_log.txt','w')
     for defect_dir in  defect_dirs:
         print('Reading ', defect_dir)
         f.write(defect_dir+'\n')
@@ -167,7 +167,7 @@ if __name__ == '__main__':
                 def_poscar = os.path.join(defect_dir,chg_fd,'POSCAR')
                 num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
                 pa_def = get_ele_sta(os.path.join(defect_dir,chg_fd,'scf','OUTCAR'),num_def)
-                pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell/scf','OUTCAR'),num_no_def)
+                pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell','scf','OUTCAR'),num_no_def)
                 E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
                 chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
         ele_in_out = read_incar('element-in-out')
@@ -200,7 +200,7 @@ if __name__ == '__main__':
         chg_state = np.asarray(chg_state)
         E = []
         for idx in range(np.shape(chg_state)[0]):
-            E.append(chg_state[idx,1]-SC_energy+ mu+chg_state[idx,0]*Ef+chg_state[idx,2]+chg_state[idx,3])
+            E.append(chg_state[idx,1]-SC_energy+mu+chg_state[idx,0]*Ef+chg_state[idx,2]+chg_state[idx,3])
         E = np.asarray(E)
         plt.plot(Ef-Evbm,np.min(E,axis=0),label=defect_dir)
     f.close()
@@ -208,4 +208,3 @@ if __name__ == '__main__':
     plt.ylabel(r'$\Delta E (eV)$')
     plt.legend()
     plt.savefig('defect_formation_energy.png',dpi=450)
-    plt.show()

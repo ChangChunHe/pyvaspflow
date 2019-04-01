@@ -116,9 +116,9 @@ def get_PA(no_defect_dir,defect_dir):
             os.path.join(defect_dir,'POSCAR'))
     pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)
     pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)
-    click.echo('Electrostatic of the farther atom from defect atom in defect system is: ')
+    click.echo('Electrostatic of the farther atom '+str(num_def)+' from defect atom in defect system is: ')
     click.echo(pa_def)
-    click.echo('Electrostatic of the farther atom from defect atom in defect-free system is: ')
+    click.echo('Electrostatic of the farther atom '+str(num_no_def)+' from defect atom in defect-free system is: ')
     click.echo(pa_no_def)
     click.echo('Potential alignment correlation is: '+str(pa_def-pa_no_def))
 
