@@ -15,7 +15,7 @@ while [ $kp3 -ge ${kmins[3]} ]
 do
 sed -i "4c $kp1 $kp2 $kp3" KPOINTS
 stru_one_step.sh
-echo $kp1 $kp2 $kp3 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
+echo $kp1 $kp2 $kp3 ` tail -1 OSZICAR|awk '{print $5}'` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
         kp3=$[$kp3-1]
 done
 kp2=$[$kp2-1]
@@ -31,7 +31,7 @@ while [ $kp1 -ge ${kmins[1]} ]
 do
 sed -i "4c $kp1 $kp1 $kp1" KPOINTS
 stru_one_step.sh
-echo $kp1 $kp1 $kp1 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
+echo $kp1 $kp1 $kp1 `tail -1 OSZICAR|awk '{print $5}'` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
 kp1=$[$kp1-1]
 done
 }
@@ -46,7 +46,7 @@ do
 	do
 	        sed -i "4c $kp1 $kp2 $kp2" KPOINTS
           stru_one_step.sh
-	        echo $kp1 $kp2 $kp2 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
+	        echo $kp1 $kp2 $kp2 `tail -1 OSZICAR|awk '{print $5}'` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
 		kp2=$[$kp2-1]
 	done
 	kp1=$[$kp1-1]
@@ -63,7 +63,7 @@ do
         do
         sed -i "4c $kp2 $kp1 $kp2" KPOINTS
         stru_one_step.sh
-        echo $kp2 $kp1 $kp2 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
+        echo $kp2 $kp1 $kp2 `tail -1 OSZICAR|awk '{print $5}'` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
         kp2=$[$kp2-1]
         done
         kp1=$[$kp1-1]
@@ -80,7 +80,7 @@ do
   do
           sed -i "4c $kp2 $kp2 $kp1" KPOINTS
           stru_one_step.sh
-          echo $kp2 $kp2 $kp1 `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
+          echo $kp2 $kp2 $kp1 `tail -1 OSZICAR|awk '{print $5}'` `awk '/CPU/{print $NF}' OUTCAR` >> kp_energy.out
           kp2=$[$kp2-1]
   done
   kp1=$[$kp1-1]
@@ -127,4 +127,3 @@ elif [ ${kmaxs[1]} -eq ${kmaxs[2]} ]
 then	kp_option5
 else	kp_option1
 fi
-

@@ -16,5 +16,5 @@ do
 incar.sh
 sed -i -e '/NSW/c NSW=0'  -e "/ENCUT/c  ENCUT=$val" INCAR
 stru_one_step.sh
-echo $val `awk '/TOTEN/{print $(NF-1)}' OUTCAR |tail -1` `awk '/CPU/{print $NF}' OUTCAR` >> encut_energy.out
+echo $val `tail -1 OSZICAR|awk '{print $5}'` `awk '/CPU/{print $NF}' OUTCAR` >> encut_energy.out
 done
