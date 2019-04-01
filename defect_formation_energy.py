@@ -140,7 +140,7 @@ if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3:
         raise ValueError('Not enough input parameters, you should input the main direcroty and the defect-directory')
-    data_folder = sys.argv[1]
+    data_folder = sys.argv[1].replace("\\",'').replace("/",'')
     print('The main direcroty is: ', data_folder)
     defect_dirs = sys.argv[2:]
     f = open(data_folder+'_log.txt','w')
@@ -191,7 +191,7 @@ if __name__ == '__main__':
                 raise ValueError('chemical potential mu_'+key.title()+' cannot found')
         os.system('rm element-in-out')
         for key, val in ele_in_out.items():
-            if val == 1:
+            if abs(float(val)+1)<0.01:
                 f.writelines(key.title()+' has been dopped\n')
             else:
                 f.writelines(key.title()+' has been removed\n')
