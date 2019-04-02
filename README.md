@@ -177,7 +177,8 @@ stru_scf.sh
 stru_band.sh
 stru_dos.sh
 ```
-The initial files can only be `POSCAR` and `job.sh`,
+The initial files can only be `POSCAR` and `job.sh`
+
 ![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/band_init.png)
 
 then you can sbath your job and after calculation, you will get the below files.
