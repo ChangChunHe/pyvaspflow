@@ -89,9 +89,11 @@ kpoint.sh band # this will genrate k-path based on `aflow`
 
 ### 2.4 some test-parameters scripts
 
-[kp_test.sh](./parameter_test_shell/kp_test.sh) can test what kinds of KPOINTS you should use, and [encut_test.sh](./parameter_test_shell/encut_test.sh) can help you test what `ENCUT` is best suitable for your calculations.
+[kp_test.sh](./parameter_test_shell/kp_test.sh) can test what kinds of KPOINTS you should use
 
+[encut_test.sh](./parameter_test_shell/encut_test.sh) can help you test what `ENCUT` is best suitable for your calculations.
 
+[latt_const_test.sh](./parameter_test_shell/latt_const_test.sh) can test which lattice constant is best for the system you are calculating.
 ### 2.5 some integrated scripts
 
 Here, we supply some integrated shell scripts to calculate the jobs you need.<br />
@@ -175,6 +177,15 @@ stru_scf.sh
 stru_band.sh
 stru_dos.sh
 ```
+The initial files can only be `POSCAR` and `job.sh`,
+![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/band_init.png)
+
+then you can sbath your job and after calculation, you will get the below files.
+
+![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/band_caL.png)
+
+Here, the main directory contains relax-results or optimization-results, the band, dos, scf will respectively contain correspondent files.
+
 
 ### 4.1 Si-vacancy-defect
 First, you should supply the POSCAR of Si, and execute
@@ -182,7 +193,7 @@ First, you should supply the POSCAR of Si, and execute
 # generate Si-vacancy structures
 pyvasp.py get_purity -i Vacc -o Si POSCAR
 ```
-submit your job
+to generate purity `POSCAR`, and then submit your job. Below is an example job file.
 ```bash
 #!/bin/bash -l
 # NOTE the -l flag!
@@ -199,7 +210,7 @@ module load vasp/5.4.4-impi-mkl
 # add your job logical here!!!
 
 # this is the defect directory
-defect_folder=Mg-Vacc-defect
+defect_folder=Si-Vacc-defect
 
 export NSLOTS=$SLURM_NPROCS
 mkdir supercell
@@ -210,7 +221,7 @@ stru_scf.sh
 cd ..
 get_ground_defect_stru.sh $defect_folder
 cd $defect_folder
-for q in  -2 -1 0 1
+for q in  -2 -1 0 1 2
 do
   charge_state_cal.sh $q
 done
@@ -218,7 +229,7 @@ cd ..
 image_corr_cal.sh
 ```
 
-all calculations have been completed. you can get a standard hierarchy of files. Below is an example, and your files should also be like this.
+All calculations have been completed. You can get a standard hierarchy of files if you do not encounter any accident problems. Below is an example, and your files should also be like this.
 
 ![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/tree_defect.png)
 
@@ -229,7 +240,7 @@ to plot the figure.
 # the second parameter is the path of your defect directory
 defect_formation_energy.py MgH2 MgH2/Mg-Vacc-defect
 ```
-
+Also, we will write a log file named `${defect_folder}_log.txt` to record some necessary message in your calculation process.
 
 
 
