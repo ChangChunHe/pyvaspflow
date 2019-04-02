@@ -229,7 +229,7 @@ cd ..
 image_corr_cal.sh
 ```
 
-All calculations have been completed. You can get a standard hierarchy of files if you do not encounter any accident problems. Below is an example, and your files should also be like this.
+You can get a standard hierarchy of files if you do not encounter any accident problems after all calculations have been completed. Below is an example, and your files should also be like this.
 
 ![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/tree_defect.png)
 
