@@ -122,14 +122,14 @@ class DefectMaker:
                 idx += 1
 
 
-    def get_purity_defect(self,symprec=1e-3,purity_out='all',purity_in='Vacc'):
+    def get_purity_defect(self,symprec=1e-3,purity_out='all',purity_in='Vacc',num=1):
         cg = ConfigurationGenerator(self.no_defect_cell, symprec)
         sites = _get_sites(list(self.atoms), purity_out=purity_out, purity_in=purity_in)
         if purity_out == 'all':
-            confs = cg.cons_specific_cell(sites, e_num=(len(self.atoms)-1,1), symprec=symprec)
+            confs = cg.cons_specific_cell(sites, e_num=(len(self.atoms)-num, num), symprec=symprec)
         else:
             purity_atom_num = np.where(self.atoms==s2n(purity_out))[0].size
-            confs = cg.cons_specific_cell(sites, e_num=(purity_atom_num-1,1), symprec=symprec)
+            confs = cg.cons_specific_cell(sites, e_num=(purity_atom_num-num, num), symprec=symprec)
         folder = purity_out + '-' + purity_in + '-defect'
         if not os.path.exists('./'+folder):
             os.mkdir('./'+folder)
