@@ -14,10 +14,6 @@ class ExtractValue():
         self.data_folder = data_folder
         self.atomic_num = atomic_num
 
-    def _get_line(self,file_tmp,rematch=None):
-        grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
-        return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
-
     def get_energy(self):
         file_osz = os.path.join(self.data_folder,'OSZICAR')
         return float(subprocess.run(['tail','-1',file_osz],stdout=subprocess.PIPE).stdout.decode('utf-8').split()[4])
@@ -158,7 +154,7 @@ if __name__ == '__main__':
         print('Evbm, Ecbm, gap of supcell is: ', Evbm, Ecbm, gap)
         f.write('Evbm: '+str(Evbm)+' eV\n'+'Ecbm: '+str(Ecbm)+' eV\n'+'gap: '+str(gap)+' eV\n')
         chg_state = []
-        f.write('\tcharge\t\tenergy\t\tE_PA\t\tE_IC\n')
+        f.write('charge\t\tenergy\t\tE_PA\t\tE_IC\n')
         for chg_fd in os.listdir(os.path.join(defect_dir)):
             if 'charge_state' in chg_fd:
                 q = chg_fd.split('_')[-1]
@@ -191,7 +187,7 @@ if __name__ == '__main__':
                 raise ValueError('chemical potential mu_'+key.title()+' cannot found')
         os.system('rm element-in-out')
         for key, val in ele_in_out.items():
-            if abs(float(val)+1)<0.01:
+            if int(val) == -1:
                 f.writelines(key.title()+' has been dopped\n')
             else:
                 f.writelines(key.title()+' has been removed\n')
