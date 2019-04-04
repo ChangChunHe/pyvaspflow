@@ -2,7 +2,7 @@
 
 import click,subprocess
 from defect_formation_energy import ExtractValue
-from sagar.io.vasp import  read_vasp
+from defect_formation_energy import get_ele_sta
 import numpy as np
 import function_toolkit as ft
 import linecache as lc
@@ -20,8 +20,8 @@ def cli():
 @click.argument('file_directory',metavar='<Work_directory>',
 type=click.Path(exists=True))
 @click.option('--attribute','-a', default='energy', type=str)
-
-def main(file_directory, attribute):
+@click.option('--number','-n', default=1, type=int)
+def main(file_directory, attribute,number):
     """
     First parameter:
 
@@ -58,10 +58,13 @@ def main(file_directory, attribute):
         get_energy(EV)
     elif 'ele' in attribute.lower() and 'free' in attribute.lower():
         get_Ne_defect_free(EV)
-    elif 'ele' in attribute.lower() and 'free' not in attribute.lower():
+    elif 'ele' in attribute.lower() and 'free' not in attribute.lower() and 'static' not in attribute.lower():
         get_Ne_defect(EV)
     elif 'ima' in attribute or 'ewald' in attribute.lower():
         get_Ewald(EV)
+    elif 'elect' in attribute and 'static' in attribute:
+        outcar=os.path.join(file_directory,'OUTCAR')
+        click.echo('Electrostatic energy of '+str(number)+' atom is: '+str(get_ele_sta(outcar, number)))
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -181,7 +184,31 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 @click.option('--isunique','-u', default=True, type=bool)
 def get_tetrahedral_poscar(poscar,purity_in,isunique):
     DM = DefectMaker(no_defect=poscar)
-    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)
+    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)/home/hecc/bader-analysis/scf
+
+
+
+@cli.command('symmetry',short_help="Get get symmetry of POSCAR")
+@click.argument('poscar', metavar='<cell_file>',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+@click.option('--attr','-a', default='space_group', type=str)
+@click.option('--sympre','-s', default=1e-3, type=float)
+def symmetry(poscar,attr,sympre):
+    c = read_vasp(poscar)
+    if 'space' in attr or 'group' in attr:
+        print('Space group: ', c.get_spacegroup(sympre))
+    elif 'symme' in attr:
+        print('Symmetry: ', c.get_symmetry(sympre))
+    elif 'trans' in attr:
+        print('Translations Symmetry: ', c.get_symmetry(sympre)['translations'])
+    elif 'rotat' in attr:
+        print('Rotations Symmetry: ', c.get_symmetry(sympre)['rotations'])
+    elif 'equiv' in attr:
+        print('Equivalent Atoms: ', c.get_symmetry(sympre)['equivalent_atoms'])
+    elif 'primi' in attr:
+        pc = c.get_primitive_cell(sympre)
+        write_vasp(pc,'prim_cell')
+
 
 if __name__ == "__main__":
     cli()
