@@ -129,7 +129,7 @@ def read_incar(incar):
         res[line[0]] = line[1]
     return res
 
-#%% main script
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import warnings
@@ -154,18 +154,18 @@ if __name__ == '__main__':
         print('Evbm, Ecbm, gap of supcell is: ', Evbm, Ecbm, gap)
         f.write('Evbm: '+str(Evbm)+' eV\n'+'Ecbm: '+str(Ecbm)+' eV\n'+'gap: '+str(gap)+' eV\n')
         chg_state = []
-        f.write('charge\t\tenergy\t\tE_PA\t\tE_IC\n')
+        f.write('charge\t\tenergy\t\tE_PA\t\tE_IC\tfar_atom_def_sys\tfar_atom_def_fr_system\n')
         for chg_fd in os.listdir(os.path.join(defect_dir)):
             if 'charge_state' in chg_fd:
                 q = chg_fd.split('_')[-1]
                 e = ExtractValue(os.path.join(defect_dir,chg_fd,'scf')).get_energy()
-                no_def_poscar = os.path.join(data_folder,'supercell','CONTCAR')
+                no_def_poscar = os.path.join(data_folder,'supercell','POSCAR')
                 def_poscar = os.path.join(defect_dir,chg_fd,'POSCAR')
                 num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
                 pa_def = get_ele_sta(os.path.join(defect_dir,chg_fd,'scf','OUTCAR'),num_def)
                 pa_no_def = get_ele_sta(os.path.join(data_folder,'supercell','scf','OUTCAR'),num_no_def)
                 E_imagecor = ExtractValue(os.path.join(data_folder,'image_corr')).get_image()
-                chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor])
+                chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor, num_def, num_no_def])
         ele_in_out = read_incar('element-in-out')
         incar_para = read_incar('defect-incar')
         incar_para['mu_vacc'] = 0
@@ -177,7 +177,8 @@ if __name__ == '__main__':
         chg_state = np.asarray(chg_state)
         chg_state[:,2] = chg_state[:,2]*chg_state[:,0]
         chg_state[:,3] = -2/3*chg_state[:,0]**2*chg_state[:,3]/epsilon
-        f.write(str(chg_state).replace('[','').replace(']','')+'\n')
+        for c in chg_state:
+            f.write('{:2d}\t\t{:.5f}\t{:+.5f}\t{:+.5f}\t{:d}\t\t\t{:d}\n'.format(int(c[0]),c[1],c[2],c[3],int(c[4]),int(c[5])))
         mu = 0
         for key,val in ele_in_out.items():
             if 'mu_'+key in incar_para:
@@ -188,7 +189,7 @@ if __name__ == '__main__':
         os.system('rm element-in-out')
         for key, val in ele_in_out.items():
             if int(val) == -1:
-                f.writelines(key.title()+' has been dopped\n')
+                f.writelines(key.title()+' has been doped\n')
             else:
                 f.writelines(key.title()+' has been removed\n')
         f.writelines('\n')
