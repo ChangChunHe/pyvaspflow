@@ -38,6 +38,6 @@ done
 gd=`sort -k2n energy_out|awk 'NR==1{print $1}'`
 
 # calculate scf of the ground structure
-cp  $gd-dir/CONTCAR ./POSCAR
-cp  $gd-dir/POTCAR  .
+cp  ${gd}-dir/POSCAR ./POSCAR
+cp  ${gd}-dir/POTCAR  .
 cd ..
