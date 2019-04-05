@@ -119,8 +119,10 @@ Here, almost all `*.sh` file will automatic make a new directory for its calcula
 
 And each file can be executed respectively with some necessary files. Below I list the necessary files each script need to read in the current directory.
  * `stru_relax`, `stru_optimization` need POSCAR
- * `stru_scf` needs CONTCAR
- * `stru_dos`, `stru_band` need scf/CHG scf/CHGCAR
+ * `stru_scf` needs CONTCAR, POTCAR, INCAR
+ * `stru_dos`, `stru_band` needs scf/CHG* scf/WAVECAR scf/INCAR scf/POTCAR scf/KPOINTS scf/CONTCAR
+ * `stru_band` needs scf/WAVECAR scf/CHG* scf/POTCAR scf/POSCAR scf/INCAR 
+
 
 Below is an example.
 
