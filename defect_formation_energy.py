@@ -125,7 +125,7 @@ def read_incar(incar):
     with open(incar,'r') as f:
         lines = f.readlines()
     for line in lines:
-        line = re.sub(r"\s+","",line.lower(),flags=re.UNICODE).split('=')
+        line = re.sub(r"\s+","",line,flags=re.UNICODE).split('=')
         res[line[0]] = line[1]
     return res
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
             if 'charge_state' in chg_fd:
                 q = chg_fd.split('_')[-1]
                 e = ExtractValue(os.path.join(defect_dir,chg_fd,'scf')).get_energy()
-                no_def_poscar = os.path.join(data_folder,'supercell','POSCAR')
+                no_def_poscar = os.path.join(data_folder,'supercell','scf/CONTCAR')
                 def_poscar = os.path.join(defect_dir,chg_fd,'POSCAR')
                 num_def, num_no_def = get_farther_atom_num(no_def_poscar, def_poscar)
                 pa_def = get_ele_sta(os.path.join(defect_dir,chg_fd,'scf','OUTCAR'),num_def)
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                 chg_state.append([int(float(q)), e, pa_def-pa_no_def, E_imagecor, num_def, num_no_def])
         ele_in_out = read_incar('element-in-out')
         incar_para = read_incar('defect-incar')
-        incar_para['mu_vacc'] = 0
+        incar_para['mu_Vacc'] = 0
         if 'epsilon' in incar_para:
             epsilon = float(incar_para['epsilon'])
         else:
