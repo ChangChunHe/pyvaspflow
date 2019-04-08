@@ -3,7 +3,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import linprog
 from itertools import combinations
 from collections import namedtuple, defaultdict
 import re
@@ -35,6 +34,21 @@ def get_ele_num(line):
     return (element,number)
 
 
+def get_3d_cross_pts(A,B):
+# A = [1,2,4,-10]
+# B = [1,0,1,-6]
+    C = np.array([A,B])
+    res = []
+    for com in combinations(range(len(A)-1),len(A)-2):
+        a,b = C[:,com],C[:,-1]
+        x = np.linalg.solve(a, b)
+        _res = np.zeros((len(A)-1,))
+        _res[list(com)] = x
+        _res[np.setdiff1d(range(len(A)-1),com)] = 0
+        res.append(_res.tolist())
+    return res
+
+
 class Phase:
     def __init__(self,name='',element='',number='',energy=''):
         self.name = name
@@ -61,7 +75,7 @@ for line in lines:
             line[0] = line[0].replace('#','')
             element, number = get_ele_num(line[0])
             energy = float(line[1])
-            host = Phase(name=line[0],element=element,number=np.array(number),energy=energy)
+            host = Phase(name=line[0],element=element,number=number,energy=energy)
 for idx in range(len(host.element)):
     host.energy -= host.number[idx] * pure_phase[host.element[idx]]
 
@@ -72,12 +86,11 @@ for line in lines:
     ele_num = defaultdict(lambda: 0, dict(zip(element,number)))
     if '#' not in line[0] and len(element) > 1:
         element = host.element
-        number = np.array([ele_num[key] for key in element])
+        number = [ele_num[key] for key in element]
         energy = float(line[1])
         for idy in range(len(host.element)):
             energy -= number[idy] * pure_phase[host.element[idy]]
         compete_phase.append(Phase(name=line[0],element=element,number=number,energy=energy))
-
 
 atom_num = len(host.element)
 f = open('chemical_log.txt','w')
@@ -87,25 +100,20 @@ for phase in compete_phase:
     for ii in host.element:
         f.write(str(ii)+'\t')
     f.write('\n')
-    A_ub = -phase.number.reshape((1,-1))
-    b_ub = -np.array(phase.energy).reshape((1,1))
-    A_eq = np.array(host.number).reshape((1,-1))
-    b_eq = np.array(host.energy).reshape((1,1))
-    bounds = [(None,0) for i in range(atom_num)]
-    pts_val = []
-    for ii in range(atom_num):
-        c = np.zeros((atom_num,))
-        c[ii] = 1
-        res = linprog(c,A_ub,b_ub,A_eq,b_eq,bounds=bounds)
-        import pdb;pdb.set_trace()
-        res = res.x.tolist()
-        f.write('\t'.join([str(np.round(i,4)) for i in res])+'\n')
-        pts_val.append(res)
-    pts[phase.name] = pts_val
+    A_ub = phase.number
+    A_ub.append(phase.energy)
+    A_eq = host.number.copy()
+    A_eq.append(host.energy)
+    pts_val1 = get_3d_cross_pts(A_eq,A_ub)
+    pts[phase.name] = pts_val1
+    for pt in pts_val1:
+        f.write('\t'.join([str(np.round(i,4)) for i in pt])+'\n')
     f.write('\n')
 f.close()
 
-
+remove_ele = 0
+idx = [0,1,2]
+idx.remove(remove_ele)
 fig = plt.figure()
 ax=plt.axes()
 ax.spines['right'].set_color('none')
@@ -114,18 +122,20 @@ ax.xaxis.set_ticks_position('bottom')
 ax.spines['bottom'].set_position(('data',0))
 ax.yaxis.set_ticks_position('left')
 ax.spines['left'].set_position(('data',0))
-ax.set_xlabel(r'$\mu_A $ (eV)',ha='left', va = 'top')
+ax.set_xlabel(r'$\mu $'+host.element[idx[0]]+' (eV)',ha='left',va='top')
 ax.xaxis.set_label_coords(0, 1.01)
-ax.set_ylabel(r'$\mu_B$ (eV)')
+ax.set_ylabel(r'$\mu$'+host.element[idx[1]]+' (eV)')
 ax.yaxis.set_label_coords(1.01, 0)
-
 for key, val in pts.items():
     for two_pts in combinations(val,2):
-        x,y = two_pts[0],two_pts[1]
-        plt.plot([x[0],y[0]],[x[1],y[1]],color="blue",linewidth=2.5,linestyle="-")
-
-xlim,ylim = host.energy/host.number[0],host.energy/host.number[1]
+        pts0,pts1 = two_pts[0],two_pts[1]
+        x1,x2,y1,y2 = pts0[idx[0]],pts1[idx[0]],pts0[idx[1]],pts1[idx[1]]
+        if all(np.array([x1,x2,y1,y2])<=0) and A_eq[idx[0]]*x1+A_eq[idx[1]]*y1 >=A_eq[-1] \
+        and A_eq[idx[0]]*x2+A_eq[idx[1]]*y2 >=A_eq[-1]:
+            plt.plot([x1,x2],[y1,y2],linewidth=2.5,linestyle="-",label=key)
+xlim,ylim = host.energy/host.number[idx[0]],host.energy/host.number[idx[1]]
 plt.plot([xlim,0],[0,ylim],color="blue",linewidth=2.5,linestyle="-")
 plt.plot([xlim,0],[0,0],color="blue",linewidth=2.5,linestyle="-")
 plt.plot([0,0],[0,ylim],color="blue",linewidth=2.5,linestyle="-")
+plt.legend()
 plt.show()
