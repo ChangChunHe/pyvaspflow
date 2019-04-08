@@ -9,7 +9,7 @@ import linecache as lc
 from sagar.io.vasp import read_vasp, write_vasp
 import os
 from defect_maker import DefectMaker
-
+from chemical_potential import plot_2d_chemical_potential_phase
 
 @click.group()
 def cli():
@@ -209,6 +209,11 @@ def symmetry(poscar,attr,sympre):
         pc = c.get_primitive_cell(sympre)
         write_vasp(pc,'prim_cell')
 
-
+@cli.command('chem_pot',short_help="Get get symmetry of POSCAR")
+@click.argument('chem_incar', metavar='<chemical-incar-file>',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+@click.option('--remove','-r', default=0, type=int)
+def chem_pot(chem_incar,remove):
+    plot_2d_chemical_potential_phase(chem_incar,remove)
 if __name__ == "__main__":
     cli()
