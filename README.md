@@ -35,7 +35,7 @@ Table of Contents
 Firstly, you should make a directory for those scripts and add its path to your `.bashrc`. I divide these scripts into three directories so that you can easily know the usage of each scripts, and you can put them all into a directory in order to conveniently use them. For example, I make the `scripts` directory under my $HOME directory, so I can use the below command to add this directory to $PATH, and `source` your `.bashrc` to make it work.
 
 ```shell
-echo export PATH="$PATH:/home/hecc/scripts" >> ~/.bashrc
+echo export PATH="$PATH:/home/${usr_name}/scripts" >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -121,7 +121,7 @@ And each file can be executed respectively with some necessary files. Below I li
  * `stru_relax`, `stru_optimization` need POSCAR
  * `stru_scf` needs CONTCAR, POTCAR, INCAR
  * `stru_dos`, `stru_band` needs scf/CHG* scf/WAVECAR scf/INCAR scf/POTCAR scf/KPOINTS scf/CONTCAR
- * `stru_band` needs scf/WAVECAR scf/CHG* scf/POTCAR scf/POSCAR scf/INCAR 
+ * `stru_band` needs scf/WAVECAR scf/CHG* scf/POTCAR scf/POSCAR scf/INCAR
 
 
 Below is an example.
@@ -187,22 +187,22 @@ pyvasp.py main -a image image_corr/ # this can get Ewald energy of your system, 
 ### 3.3 pyvasp-`cell`
 This command is used to extend your cell and generate a supcell.vasp
 ```shell
-pyvasp cell -v 2 2 2 POSCAR
+pyvasp.py cell -v 2 2 2 POSCAR
 # extend your POSCAR to 2*2*2 supercell
 ```
 
 ### 3.4 pyvasp-`get_purity`
 This command is used to get the purity structures , such Si-vacancy, Ga purity in In2O3 system, but noted that each time only one purity atom will be dopped into the system.
 ```shell
-pyvasp get_purity -i Vacc -o Si Si-POSCAR # generate a vacancy
-pyvasp get_purity -i Ga -o In In2O3-POSCAR #genrate a Ga defect
+pyvasp.py get_purity -i Vacc -o Si Si-POSCAR # generate a vacancy
+pyvasp.py get_purity -i Ga -o In In2O3-POSCAR #genrate a Ga defect
 ```
 
 ### 3.5 pyvasp-`get_tetrahedral`
 This command is used to get the tetrahedral interstitial sites, for example, in YFe2 system, H atom can be inserted into the tetrahedral sites.
 
 ```shell
-pyvasp get_tetrahedral -i H YFe2-POSCAR
+pyvasp.py get_tetrahedral -i H YFe2-POSCAR
 ```
 
 ### 3.6 pyvasp-`get_PA`
@@ -215,11 +215,20 @@ pyvasp.py get_PA defect_free charge_state_1
 This command can get some symmetry message of your POSCAR.
 
 ```shell
-pyvasp symmetry -a spacegroup POSCAR # get space group
-pyvasp symmetry -a equivalent POSCAR # get equivalent atoms
-pyvasp symmetry -a primitive POSCAR # generate primitive cell POSCAR
+pyvasp.py symmetry -a spacegroup POSCAR # get space group
+pyvasp.py symmetry -a equivalent POSCAR # get equivalent atoms
+pyvasp.py symmetry -a primitive POSCAR # generate primitive cell POSCAR
 ```
 
+### 3.8 pyvasp-`chem_pot`
+This command can generate the chemical potential phase figure,  noted that we only support three-component compound so that we can plot a two dimension figure.
+
+```shell
+pyvasp.py chem_pot chemical-incar
+
+pyvasp.py chem_pot chemical-incar -r 2
+# remove the third dimension
+```
 
 ## 4. Examples
 Here I will give some examples to demonstrate how this package works
