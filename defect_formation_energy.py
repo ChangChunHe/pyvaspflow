@@ -136,10 +136,10 @@ if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3:
         raise ValueError('Not enough input parameters, you should input the main direcroty and the defect-directory')
-    data_folder = sys.argv[1].replace("\\",'').replace("/",'')
+    data_folder = sys.argv[1]
     print('The main direcroty is: ', data_folder)
     defect_dirs = sys.argv[2:]
-    f = open(data_folder+'_log.txt','w')
+    f = open(sys.argv[1].replace("\\",'').replace("/",'')+'_log.txt','w')
     for defect_dir in  defect_dirs:
         print('Reading ', defect_dir)
         f.write(defect_dir+'\n')
