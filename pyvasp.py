@@ -173,6 +173,25 @@ def cell(pcell_filename, volume):
 @click.option('--symprec','-s', default='1e-3', type=float,help='system precision')
 @click.option('--num','-n', default=1, type=int,help='the number of elements you want to substitute')
 def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
+    """
+    argument:
+
+    poscar, the  path of your initial POSCAR
+
+    purity_in, the element you want to put into the system
+
+    purity_out, the element you want to drop out of the system
+
+    Optional parameter:
+    num: the number of element you want to put, the default is 1
+    sympre: system precision
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    pyvasp.py get_purity_poscar -i Vacc -o Si POSCAR
+    """
     DM = DefectMaker(no_defect=poscar)
     DM.get_purity_defect(purity_out=purity_out,purity_in=purity_in,symprec=symprec,num=num)
 
@@ -183,6 +202,19 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 @click.option('--purity_in','-i', default='H', type=str)
 @click.option('--isunique','-u', default=True, type=bool)
 def get_tetrahedral_poscar(poscar,purity_in,isunique):
+    """
+    argument:
+
+    poscar, the  path of your initial POSCAR
+
+    purity_in, the element you want to put into the system
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    pyvasp.py get_tetrahedral_poscar -i H  POSCAR
+    """
     DM = DefectMaker(no_defect=poscar)
     DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)/home/hecc/bader-analysis/scf
 
@@ -194,6 +226,27 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique):
 @click.option('--attr','-a', default='space_group', type=str)
 @click.option('--sympre','-s', default=1e-3, type=float)
 def symmetry(poscar,attr,sympre):
+    """
+    argument:
+
+    poscar, the  path of your initial POSCAR
+
+    attr, the attribute you want to get
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    pyvasp.py symmetry -a space POSCAR # get space_group
+
+    pyvasp.py symmetry -a translations POSCAR # get translations symmetry
+
+    pyvasp.py symmetry -a rotations POSCAR # get rotations symmetry
+
+    pyvasp.py symmetry -a equivalent POSCAR # get equivalent_atoms
+
+    pyvasp.py symmetry -a primitive POSCAR # get primitive cell
+    """
     c = read_vasp(poscar)
     if 'space' in attr or 'group' in attr:
         print('Space group: ', c.get_spacegroup(sympre))
@@ -204,16 +257,36 @@ def symmetry(poscar,attr,sympre):
     elif 'rotat' in attr:
         print('Rotations Symmetry: ', c.get_symmetry(sympre)['rotations'])
     elif 'equiv' in attr:
-        print('Equivalent Atoms: ', c.get_symmetry(sympre)['equivalent_atoms'])
+        equ_atom = c.get_symmetry(sympre)['equivalent_atoms']
+        atom_type = np.unique(equ_atom)
+        atom_species,k = {},1
+        for ii in atom_type:
+            atom_species[k] = np.where(equ_atom==ii)[0]+1
+            k += 1
+        for key, val in atom_species.items():
+            print(key,val)
     elif 'primi' in attr:
         pc = c.get_primitive_cell(sympre)
-        write_vasp(pc,'prim_cell')
+        write_vasp(pc,'primitive_cell')
 
-@cli.command('chem_pot',short_help="Get get symmetry of POSCAR")
+@cli.command('chem_pot',short_help="Get chemical potential phase figure")
 @click.argument('chem_incar', metavar='<chemical-incar-file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
 @click.option('--remove','-r', default=0, type=int)
 def chem_pot(chem_incar,remove):
+    '''
+    argument:
+
+    chem_incar, some necessay compound energy
+
+    remove, the dismension you want to remove
+
+    Example:
+
+    module load sagar #load the necessay package
+
+    pyvasp.py chem_pot chem_incar # get space_group
+    '''
     plot_2d_chemical_potential_phase(chem_incar,remove)
 if __name__ == "__main__":
     cli()
