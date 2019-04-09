@@ -38,7 +38,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=True, purity_in='H'):
+    def get_tetrahedral_defect(self, isunique=True, purity_in='H',min_d=1):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
@@ -76,13 +76,19 @@ class DefectMaker:
                     if (np.std(tmp[0:4]) < 0.01 or np.std(tmp[1:5]) <
                      0.01 or np.std(tmp[2:])<0.01) and np.std(tmp) < 0.5:
                         third_tetra.append(comb_list)
-        first_tetra = np.unique(np.sort(first_tetra,axis=1),axis=0)
-        first_tetra = refine_points(first_tetra,extend_S,self.lattice)
-        sec_tetra = np.unique(np.sort(sec_tetra,axis=1),axis=0)
-        sec_tetra = refine_points(sec_tetra,extend_S,self.lattice)
-        third_tetra = np.unique(np.sort(third_tetra,axis=1),axis=0)
-        third_tetra = refine_points(third_tetra,extend_S,self.lattice)
-        all_tetra = [first_tetra,sec_tetra,third_tetra]
+        all_tetra = []
+        if len(first_tetra) != 0:
+            first_tetra = np.unique(np.sort(first_tetra,axis=1),axis=0)
+            first_tetra = refine_points(first_tetra,extend_S,self.lattice,min_d=min_d)
+            all_tetra.append(first_tetra)
+        if len(sec_tetra) !=0:
+            sec_tetra = np.unique(np.sort(sec_tetra,axis=1),axis=0)
+            sec_tetra = refine_points(sec_tetra,extend_S,self.lattice,min_d=min_d)
+            all_tetra.append(sec_tetra)
+        if len(third_tetra) != 0:
+            third_tetra = np.unique(np.sort(third_tetra,axis=1),axis=0)
+            third_tetra = refine_points(third_tetra,extend_S,self.lattice,min_d=min_d)
+            all_tetra.append(third_tetra)
         if isunique:
             folder = 'tetrahedral-unique-defect'
             if not os.path.exists('./'+folder):
@@ -156,3 +162,7 @@ def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
 #                'Rb': 1, 'Sr': 2, 'Y': 3, 'Zr': 4, 'Nb': 3, 'Mo': 3, 'Tc': 6, 'Ru': 3, 'Rh': 4, 'Pd': 2, 'Ag': 1, 'Cd': 2, 'In': 3, 'Sn': 4, 'Sb': 5, 'Te': 6, 'I': 7, 'Xe': 0,
 #                'Cs': 1, 'Ba': 2, 'Hf': 4, 'Ta': 5, 'W': 6, 'Re': 2, 'Os': 3, 'Ir': 3, 'Pt': 2, 'Au': 1, 'Hg': 1, 'Tl': 1, 'Pb': 2, 'Bi': 3, 'Po': 2, 'At': 0, 'Rn': 0,
 #                'Fr': 1, 'Ra': 2}
+
+if __name__ == '__main__':
+    dm = DefectMaker('CONTCAR')
+    dm.get_tetrahedral_defect(purity_in='Al',min_d=1.5)

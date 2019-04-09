@@ -13,7 +13,7 @@ def generate_all_basis(N1,N2,N3):
     return np.hstack((tmp,x))
 
 
-def refine_points(tetra,extend_S,C):
+def refine_points(tetra,extend_S,C,min_d=1):
     n = np.shape(tetra)[0]
     tetra_cen = np.zeros((n,3))
     for ii in range(n):
@@ -23,7 +23,7 @@ def refine_points(tetra,extend_S,C):
     for cen in tetra_cen:
         d = np.linalg.norm(cen-tetra_cen,axis=1)
         d = d[d>0]
-        if min(d) > 1:
+        if min(d) > min_d:
             final_res.append(cen)
     final_res = np.dot(final_res,np.linalg.inv(C))
     final_res = np.unique(np.round(final_res,decimals=3),axis=0)
