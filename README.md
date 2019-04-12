@@ -7,7 +7,7 @@ Table of Contents
 =================
 
    * [Defect-Formation-Calculation](#defect-formation-calculation)
-      * [0. Installment](#0-installment)
+      * [0. Installation](#0-installation)
       * [1. Generate defect structures](#1-generate-defect-structures)
       * [2. submit your common calculation jobs](#2-submit-your-common-calculation-jobs)
          * [2.1 potcar.sh](#21-potcarsh)
@@ -23,6 +23,7 @@ Table of Contents
          * [3.5 pyvasp-get_tetrahedral](#35-pyvasp-get_tetrahedral)
          * [3.6 pyvasp-get_PA](#36-pyvasp-get_pa)
          * [3.7 pyvasp-symmetry](#37-pyvasp-symmetry)
+         * [3.8 pyvasp-chem_pot](#38-pyvasp-chem_pot)
       * [4. Examples](#4-examples)
          * [4.0 band-dos calculation](#40-band-dos-calculation)
          * [4.1 Si-vacancy-defect](#41-si-vacancy-defect)
@@ -31,7 +32,8 @@ Table of Contents
 
 
 
-## 0. Installment
+
+## 0. Installation
 Firstly, you should make a directory for those scripts and add its path to your `.bashrc`. I divide these scripts into three directories so that you can easily know the usage of each scripts, and you can put them all into a directory in order to conveniently use them.  You can also maintain the configuration without any change, so you have to add all file path to `$PATH` so that you can execute them.
 
 For example, I make the `scripts` directory under my $HOME directory, so I can use the below command to add this directory to $PATH, and `source` your `.bashrc` to make it work.
