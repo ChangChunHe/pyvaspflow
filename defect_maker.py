@@ -99,6 +99,8 @@ class DefectMaker:
             idx = 0
             # deg = []
             for tetra in all_tetra:
+                if len(tetra) == 0:
+                    continue
                 new_pos = np.vstack((self.positions,tetra))
                 new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
@@ -162,7 +164,3 @@ def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
 #                'Rb': 1, 'Sr': 2, 'Y': 3, 'Zr': 4, 'Nb': 3, 'Mo': 3, 'Tc': 6, 'Ru': 3, 'Rh': 4, 'Pd': 2, 'Ag': 1, 'Cd': 2, 'In': 3, 'Sn': 4, 'Sb': 5, 'Te': 6, 'I': 7, 'Xe': 0,
 #                'Cs': 1, 'Ba': 2, 'Hf': 4, 'Ta': 5, 'W': 6, 'Re': 2, 'Os': 3, 'Ir': 3, 'Pt': 2, 'Au': 1, 'Hg': 1, 'Tl': 1, 'Pb': 2, 'Bi': 3, 'Po': 2, 'At': 0, 'Rn': 0,
 #                'Fr': 1, 'Ra': 2}
-
-if __name__ == '__main__':
-    dm = DefectMaker('CONTCAR')
-    dm.get_tetrahedral_defect(purity_in='Al',min_d=1.5)

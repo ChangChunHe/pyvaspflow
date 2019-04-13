@@ -25,6 +25,8 @@ def refine_points(tetra,extend_S,C,min_d=1):
         d = d[d>0]
         if min(d) > min_d:
             final_res.append(cen)
+    if len(final_res) == 0:
+        return np.array([])
     final_res = np.dot(final_res,np.linalg.inv(C))
     final_res = np.unique(np.round(final_res,decimals=3),axis=0)
     final_res[final_res>0.99] = 0
