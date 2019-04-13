@@ -21,10 +21,13 @@ do
 awk -v j=$i 'NR==j {print}' k-path >> KPOINTS
 done
 rm k-path
-
+if [[ $2 =~ ^[0-9]+$  ]]
+then
+sed -i "2s/.*/$2/" KPOINTS
+fi
 else
 
-if [[ $1 =~ ^-?[0-9]+$ ]]
+if [[ $1 =~ ^[0-9]+$ ]]
 then
 k_max=$1
 fi
