@@ -117,8 +117,8 @@ def get_PA(no_defect_dir,defect_dir):
     """
     num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'POSCAR'), \
             os.path.join(defect_dir,'POSCAR'))
-    pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)
-    pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)
+    pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)[1]
+    pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)[1]
     click.echo('Electrostatic of the farther atom '+str(num_def)+' from defect atom in defect system is: ')
     click.echo(pa_def)
     click.echo('Electrostatic of the farther atom '+str(num_no_def)+' from defect atom in defect-free system is: ')
@@ -134,7 +134,7 @@ def get_ele_sta(no_defect_outcar,number):
         rows -= 1
         col = 4
     tmp_line = lc.getlines(no_defect_outcar)[tmp_match_line[0]+rows+3].split()
-    return float(tmp_line[2*col+1])
+    return [float(i) for i in tmp_line[2*col:2*col+2]]
 
 def _get_line(file_tmp,rematch=None):
     grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
@@ -216,11 +216,11 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique):
     pyvasp.py get_tetrahedral_poscar -i H  POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
-    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)/home/hecc/bader-analysis/scf
+    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)
 
 
 
-@cli.command('symmetry',short_help="Get get symmetry of POSCAR")
+@cli.command('symmetry',short_help="Get symmetry of POSCAR")
 @click.argument('poscar', metavar='<cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
 @click.option('--attr','-a', default='space_group', type=str)

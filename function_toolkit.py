@@ -67,7 +67,7 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
                 rm_atom = key
                 break
         print('This is a vacancy defect','atom: \n',
-              rm_atom,ii,'in the defect-free POSCAR has benn removed')
+              rm_atom,ii+1,'in the defect-free POSCAR has benn removed')
         with open('element-in-out','w') as f:
             f.writelines(str(rm_atom)+'='+str(1)+'\n')
             f.writelines('Vacc=-1 \n')
@@ -84,7 +84,7 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
             if val == purity_atom:
                 in_atom = key
         print('This is a purity defect','atom: \n',
-            rm_atom, ii,'in the defect-free POSCAR has benn dopped by', in_atom)
+            rm_atom, ii+1,'in the defect-free POSCAR has benn dopped by', in_atom)
         with open('element-in-out','w') as f:
             f.writelines(str(rm_atom)+'='+str(1)+'\n')
             f.writelines(str(in_atom)+'='+str(-1)+'\n')

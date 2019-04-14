@@ -123,6 +123,8 @@ class DefectMaker:
                 os.mkdir('./'+folder)
             idx = 0
             for tetra in all_tetra:
+                if len(tetra) == 0:
+                    continue
                 new_pos = np.vstack((self.positions,tetra))
                 new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
