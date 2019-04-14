@@ -27,7 +27,8 @@ Table of Contents
       * [4. Examples](#4-examples)
          * [4.0 band-dos calculation](#40-band-dos-calculation)
          * [4.1 Si-vacancy-defect](#41-si-vacancy-defect)
-         * [4.2 In2O3](#42-in2o3)
+   * [4.2 ZnGa2O3](#42-znga2o3)
+
 
 
 
