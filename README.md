@@ -27,7 +27,8 @@ Table of Contents
       * [4. Examples](#4-examples)
          * [4.0 band-dos calculation](#40-band-dos-calculation)
          * [4.1 Si-vacancy-defect](#41-si-vacancy-defect)
-   * [4.2 ZnGa2O3](#42-znga2o3)
+         * [4.2 ZnGa2O3](#42-znga2o3)
+
 
 
 
@@ -399,7 +400,7 @@ This is the defect formation energy figure.
 ![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/defect_formation_energy.png)
 
 
-# 4.2 ZnGa2O3
+### 4.2 ZnGa2O3
 
 For multiple composition,  you should get the proper chemical potential of some elements. You should supply a `chemical-incar`. The left is the the composition and the right is the energy. Noted that the host compound should be marked with `#`, and you should supply the pure phase energy.
 
