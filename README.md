@@ -1,6 +1,6 @@
 # Defect-Formation-Calculation
 
-This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and withdraw necessary data to calculate defect formation energy.
+This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and extracting necessary data to calculate defect formation energy.
 
 
 Table of Contents
@@ -231,7 +231,7 @@ This command can generate the chemical potential phase figure,  noted that we on
 pyvasp.py chem_pot chemical-incar
 
 pyvasp.py chem_pot chemical-incar -r 2
-# remove the third dimension
+# remove the second dimension
 ```
 
 ## 4. Examples
@@ -250,9 +250,9 @@ Prepare your POSCAR in your work directory, if you want to use the default setti
 export NSLOTS=$SLURM_NPROCS
 module load vasp/5.4.4-impi-mkl
 stru_relax.sh
-stru_scf.sh
-stru_band.sh
-stru_dos.sh
+stru_scf.sh 45 # using k-mesh 45/a 45/b 45/c
+stru_band.sh 20 # insert 20 pts between two high-symmetry pts
+stru_dos.sh 50 #using k-mesh 50/a 50/b 50/c
 ```
 The initial files can only be `POSCAR` and `job.sh`
 
@@ -263,7 +263,7 @@ total 8
 -rw-rw-r-- 1 hecc hecc 345 Apr  4 15:19 POSCAR
 ```
 
-then you can sbath your job and after calculation, you will get the below files.
+then you can sbath your job, and after calculation you will get the below files.
 
 ```
 [hecc@cmp Si]$ ll
@@ -286,7 +286,6 @@ drwxrwxr-x 2 hecc hecc   4096 Apr  4 15:49 dos
 -rw-rw-r-- 1 hecc hecc 195673 Apr  4 15:49 POTCAR
 -rw-rw-r-- 1 hecc hecc      0 Apr  4 15:49 REPORT
 drwxrwxr-x 2 hecc hecc    323 Apr  4 15:49 scf
--rw-rw-r-- 1 hecc hecc  17026 Apr  4 15:49 slurm-54258.out
 -rw-rw-r-- 1 hecc hecc  57847 Apr  4 15:49 vasprun.xml
 -rw-rw-r-- 1 hecc hecc      0 Apr  4 15:49 WAVECAR
 -rw-rw-r-- 1 hecc hecc    283 Apr  4 15:49 XDATCAR
@@ -360,23 +359,6 @@ Si/
     └── scf
 ```
 
-Then you should get the proper chemical potential of some elements. You should supply a `chemical-incar`. The left is the the composition and the right is the energy. Noted that the host compound should be marked with `#`, and you should supply the pure phase energy.
-
-```shell
-Ga=-2.916203375
-Ga8O12=-121.098
-O2=-8.9573588
-Zn=-2.5493
-#Zn8Ga16O32=-328.32564
-ZnO=-10.586057
-```
-
- And use the command
- ```
-pyvasp.py chem_pot chemical-incar
-```
-you can get the cross points in `chemical_log.txt` file.
-
 
 Next, you can execute `defect_formation_energy.py`
 to plot the figure. But before you push your enter key,  you should supply a `defect-incar` including `epsilon`(dielectric coefficient) and the chemical potential of some elements in your current directory. The `defect-incar` may be like this
@@ -392,8 +374,63 @@ then you can push your enter key and wait for  the defect-formation energy figur
 # the second parameter is the path of your defect directory
 defect_formation_energy.py Si  Si/Si-Vacc-defect
 ```
-Also, we will write a log file named `${defect_folder}_log.txt` to record some necessary message in your calculation process.
+Also, we will write a log file named `${defect_folder}_log.txt` to record some necessary message in your calculation process. Below is an example of log-file of Si-vacancy defect, you can obtain some useful information from this log-file.
+
+```
+test/test-defect-formation-energy/Si/Si-Vacc-defect
+Energy of supcell is: -1171.6512 eV
+Evbm: 5.424675 eV
+Ecbm: 6.234886 eV
+gap: 0.6102110000000005 eV
+charge		energy		E_PA		E_IC	far_atom_def_sys	far_atom_def_fr_system
+ 0		-1162.55020	-0.00000	+0.00000	8			35
+-2		-1150.69310	+0.26840	+0.24860	8			35
+ 2		-1173.95500	-0.03720	+0.24860	8			35
+-1		-1156.67410	+0.10720	+0.06215	8			35
+ 1		-1168.31110	-0.04380	+0.06215	8			35
+chemical potential of Si: -5.41 eV
+chemical potential of Vacc: 0 eV
+Si has been removed
+Vacc has been doped
+```
+This is the defect formation energy figure.
+
+![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/defect_formation_energy.png)
 
 
+# 4.2 ZnGa2O3
 
-### 4.2 In2O3
+For multiple composition,  you should get the proper chemical potential of some elements. You should supply a `chemical-incar`. The left is the the composition and the right is the energy. Noted that the host compound should be marked with `#`, and you should supply the pure phase energy.
+
+```
+Ga=-2.916203375
+Ga8O12=-121.098
+O2=-8.9573588
+Zn=-2.5493
+#Zn8Ga16O32=-328.32564
+ZnO=-10.586057
+```
+
+ And use the command
+ ```
+python3.6 pyvasp.py chem_pot -r 0 chemical-incar  
+```
+you can get the cross points in `chemical_log.txt` file.
+
+```
+chemical potential constrain of Ga8O12
+Zn	Ga	O
+-3.7382	-5.503	0.0
+-0.0695	0.0	-3.6687
+0.0	0.1043	-3.7382
+
+chemical potential constrain of ZnO
+Zn	Ga	O
+-3.5581	-5.5931	0.0
+0.1707	0.0	-3.7287
+0.0	-0.256	-3.5581
+```
+
+and also a chemical potential phase figure will be generated.
+
+![](https://raw.githubusercontent.com/ChangChunHe/Sundries/master/chemical-potential.png)
