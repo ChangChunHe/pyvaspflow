@@ -16,7 +16,7 @@ class ExtractValue():
 
     def get_energy(self):
         file_osz = os.path.join(self.data_folder,'OSZICAR')
-        return float(subprocess.run(['tail','-1',file_osz],stdout=subprocess.PIPE).stdout.decode('utf-8').split()[2])
+        return float(subprocess.run(['tail','-1',file_osz],stdout=subprocess.PIPE).stdout.decode('utf-8').split()[4])
 
 
     def get_fermi(self):
@@ -139,6 +139,7 @@ if __name__ == '__main__':
     data_folder = sys.argv[1]
     print('The main direcroty is: ', data_folder)
     defect_dirs = sys.argv[2:]
+    fig, ax = plt.subplots()
     f = open(sys.argv[1].replace("\\",'').replace("/",'')+'_log.txt','w')
     for defect_dir in  defect_dirs:
         print('Reading ', defect_dir)
@@ -199,7 +200,6 @@ if __name__ == '__main__':
         for idx in range(np.shape(chg_state)[0]):
             E.append(chg_state[idx,1]-SC_energy+mu+chg_state[idx,0]*Ef+chg_state[idx,2]+chg_state[idx,3])
         E = np.asarray(E)
-        fig, ax = plt.subplots()
         ax.set_aspect('equal')
         ax.plot(Ef-Evbm,np.min(E,axis=0),label=defect_dir)
     f.close()

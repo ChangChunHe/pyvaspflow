@@ -126,10 +126,15 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
                     + sum(c*basis))) for basis in all_basis])])
     d = np.asarray(d)
     max_idx_no_def = int(d[np.argmax(d[:,1]),0])#no-defect-farther-atom-number
+    # import pdb;pdb.set_trace()
     d = []
     for i in range(one_def_pos.shape[0]):
-        d.append([i, min([np.linalg.norm(defect_atom - (no_def_pos[i] \
+        d.append([i, min([np.linalg.norm(defect_atom - (one_def_pos[i] \
                     + sum(c*basis))) for basis in all_basis])])
     d = np.asarray(d)
     max_idx_one_def = int(d[np.argmax(d[:,1]),0])
     return max_idx_one_def+1,max_idx_no_def+1
+if __name__ == '__main__':
+    no_defect_poscar = 'test/test-defect-formation-energy/MgH2/supercell/CONTCAR'
+    one_defect_poscar = 'test/test-defect-formation-energy/MgH2/H-vacc-defect/charge_state_-1/POSCAR'
+    print(get_farther_atom_num(no_defect_poscar,one_defect_poscar))
