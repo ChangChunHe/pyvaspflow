@@ -125,6 +125,11 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
             d.append([i, min([np.linalg.norm(defect_atom - (no_def_pos[i] \
                     + sum(c*basis))) for basis in all_basis])])
     d = np.asarray(d)
-    max_idx = int(d[np.argmax(d[:,1]),0])
-    d_ = np.linalg.norm(no_def_pos[max_idx] - np.dot(one_def_pos,c),axis=1)
-    return np.argmin(d_)+1,max_idx+1
+    max_idx_no_def = int(d[np.argmax(d[:,1]),0])#no-defect-farther-atom-number
+    d = []
+    for i in range(one_def_pos.shape[0]):
+        d.append([i, min([np.linalg.norm(defect_atom - (no_def_pos[i] \
+                    + sum(c*basis))) for basis in all_basis])])
+    d = np.asarray(d)
+    max_idx_one_def = int(d[np.argmax(d[:,1]),0])
+    return max_idx_one_def+1,max_idx_no_def+1
