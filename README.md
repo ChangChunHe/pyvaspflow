@@ -381,15 +381,15 @@ Also, we will write a log file named `${defect_folder}_log.txt` to record some n
 ```
 test/test-defect-formation-energy/Si/Si-Vacc-defect
 Energy of supcell is: -1171.6512 eV
-Evbm: 5.424675 eV
-Ecbm: 6.234886 eV
+Evbm: 5.4746749999999995 eV
+Ecbm: 6.084886 eV
 gap: 0.6102110000000005 eV
 charge		energy		E_PA		E_IC	far_atom_def_sys	far_atom_def_fr_system
- 0		-1162.55020	-0.00000	+0.00000	8			35
--2		-1150.69310	+0.26840	+0.24860	8			35
- 2		-1173.95500	-0.03720	+0.24860	8			35
--1		-1156.67410	+0.10720	+0.06215	8			35
- 1		-1168.31110	-0.04380	+0.06215	8			35
+ 0		-1162.55020	-0.00000	+0.00000	35			35
+-2		-1150.69310	+0.21600	+0.24860	35			35
+ 2		-1173.95500	-0.07420	+0.24860	35			35
+-1		-1156.67410	+0.09000	+0.06215	35			35
+ 1		-1168.31110	-0.05030	+0.06215	35			35
 chemical potential of Si: -5.41 eV
 chemical potential of Vacc: 0 eV
 Si has been removed
