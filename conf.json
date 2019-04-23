@@ -1,0 +1,9 @@
+{
+"potcar_path":
+{"paw_PBE":"/opt/ohpc/pub/apps/vasp/pps/paw_PBE",
+"paw_LDA":"/opt/ohpc/pub/apps/vasp/pps/paw_LDA",
+"paw_PW91":"/opt/ohpc/pub/apps/vasp/pps/paw_PW91",
+"USPP_LDA":"/opt/ohpc/pub/apps/vasp/pps/USPP_LDA",
+"USPP_PW91":"/opt/ohpc/pub/apps/vasp/pps/USPP_PW91"
+}
+}
