@@ -170,39 +170,17 @@ def clean_lines(string_list, remove_empty_lines=True):
             yield clean_s
 
 
-def zopen(filename, *args, **kwargs):
-    """
-    This function wraps around the bz2, gzip and standard python's open
-    function to deal intelligently with bzipped, gzipped or standard text
-    files.
-    Args:
-        filename (str/Path): filename or pathlib.Path.
-        \*args: Standard args for python open(..). E.g., 'r' for read, 'w' for
-            write.
-        \*\*kwargs: Standard kwargs for python open(..).
-    Returns:
-        File-like object. Supports with context.
-    """
-    if Path is not None and isinstance(filename, Path):
-        filename = str(filename)
-
+def zread(filename):
     name, ext = path.splitext(filename)
     ext = ext.upper()
-    if ext == ".BZ2":
-        if PY_VERSION[0] >= 3:
-            return bz2.open(filename, *args, **kwargs)
-        else:
-            args = list(args)
-            if len(args) > 0:
-                args[0] = "".join([c for c in args[0] if c != "t"])
-            if "mode" in kwargs:
-                kwargs["mode"] = "".join([c for c in kwargs["mode"]
-                                          if c != "t"])
-            return bz2.BZ2File(filename, *args, **kwargs)
-    elif ext in (".GZ", ".Z"):
-        return open(filename, 'rb')
+    if ext in (".GZ", ".Z"):
+        with open(filename,'rb') as f:
+            data = f.read()
+        return unlzw(data).decode('utf-8')
     else:
-        return open(filename, *args, **kwargs)
+        with open(filename) as f:
+            data = f.readlines()
+        return ' '.join(data)
 
 def unlzw(data):
     """
