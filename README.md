@@ -436,3 +436,6 @@ Zn	Ga	O
 and also a chemical potential phase figure will be generated.
 
 ![](https://raw.githubusercontent.com/ChangChunHe/Sundries/b7826d486bc764b559f01e19365aabfff73c51c2/chemical-potential.png)
+
+
+if you have any problems when you using this package, you can new a issue or email me at changchun_he@foxmail.com
