@@ -3,7 +3,6 @@ from sagar.io.vasp import  write_vasp, read_vasp
 from os import path
 from sagar.element.base import periodic_table_dict as ptd
 import gzip,bz2
-from pathlib import Path
 
 def generate_all_basis(N1,N2,N3):
     n1,n2,n3 = 2*N1+1, 2*N2+1, 2*N3+1
@@ -178,9 +177,9 @@ def zread(filename):
             data = f.read()
         return unlzw(data).decode('utf-8')
     else:
-        with open(filename) as f:
-            data = f.readlines()
-        return ' '.join(data)
+        with open(filename,'r') as f:
+            data = f.read()
+        return data
 
 def unlzw(data):
     """
