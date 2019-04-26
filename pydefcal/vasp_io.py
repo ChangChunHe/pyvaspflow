@@ -1,10 +1,11 @@
-from function_toolkit import str_delimited, clean_lines, unlzw, zread
+from pydefcal.utils import str_delimited, clean_lines, unlzw, zread
 from sagar.io.vasp import  read_vasp
 import re,math,json,seekpath
 from collections import namedtuple
 from os import path
-from enum import Enum
 import numpy as np
+from enum import Enum
+
 
 class Incar(dict):
 
@@ -239,7 +240,16 @@ class Potcar(list):
         return res
 
     def write_file(self,filename='POTCAR'):
-        with open('conf.json') as f:
+        from os.path import expanduser
+        home = expanduser("~")
+        if path.isfile(path.join(home,'conf.json')):
+            conf_file_path = path.join(home,'conf.json')
+        elif path.isfile(path.join('.','conf.json')):
+            conf_file_path = path.join('.','conf.json')
+        else:
+            raise FileNotFoundError('You should put conf.json file in your \
+                                   $HOME directory or your current directory')
+        with open(conf_file_path) as f:
             json_f = json.load(f)
         potcar_main_dir_path = json_f['potcar_path'][self.functional]
         all_pot_file = []
@@ -249,8 +259,15 @@ class Potcar(list):
                 all_pot_file.append(path.join(pot_path,'POTCAR'))
             elif path.isfile(path.join(pot_path,'POTCAR.Z')):
                 all_pot_file.append(path.join(pot_path,'POTCAR.Z'))
+            else:
+                from os import listdir
+                from os.path import isfile, join
+                possible = [dir for dir in  listdir(json_f['potcar_path'][self.functional]) if map.split('_')[0] in dir]
+                raise FileNotFoundError('Not found supported POTCAR file'
+                      +' you can change your map to:'+ ' '.join(possible))
         with open(filename, 'w') as outfile:
             for fname in all_pot_file:
+                print('POTCAR from: ', fname)
                 outfile.write(zread(fname))
 
 
@@ -275,9 +292,6 @@ class Kpoints_supported_modes(Enum):
 
 
 class Kpoints:
-    """
-    KPOINT reader/writer.
-    """
     supported_modes = Kpoints_supported_modes
 
     def __init__(self, comment="Default gamma", num_kpts=0,
@@ -326,7 +340,6 @@ class Kpoints:
         if num_kpts > 0 and (not labels) and (not kpts_weights):
             raise ValueError("For explicit or line-mode kpoints, either the "
                              "labels or kpts_weights must be specified.")
-
         self.comment = comment
         self.num_kpts = num_kpts
         self.kpts = kpts
@@ -354,7 +367,6 @@ class Kpoints:
             raise ValueError("For fully automatic or automatic gamma or monk "
                              "kpoints, only a single line for the number of "
                              "divisions is allowed.")
-
         self._style = style
 
     def automatic(self,subdivisions):
@@ -467,7 +479,7 @@ class Kpoints:
         self.kpts_shift = [0,0,0]
 
 
-    def automatic_density_by_vol(structure, kppvol, force_gamma=False):
+    def automatic_density_by_vol(self,structure, kppvol, force_gamma=False):
         """
         Returns an automatic Kpoint object based on a structure and a kpoint
         density per inverse Angstrom^3 of reciprocal cell.
@@ -478,11 +490,32 @@ class Kpoints:
             kppvol (int): Grid density per Angstrom^(-3) of reciprocal cell
             force_gamma (bool): Force a gamma centered mesh
         """
-        vol = structure.lattice.reciprocal_lattice.volume
-        kppa = kppvol * vol * structure.num_sites
-        return Kpoints.automatic_density(structure, kppa,
-                                         force_gamma=force_gamma)
-
+        # vol = structure.lattice.reciprocal_lattice.volume
+        latt = structure.lattice
+        latt_vol = np.linalg.det(latt)
+        r_x = np.cross(latt[1],latt[2])/latt_vol
+        r_y = np.cross(latt[2],latt[0])/latt_vol
+        r_z = np.cross(latt[0],latt[1])/latt_vol
+        vol = 2*np.pi*np.linalg.det([r_x,r_y,r_z])
+        kppa = kppvol * vol * len(structure.atoms)
+        self.comment = "KPOINTS with grid density = " +"{} / atom".format(kppa)
+        self.num_kpts =  0
+        if force_gamma:
+            self._style = Kpoints.supported_modes.Gamma
+        else:
+            self._style = Kpoints.supported_modes.Monkhorst
+        lengths = np.linalg.norm(latt,axis=1)
+        ngrid = kppa / len(structure.atoms)
+        mult = (ngrid * lengths[0] * lengths[1] * lengths[2]) ** (1 / 3)
+        num_div = [int(math.floor(max(mult / l, 1))) for l in lengths]
+        spg = structure.get_spacegroup()
+        if int(spg.split('(')[1].split(')')[0]) in range(168,195):
+            is_hexagonal = True#   latt.is_hexagonal()
+        else:
+            is_hexagonal = False
+        has_odd = any([i % 2 == 1 for i in num_div])
+        self.kpts = [num_div]
+        self.kpts_shift = [0,0,0]
 
 
     def automatic_linemode(self, structure,num_kpts=16):
@@ -687,9 +720,3 @@ class Kpoints:
                    labels=d.get("labels"), tet_number=d.get("tet_number", 0),
                    tet_weight=d.get("tet_weight", 0),
                    tet_connections=d.get("tet_connections"))
-
-if __name__ == "__main__":
-    Kpt = Kpoints()
-    c = read_vasp('POSCAR')
-    Kpt.automatic_linemode(structure=c,num_kpts=20)
-    Kpt.write_file()
