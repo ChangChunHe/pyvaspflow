@@ -9,7 +9,7 @@ from distutils.core import setup
 #You could be more specific.
 
 
-setup(name = "PyDefCal",
+setup(name = "pydefcal",
     version = "0.0.1",
     description = "Vasp defect formation calculation",
     author = "ChangChunHe",
@@ -18,6 +18,6 @@ setup(name = "PyDefCal",
     #(If you have other packages (dirs) or modules (py files) then
     #put them into the package directory - they will be found
     #recursively.)
-    packages = ['PyDefCal'],
+    packages = ['pydefcal'],
     install_requires=['numpy>=1.15.4','sagar','seekpath']
 )
