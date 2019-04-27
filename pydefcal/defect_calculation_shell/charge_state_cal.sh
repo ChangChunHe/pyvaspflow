@@ -44,15 +44,14 @@ fi
 
 mpirun -n ${NSLOTS} $vasp_version
 
- mkdir scf
- cp CONTCAR scf/POSCAR
+mkdir scf
+cp CONTCAR scf/POSCAR
 cp POTCAR INCAR KPOINTS scf/
 cd scf/
 
 sed -i -e '/ISIF/c ISIF=2' -e '/NSW/c NSW=0' -e '/IBRION/c IBRION=-1' -e '/LWAVE/c LWAVE=T' -e '/LCHARG/c LCHARG=T' INCAR
 
-echo ISYM=-1>>INCAR
+#echo ISYM=-1>>INCAR
 mpirun -n ${NSLOTS} $vasp_version
 
 cd ../..
-
