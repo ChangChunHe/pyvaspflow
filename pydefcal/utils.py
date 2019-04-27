@@ -2,7 +2,7 @@ import numpy as np
 from sagar.io.vasp import  write_vasp, read_vasp
 from os import path
 from sagar.element.base import periodic_table_dict as ptd
-import gzip,bz2
+import json
 
 def generate_all_basis(N1,N2,N3):
     n1,n2,n3 = 2*N1+1, 2*N2+1, 2*N3+1
@@ -369,3 +369,120 @@ def unlzw(data):
 
     # Return the decompressed data as string
     return bytes(bytearray(put))
+
+
+import os
+import sys
+import shlex
+import subprocess
+
+class std_output(str):
+
+    @property
+    def lines(self):
+        return self.split("\n")
+
+    @property
+    def qlines(self):
+        return [line.split() for line in self.split("\n")]
+
+
+class runmeta(type):
+    @property
+    def stdin(cls):
+        return sys.stdin
+
+
+class run(runmeta('base_run', (std_output, ), {})):
+    """
+      >>> from subprocess import run
+      >>> print run('uname -r')
+      3.7.0-7-generic
+      >>> print run('uname -r').stdout
+      3.7.0-7-generic
+      >>> run('uname -a').status
+      0
+      >>> print run('rm not_existing_directory').stderr
+      rm: cannot remove `not_existing_directory': No such file or directory
+      >>> print run('ls -la', 'wc -l')
+      14
+      >>> print run('ls -la', 'wc -l', 'wc -c')
+      3
+      >>> run('ls -la', 'wc -l', 'wc -c')
+      ls -la | wc -l | wc -c
+      >>> print run('ls -la').stdout.lines
+      ['total 20',
+       'drwxrwxr-x 3 user user 4096 Dec 20 22:55 .',
+       'drwxrwxr-x 5 user user 4096 Dec 20 22:57 ..',
+       'drwxrwxr-x 2 user user 4096 Dec 20 22:37 dir',
+       '-rw-rw-r-- 1 user user    0 Dec 20 22:52 file']
+    To use pipe from the shell.
+    .. code-block:: python
+      from subprocess import run
+      run('grep something', data=run.stdin)
+    .. code-block:: bash
+      $ ps aux | python script.py
+    """
+
+    @classmethod
+    def create_process(cls, command, stdin, cwd, env, shell):
+        return subprocess.Popen(
+            shlex.split(command),
+            universal_newlines=True,
+            shell=shell,
+            cwd=cwd,
+            env=env,
+            stdin=stdin,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            bufsize=0,
+        )
+    def __new__(cls, *args, **kwargs):
+        env = dict(os.environ)
+        env.update(kwargs.get('env', {}))
+        cwd = kwargs.get('cwd')
+        shell = kwargs.get('shell', False)
+        chain = []
+        stdin = kwargs.get('stdin', subprocess.PIPE)
+        for command in args:
+            process = cls.create_process(
+                command, stdin, cwd=cwd, env=env, shell=shell)
+            stdin = process.stdout
+            obj = super(run, cls).__new__(run, command)
+            obj.process = process
+            obj.pid = process.pid
+            obj.command = command
+            chain.append(obj)
+            obj.chain = chain[:]
+        return obj
+
+    @property
+    def status(self):
+        self.process.communicate()
+        return self.process.returncode
+
+    @property
+    def std_out_err(self):
+        return [std_output(i) for i in self.process.communicate()]
+
+
+    def __repr__(self):
+        return " | ".join([e.command for e in self.chain])
+
+def read_json():
+    from os.path import expanduser
+    home = expanduser("~")
+    if path.isfile(path.join(home,'conf.json')):
+        conf_file_path = path.join(home,'conf.json')
+    elif path.isfile(path.join('.','conf.json')):
+        conf_file_path = path.join('.','conf.json')
+    else:
+        raise FileNotFoundError('You should put conf.json file in your \
+                               $HOME directory or your current directory')
+    with open(conf_file_path) as f:
+        json_f = json.load(f)
+    return json_f
+
+
+if __name__ == "__main__":
+    pass
