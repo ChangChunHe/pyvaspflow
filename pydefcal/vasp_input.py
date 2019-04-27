@@ -1,4 +1,4 @@
-from pydefcal.utils import str_delimited, clean_lines, unlzw, zread
+from pydefcal.utils import str_delimited, clean_lines, unlzw, zread,read_json
 from sagar.io.vasp import  read_vasp
 import re,math,json,seekpath
 from collections import namedtuple
@@ -240,17 +240,7 @@ class Potcar(list):
         return res
 
     def write_file(self,filename='POTCAR'):
-        from os.path import expanduser
-        home = expanduser("~")
-        if path.isfile(path.join(home,'conf.json')):
-            conf_file_path = path.join(home,'conf.json')
-        elif path.isfile(path.join('.','conf.json')):
-            conf_file_path = path.join('.','conf.json')
-        else:
-            raise FileNotFoundError('You should put conf.json file in your \
-                                   $HOME directory or your current directory')
-        with open(conf_file_path) as f:
-            json_f = json.load(f)
+        json_f = read_json()
         potcar_main_dir_path = json_f['potcar_path'][self.functional]
         all_pot_file = []
         for map in self.sym_potcar_map:
