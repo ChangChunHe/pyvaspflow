@@ -472,13 +472,15 @@ class run(runmeta('base_run', (std_output, ), {})):
 def read_json():
     from os.path import expanduser
     home = expanduser("~")
-    if path.isfile(path.join(home,'conf.json')):
-        conf_file_path = path.join(home,'conf.json')
-    elif path.isfile(path.join('.','conf.json')):
+    if path.isfile(path.join('.','conf.json')):
         conf_file_path = path.join('.','conf.json')
+    elif path.isfile(path.join(home,'conf.json')):
+        conf_file_path = path.join(home,'conf.json')
     else:
         raise FileNotFoundError('You should put conf.json file in your \
-                               $HOME directory or your current directory')
+                               $HOME directory or your current directory\
+                               and we will first check conf.json is under your\
+                               current direcroty or not')
     with open(conf_file_path) as f:
         json_f = json.load(f)
     return json_f
