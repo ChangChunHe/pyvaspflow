@@ -115,11 +115,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     pyvasp.py get_PA defect_free charge_state_1
     """
-<<<<<<< HEAD:pyvasp.py
-    num_def, num_no_def = us.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
-=======
     num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
->>>>>>> dev:pydefcal/pyvasp.py
             os.path.join(defect_dir,'POSCAR'))
     pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)[1]
     pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)[1]
