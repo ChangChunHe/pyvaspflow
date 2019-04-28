@@ -2,11 +2,13 @@
 # coding: utf-8
 
 import unittest
-
-class Test_runvasp(unittest.TestCase):
+from pydefcal.vasp_io import vasp_input
+class TestVasp_io(unittest.TestCase):
 
     def test_incar(self):
-        pass
+        incar = vasp_input.Incar()
+        incar['EDIFF'] = 1e-7
+
 
     def test_kpoints(self):
         pass
