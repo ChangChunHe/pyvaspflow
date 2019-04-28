@@ -5,7 +5,7 @@
 import matplotlib.pyplot as plt
 import warnings,sys,os
 import numpy as np
-from pydefcal.vasp_out import ExtractValue,get_ele_sta,read_incar
+from pydefcal.vasp_io.vasp_out import ExtractValue,get_ele_sta,read_incar
 from pydefcal.utils import get_farther_atom_num
 
 if len(sys.argv) < 3:
