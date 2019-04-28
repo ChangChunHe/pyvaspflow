@@ -1,3 +1,7 @@
+#!/usr/bin/env python3.6
+# -*- coding: utf-8 -*-
+
+
 from pydefcal.utils import str_delimited, clean_lines, unlzw, zread,read_json
 from sagar.io.vasp import  read_vasp
 import re,math,json,seekpath

@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
 import click
-from defect_formation_energy import ExtractValue
-from defect_formation_energy import get_ele_sta
+from pydefcal.defect_cal.defect_formation_energy import ExtractValue, get_ele_sta
 import numpy as np
 import utils as us
 import linecache as lc
 from sagar.io.vasp import read_vasp, write_vasp
 import os
-from defect_maker import DefectMaker
-from chemical_potential import plot_2d_chemical_potential_phase
+from pydefcal.defect_cal.defect_maker import DefectMaker
+from pydefcal.defect_cal.chemical_potential import plot_2d_chemical_potential_phase
 
 @click.group()
 def cli():
