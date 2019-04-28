@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import click,subprocess
+import click
 from defect_formation_energy import ExtractValue
 from defect_formation_energy import get_ele_sta
 import numpy as np
-import function_toolkit as ft
+import utils as ft
 import linecache as lc
 from sagar.io.vasp import read_vasp, write_vasp
 import os
@@ -115,7 +115,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     pyvasp.py get_PA defect_free charge_state_1
     """
-    num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'POSCAR'), \
+    num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
             os.path.join(defect_dir,'POSCAR'))
     pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)[1]
     pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)[1]
