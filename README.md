@@ -45,7 +45,7 @@ echo export PATH="$PATH:/home/${usr_name}/scripts" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-__Noted that, if you get `permission denied`, please use `chmod u+x pyvasp.py` to give the execute right to the file__
+__Noted that, if you get `permission denied`, please use `chmod u+x filename` to give the execution right to the file__
 
 
 ## 1. Generate defect structures
