@@ -3,7 +3,7 @@
 
 import unittest
 
-class TestVasp_io(unittest.TestCase):
+class Test_runvasp(unittest.TestCase):
 
     def test_incar(self):
         pass
