@@ -6,10 +6,8 @@ import linecache as lc
 import numpy as np
 import os
 import subprocess
-<<<<<<< HEAD:defect_formation_energy.py
 from utils import get_farther_atom_num
-=======
->>>>>>> dev:pydefcal/vasp_out.py
+
 
 class ExtractValue():
     def __init__(self,data_folder='./',atomic_num=3):
