@@ -4,7 +4,7 @@ import click
 from defect_formation_energy import ExtractValue
 from defect_formation_energy import get_ele_sta
 import numpy as np
-import function_toolkit as ft
+import utils as us
 import linecache as lc
 from sagar.io.vasp import read_vasp, write_vasp
 import os

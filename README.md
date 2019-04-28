@@ -36,7 +36,7 @@ Table of Contents
 
 
 ## 0. Installation
-Firstly, you should make a directory for those scripts and add its path to your `.bashrc`. I divide these scripts into three directories so that you can easily know the usage of each scripts, and you can put them all into a directory in order to conveniently use them.  You can also maintain the configuration without any change, so you have to add all file path to `$PATH` so that you can execute them.
+Firstly, you should make a directory for those `.py, .sh` scripts and add its path to your `.bashrc`. You can also maintain the configuration without any change, so you have to add all file path to `$PATH` so that you can execute them. Before you use this package you should install our (S)Tructures of (A)lloys (G)eneration (A)nd (R)ecognition package `sagar`, you'd better refer to [this](https://sagar.readthedocs.io/zh_CN/latest/installation/quick_install.html) guide to install `sagar`, this package  will be installed easily in __unix__ system.
 
 For example, I make the `scripts` directory under my $HOME directory, so I can use the below command to add this directory to $PATH, and `source` your `.bashrc` to make it work.
 
@@ -45,7 +45,7 @@ echo export PATH="$PATH:/home/${usr_name}/scripts" >> ~/.bashrc
 source ~/.bashrc
 ```
 
-__Noted that, if you get `permission denied`, please use `chmod u+x pyvasp.py` to give the execute right to the file__
+__Noted that, if you get `permission denied`, please use `chmod u+x filename` to give the execution right to the file__
 
 
 ## 1. Generate defect structures
