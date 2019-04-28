@@ -6,7 +6,7 @@ import linecache as lc
 import numpy as np
 import os
 import subprocess
-from function_toolkit import get_farther_atom_num
+from utils import get_farther_atom_num
 
 class ExtractValue():
     def __init__(self,data_folder='./',atomic_num=3):
