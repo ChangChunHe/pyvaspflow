@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from pydefcal.vasp.run_vasp import run_sing_vasp,run_multi_vasp
-
+from pydefcal.vasp.run_vasp import run_single_vasp,run_multi_vasp
+import logging
+from os import getpid
 #submit a single job
 
-run_sing_vasp(NSW=1000,LCHARG=True,LWAVE=True,EDIFF=1e-10,job_name='stru_opt')
+logging.basicConfig(level=logging.INFO,
+                    filename='./log.txt',
+                    filemode='w',
+                    format='%(asctime)s - %(filename)s\n[line:%(lineno)d] - %(levelname)s: %(message)s')
+
+logging.info('Task start...')
+logging.info('PID of this process: '+str(getpid()))
+run_multi_vasp(sum_job_num=21,kppa=5000,job_name='stru_opt')
+logging.info('Task completion')
