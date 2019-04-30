@@ -2,25 +2,24 @@
 # -*- coding: utf-8 -*-
 
 
-from pydefcal.utils import run,read_json
-from os import path,makedirs,chdir
-import json,shutil
-from sagar.io.vasp import read_vasp
-from pydefcal.vasp_io.vasp_input import Incar,Kpoints,Potcar
+from pydefcal.vasp import prep_vasp
+from os import chdir,makedirs,path
+from shutil import copy2,rmtree
+from multiprocessing import Process,Manager
+from pydefcal.utils import run
+from time import sleep
 
 
 def is_inqueue(job_id):
     res = run('squeue','grep '+str(job_id)).std_out_err
     if res[0] == '':
         return False
-    else:
-        return True
+    return True
 
-def _submit_job(node_name,cpu_num,node_num=1,job_name='job-name'):
-    write_job_file(node_name,cpu_num,node_num,job_name)
-    res = run('sbatch job.sh')
+def submit_job():
+    res = run('sbatch ./job.sh')
     std = res.std_out_err
-    return std[0].split()[-1],std[1]
+    return std[0].split()[-1]
 
 def job_status(job_id):
     res = run('squeue','grep '+str(job_id)).std_out_err
@@ -30,75 +29,84 @@ def job_status(job_id):
         return  None
     return dict(zip(['job_id','part','name','user','status','time','node','nodelist'],stdout))
 
-def write_job_file(node_name,cpu_num,node_num,job_name):
-    json_f = read_json()
-    with open('job.sh','w') as f:
-        f.writelines('#!/bin/bash -l\n')
-        f.writelines('#SBATCH -J '+job_name+'\n')
-        f.writelines('#SBATCH -p '+node_name+' -N '+ str(node_num) +' -n '+str(cpu_num)+'\n\n')
-        f.writelines(json_f['job']['prepend']+'\n')
-        f.writelines(json_f['job']['exec']+'\n')
-
-def write_incar(kw={}):
-    if path.isfile('POTCAR'):
-        with open('POTCAR') as f:
-            data = f.readlines()
-        enmax = 1.3*max([float(i.split()[2].replace(';','')) for i in [i for i in data if 'ENMAX' in i]])
-    else:
-        enmax = None
-    if not path.isfile('INCAR'):
-        incar = Incar()
-        if enmax:
-            incar['ENMAX'] = enmax
-        incar.update(kw)
-        incar.write_file('INCAR')
-    return kw
-
-def write_potcar(kw={}):
-    if not path.isfile('POTCAR'):
-        functional,kw =  clean_parse(kw,'functional','paw_PBE')
-        sym_potcar_map,kw =  clean_parse(kw,'sym_potcar_map',None)
-        pot = Potcar(functional=functional,sym_potcar_map=sym_potcar_map)
-        pot.write_file()
-    return kw
-
-def write_kpoints(poscar='POSCAR',kw={}):
-    if not path.isfile(poscar):
-        raise FileNotFoundError('Not found POSCAR')
-    stru = read_vasp(poscar)
-    style,kw = clean_parse(kw,'style','auto')
-    if not path.isfile('KPOINTS'):
-        kpts = Kpoints()
-        if 'auto' in style.lower():
-            kppa,kw = clean_parse(kw,'kppa',3000)
-            kpts.automatic_density(structure=stru,kppa=kppa)
-            kpts.write_file('KPOINTS')
-        elif 'gamma' in style.lower():
-            kppa,kw = clean_parse(kw,'kppa',3000)
-            kpts.automatic_gamma_density(structure=stru,kppa=kppa)
-            kpts.write_file('KPOINTS')
-        elif 'band' in style.lower() or 'line' in style.lower():
-            num_kpts,kw = clean_parse(kw,'num_kpts',16)
-            kpts.automatic_linemode(structure=stru,num_kpts=num_kpts)
-            kpts.write_file('KPOINTS')
-    return kw
-
 def clean_parse(kw,key,def_val):
     val = kw.get(key,def_val)
     kw.pop(key,None)
     return val,kw
 
-def submit_job(node_name,cpu_num,node_num=1,**kw):
-    job_name,kw = clean_parse(kw,'job_name','job-name')
+def _submit_job(wd,jobs_dict):
+    res = run('sbatch ./job.sh')
+    std = res.std_out_err
+    jobs_dict[wd] = std[0].split()[-1]
+
+def run_sing_vasp(**kw):
+    par_job_num,kw = clean_parse(kw,'par_job_num',4)
+    node_name,kw = clean_parse(kw,'node_num','short_q')
+    cpu_num,kw = clean_parse(kw,'cpu_num',24)
+    node_num,kw = clean_parse(kw,'node_num',1)
+    job_name,kw = clean_parse(kw,'job_name','task')
     if path.isdir(job_name):
-        shutil.rmtree(job_name)
-    else:
-        makedirs(job_name)
-    shutil.move('POSCAR',path.join(job_name,'POSCAR'))
+        rmtree(job_name)
+    makedirs(job_name)
     chdir(job_name)
-    kw = write_potcar(kw)
-    kw = write_incar(kw)
-    kw = write_kpoints(kw=kw)
-    job_id,err = _submit_job(node_name,cpu_num,node_num=node_num,job_name=job_name)
+    copy2('../POSCAR','./POSCAR')
+    kw = prep_vasp.write_potcar(kw=kw)
+    kw = prep_vasp.write_kpoints(kw=kw)
+    kw = prep_vasp.write_incar(kw=kw)
+    prep_vasp.write_job_file(node_name=node_name,
+    node_num=node_num,cpu_num=cpu_num,job_name=job_name)
+    job_id = submit_job()
+    while True:
+        if not is_inqueue(job_id):
+            break
+        sleep(5)
     chdir('..')
-    return job_id,err
+
+
+def run_multi_vasp(sum_job_num,**kw):
+    par_job_num,kw = clean_parse(kw,'par_job_num',4)
+    node_name,kw = clean_parse(kw,'node_num','short_q')
+    cpu_num,kw = clean_parse(kw,'cpu_num',24)
+    node_num,kw = clean_parse(kw,'node_num',1)
+    for ii in range(sum_job_num):
+        if path.isdir('task'+str(ii)):
+            continue
+        makedirs('task'+str(ii))
+        chdir('task'+str(ii))
+        copy2('../POSCAR'+str(ii),'./POSCAR')
+        kw = prep_vasp.write_potcar(kw=kw)
+        kw = prep_vasp.write_kpoints(kw=kw)
+        kw = prep_vasp.write_incar(kw=kw)
+        prep_vasp.write_job_file(node_name=node_name,
+        node_num=node_num,cpu_num=cpu_num,job_name='task'+str(ii))
+        chdir('..')
+    job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
+    jobs = []
+    manager = Manager()
+    jobs_dict = manager.dict()
+    for ii in range(par_job_num):
+        chdir('task'+str(ii))
+        p = Process(target=_submit_job,args=('task'+str(ii),jobs_dict))
+        jobs.append(p)
+        p.start()
+        p.join()
+        chdir('..')
+    jobid_pool = jobs_dict.values()
+    idx = par_job_num
+    while True:
+        inqueue_num = job_inqueue_num(jobid_pool)
+        if inqueue_num < par_job_num:
+            for j in range(par_job_num-inqueue_num):
+                chdir('task'+str(idx))
+                p = Process(target=_submit_job,args=('task'+str(idx),jobs_dict))
+                jobs.append(p)
+                p.start()
+                p.join()
+                chdir('..')
+                idx += 1
+                if idx == sum_job_num:
+                    break
+        jobid_pool = jobs_dict.values()
+        sleep(5)
+        if idx == sum_job_num:
+            break
