@@ -2,8 +2,8 @@
 # coding: utf-8
 
 import unittest
-from pydefcal.vasp_io import vasp_input
-class TestVasp_io(unittest.TestCase):
+from pydefcal.io import vasp_input
+class Test_io(unittest.TestCase):
 
     def test_incar(self):
         incar = vasp_input.Incar()
@@ -16,6 +16,9 @@ class TestVasp_io(unittest.TestCase):
 
 
     def test_kpoints(self):
+        pass
+
+    def test_potcar(self):
         pass
 
 
