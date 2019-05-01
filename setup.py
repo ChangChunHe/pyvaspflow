@@ -19,5 +19,9 @@ setup(name = "pydefcal",
     #put them into the package directory - they will be found
     #recursively.)
     packages = ['pydefcal'],
-    install_requires=['numpy>=1.15.4','sagar','seekpath']
+    install_requires=['numpy>=1.15.4','sagar','seekpath'],
+    entry_points={
+        'console_scripts': [
+        'pyvasp = pydefcal.pyvasp:cli',
+        ]}
 )
