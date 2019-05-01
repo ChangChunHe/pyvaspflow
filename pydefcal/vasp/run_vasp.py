@@ -3,8 +3,7 @@
 
 
 from pydefcal.vasp import prep_vasp
-from os import chdir,makedirs,path
-from shutil import copy2,rmtree
+from os import chdir
 from multiprocessing import Process,Manager
 from pydefcal.utils import run
 from time import sleep
@@ -40,62 +39,19 @@ def _submit_job(wd,jobs_dict):
     std = res.std_out_err
     jobs_dict[wd] = std[0].split()[-1]
 
-def run_single_vasp(**kw):
-    logging.info('Using run_sing_vasp function')
-    node_name,kw = clean_parse(kw,'node_num','short_q')
-    logging.info('Using node name: '+str(node_name))
-    cpu_num,kw = clean_parse(kw,'cpu_num',24)
-    logging.info('Using cpu number: '+str(cpu_num))
-    node_num,kw = clean_parse(kw,'node_num',1)
-    logging.info('Using node number: '+str(node_num))
-    job_name,kw = clean_parse(kw,'job_name','task')
-    logging.info('job name: '+str(job_name))
-    if path.isdir(job_name):
-        rmtree(job_name)
-    makedirs(job_name)
+def run_single_vasp(job_name):
     chdir(job_name)
-    copy2('../POSCAR','./POSCAR')
-    kw = prep_vasp.write_potcar(kw=kw)
-    kw = prep_vasp.write_kpoints(kw=kw)
-    kw = prep_vasp.write_incar(kw=kw)
-    prep_vasp.write_job_file(node_name=node_name,
-    node_num=node_num,cpu_num=cpu_num,job_name=job_name)
     job_id = submit_job()
-    logging.info('job has been submitted, and the id is:'+job_id)
+    logging.info('job has been submitted and the id is: '+str(job_id))
     while True:
         if not is_inqueue(job_id):
             break
         sleep(5)
-    logging.info('vasp calculation completion')
+    logging.info('job has been completed')
     chdir('..')
 
 
-def run_multi_vasp(sum_job_num,**kw):
-    logging.info('Using run_sing_vasp function')
-    par_job_num,kw = clean_parse(kw,'par_job_num',4)
-    logging.info('Parallel job number :'+str(par_job_num))
-    node_name,kw = clean_parse(kw,'node_num','short_q')
-    logging.info('Using node name: '+str(node_name))
-    cpu_num,kw = clean_parse(kw,'cpu_num',24)
-    logging.info('Using cpu number: '+str(cpu_num))
-    node_num,kw = clean_parse(kw,'node_num',1)
-    logging.info('Using node number: '+str(node_num))
-    job_name,kw = clean_parse(kw,'job_name','task')
-    logging.info('job name: '+str(job_name))
-    _kw = kw.copy()
-    for ii in range(sum_job_num):
-        if path.isdir(job_name+str(ii)):
-            rmtree(job_name+str(ii))
-        makedirs(job_name+str(ii))
-        chdir(job_name+str(ii))
-        copy2('../POSCAR'+str(ii),'./POSCAR')
-        kw = prep_vasp.write_potcar(kw=kw)
-        kw = prep_vasp.write_kpoints(kw=kw)
-        kw = prep_vasp.write_incar(kw=kw)
-        prep_vasp.write_job_file(node_name=node_name,
-        node_num=node_num,cpu_num=cpu_num,job_name=job_name+str(ii))
-        kw = _kw.copy()
-        chdir('..')
+def run_multi_vasp(job_name,sum_job_num,par_job_num=4):
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     jobs = []
     manager = Manager()
@@ -130,3 +86,4 @@ def run_multi_vasp(sum_job_num,**kw):
         sleep(5)
         if idx == sum_job_num:
             break
+    logging.info('all jobs have been completed')
