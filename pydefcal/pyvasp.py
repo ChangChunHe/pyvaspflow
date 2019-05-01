@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 
 import click
-from defect_formation_energy import ExtractValue
-from defect_formation_energy import get_ele_sta
+from pydefcal.vasp_io.vasp_out import ExtractValue, get_ele_sta
 import numpy as np
-import utils as us
+import pydefcal.utils as us
 import linecache as lc
 from sagar.io.vasp import read_vasp, write_vasp
-import os
-from defect_maker import DefectMaker
-from chemical_potential import plot_2d_chemical_potential_phase
+import os,subprocess
+from pydefcal.defect_cal.defect_maker import DefectMaker
+from pydefcal.defect_cal.chemical_potential import plot_2d_chemical_potential_phase
+from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
+from pydefcal.vasp.run_vasp import run_single_vasp as rsv
+from pydefcal.vasp.prep_vasp import prep_multi_vasp as pmv
+from pydefcal.vasp.run_vasp import run_multi_vasp as rmv
 
 @click.group()
 def cli():
@@ -115,7 +118,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     pyvasp.py get_PA defect_free charge_state_1
     """
-    num_def, num_no_def = ft.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
+    num_def, num_no_def = us.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
             os.path.join(defect_dir,'POSCAR'))
     pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)[1]
     pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)[1]
@@ -288,5 +291,54 @@ def chem_pot(chem_incar,remove):
     pyvasp.py chem_pot chem_incar # get space_group
     '''
     plot_2d_chemical_potential_phase(chem_incar,remove)
+
+
+@cli.command('prep_single_vasp',short_help="Prepare necessary files for single vasp calculation")
+@click.option('--poscar','-p', default='POSCAR', type=str)
+@click.option('--attribute','-a', default='', type=str)
+def prep_single_vasp(poscar,attribute):
+    kw = {}
+    if attribute:
+        attribute = [i.split('=')  for i in attribute.split(',')]
+        for att in attribute:
+            key,val = att
+            try:
+                val = float(val)
+                kw[key]=val
+            except ValueError:
+                kw[key]=val
+    psv(poscar=poscar,kw=kw)
+
+
+@cli.command('run_single_vasp',short_help="run single vasp calculation")
+@click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
+def run_single_vasp(job_name):
+    rsv(job_name=job_name)
+
+
+@cli.command('prep_multi_vasp',short_help="Prepare necessary files for multiple vasp calculation")
+@click.option('--wd','-w', default='.', type=str)
+@click.option('--attribute','-a', default='', type=str)
+def prep_multi_vasp(wd,attribute):
+    kw = {}
+    if attribute:
+        attribute = [i.split('=')  for i in attribute.split(',')]
+        for att in attribute:
+            key,val = att
+            try:
+                val = float(val)
+                kw[key]=val
+            except ValueError:
+                kw[key]=val
+    pmv(wd=wd,kw=kw)
+
+
+@cli.command('run_multi_vasp',short_help="run single vasp calculation")
+@click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
+@click.argument('sum_job_num', metavar='<total number of jobs>',nargs=1)
+@click.option('--par_job_num','-p', default=4, type=int)
+def run_multi_vasp(job_name,sum_job_num,par_job_num):
+    rmv(job_name=job_name,sum_job_num=sum_job_num,par_job_num=par_job_num)
+
 if __name__ == "__main__":
     cli()

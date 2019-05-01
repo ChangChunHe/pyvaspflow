@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+# coding: utf-8
+
+import unittest
+from pydefcal.vasp import prep_vasp
+class TestVasp_io(unittest.TestCase):
+
+    def test_write_incar(self):
+        pass
+
+
+    def test_write_kpoints(self):
+        pass
+
+
+if __name__ == '__main__':
+    unittest.main()
