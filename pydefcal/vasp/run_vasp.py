@@ -7,7 +7,6 @@ from os import chdir
 from multiprocessing import Process,Manager
 from pydefcal.utils import run
 from time import sleep
-import logging
 
 
 def is_inqueue(job_id):
@@ -42,12 +41,10 @@ def _submit_job(wd,jobs_dict):
 def run_single_vasp(job_name):
     chdir(job_name)
     job_id = submit_job()
-    logging.info('job has been submitted and the id is: '+str(job_id))
     while True:
         if not is_inqueue(job_id):
             break
         sleep(5)
-    logging.info('job has been completed')
     chdir('..')
 
 
@@ -64,8 +61,6 @@ def run_multi_vasp(job_name,sum_job_num,par_job_num=4):
         p.join()
         chdir('..')
     jobid_pool = jobs_dict.values()
-    logging.info('job has been submitted, and the inqueue ids is:\n'\
-                +' '.join([i for i in jobid_pool if is_inqueue(i)]))
     idx = par_job_num
     while True:
         inqueue_num = job_inqueue_num(jobid_pool)
@@ -81,9 +76,6 @@ def run_multi_vasp(job_name,sum_job_num,par_job_num=4):
                 if idx == sum_job_num:
                     break
         jobid_pool = jobs_dict.values()
-        logging.info('job has been submitted, and the inqueue ids is:\n'\
-                      +' '.join([i for i in jobid_pool if is_inqueue(i)]))
         sleep(5)
         if idx == sum_job_num:
             break
-    logging.info('all jobs have been completed')

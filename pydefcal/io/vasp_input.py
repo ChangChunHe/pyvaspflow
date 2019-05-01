@@ -9,7 +9,6 @@ from collections import namedtuple
 from os import path
 import numpy as np
 from enum import Enum
-import logging
 
 class Incar(dict):
 
@@ -30,7 +29,6 @@ class Incar(dict):
         key = key.strip()
         val = Incar.proc_val(key.strip(), str(val).strip())
         super().__setitem__(key, val)
-        logging.info('Set '+str(key)+': '+str(val))
 
     def as_dict(self):
         d = dict(self)
@@ -263,7 +261,6 @@ class Potcar(list):
                       +' you can change your map to:'+ ' '.join(possible))
         with open(filename, 'w') as outfile:
             for fname in all_pot_file:
-                logging.info('Using POTCAR from: '+fname)
                 outfile.write(zread(fname))
 
 
@@ -445,7 +442,6 @@ class Kpoints:
             style = Kpoints.supported_modes.Gamma
         else:
             style = Kpoints.supported_modes.Monkhorst
-        logging.info('Set KPOINTS: '+comment)
         self.comment = comment
         self.num_kpts =  0
         self._style = style
@@ -469,7 +465,6 @@ class Kpoints:
         num_div = [i + i % 2 if i <= 8 else i - i % 2 + 1 for i in num_div]
         style = Kpoints.supported_modes.Gamma
         comment = "KPOINTS with grid density = " +"{} / atom".format(kppa)
-        logging.info('Set KPOINTS: '+comment)
         self.comment = comment
         self.num_kpts =  0
         self._style = style
@@ -496,7 +491,6 @@ class Kpoints:
         r_z = np.cross(latt[0],latt[1])/latt_vol
         vol = 2*np.pi*np.linalg.det([r_x,r_y,r_z])
         kppa = kppvol * vol * len(structure.atoms)
-        logging.info('Set KPOINTS: '+comment)
         self.comment = "KPOINTS with grid density = " +"{} / atom".format(kppa)
         self.num_kpts =  0
         if force_gamma:
@@ -530,7 +524,6 @@ class Kpoints:
             labels.append(p[1])
 
         comment = 'Line_mode KPOINTS file, '+'num_kpts: '+str(num_kpts)
-        logging.info('Set KPOINTS: '+comment)
         self.comment = comment
         self._style = Kpoints.supported_modes.Line_mode
         self.coord_type = 'Reciprocal'
