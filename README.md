@@ -33,6 +33,9 @@ pyvasp prep_single_vasp -p POSCAR -a kppa=4000,node_name=super_q,cpu_num=12
 
 ## 1.2 Prepare multiple vasp-tasks
 
+Noted that,first the work directory must has POSCAR[[:digit::]], and the `digit` must start with 0.
+
+
 A multiple tasks preparation example:
 
 ```shell
@@ -72,7 +75,7 @@ Options:
 
 The first parameter is your `job_name`, because you have generated some separate directories with the same prefix, the prefix is `job_name`,the default `job_name` in the `prep_multi_vasp` command is `task`.
 
-The second parameter is the total number of jobs you want to calculate, noted that the name of all directories should be $job_name+$number, number from 0 to `total_number-1`.
+The second parameter is the total number of jobs you want to calculate, noted that the name of all directories should be job_name[[:digit:]].
 
 Below example means that there are 20 directories should be calculated, there are task0,task1,...,task19.
 
