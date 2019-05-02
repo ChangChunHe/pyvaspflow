@@ -334,7 +334,7 @@ def prep_multi_vasp(wd,attribute):
 
 
 @cli.command('run_multi_vasp',short_help="run single vasp calculation")
-@click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
+@click.argument('job_name', metavar='<job_name>',nargs=1)
 @click.argument('sum_job_num', metavar='<total number of jobs>',nargs=1)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp(job_name,sum_job_num,par_job_num):
