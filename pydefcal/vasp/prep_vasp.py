@@ -49,19 +49,29 @@ def write_kpoints(poscar='POSCAR',kw={}):
     stru = read_vasp('POSCAR')
     style,kw = clean_parse(kw,'style','auto')
     if not path.isfile('KPOINTS'):
-        kpts = Kpoints()
+        _kpts = Kpoints()
         if 'auto' in style.lower():
             kppa,kw = clean_parse(kw,'kppa',3000)
-            kpts.automatic_density(structure=stru,kppa=kppa)
-            kpts.write_file('KPOINTS')
-        elif 'gamma' in style.lower():
+            _kpts.automatic_density(structure=stru,kppa=kppa)
+            _kpts.write_file('KPOINTS')
+        elif 'gamma' in style.lower() and 'kpts' not in kw:
             kppa,kw = clean_parse(kw,'kppa',3000)
-            kpts.automatic_gamma_density(structure=stru,kppa=kppa)
-            kpts.write_file('KPOINTS')
+            _kpts.automatic_gamma_density(structure=stru,kppa=kppa)
+            _kpts.write_file('KPOINTS')
+        elif 'gamma' in style.lower() and 'kpts' in kw:
+            kpts,kw = clean_parse(kw,'kpts',(1,1,1))
+            shift,kw = clean_parse(kw,'shift',(0,0,0))
+            _kpts.gamma_automatic(kpts=kpts,shift=shift)
+            _kpts.write_file('KPOINTS')
+        elif 'monk' in style.lower() and 'kpts' in kw:
+            kpts,kw = clean_parse(kw,'kpts',(1,1,1))
+            shift,kw = clean_parse(kw,'shift',(0,0,0))
+            _kpts.monkhorst_automatic(kpts=kpts,shift=shift)
+            _kpts.write_file('KPOINTS')
         elif 'band' in style.lower() or 'line' in style.lower():
             num_kpts,kw = clean_parse(kw,'num_kpts',16)
-            kpts.automatic_linemode(structure=stru,num_kpts=num_kpts)
-            kpts.write_file('KPOINTS')
+            _kpts.automatic_linemode(structure=stru,num_kpts=num_kpts)
+            _kpts.write_file('KPOINTS')
     return kw
 
 def clean_parse(kw,key,def_val):

@@ -3,7 +3,7 @@
 
 import unittest
 from pydefcal.vasp import prep_vasp
-class TestVasp_io(unittest.TestCase):
+class Test_Vasp(unittest.TestCase):
 
     def test_write_incar(self):
         pass
