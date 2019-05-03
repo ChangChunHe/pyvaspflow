@@ -2,7 +2,23 @@
 
 This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and extracting necessary data to calculate defect formation energy. If you have any problems when using this package, you can new an issue or email me at changchun_he@foxmail.com.
 
+Table of Contents
+=================
 
+   * [Defect-Formation-Calculation](#defect-formation-calculation)
+      * [0. Installation](#0-installation)
+      * [1. Preparation](#1-preparation)
+      * [1.1 Prepare single vasp-task](#11-prepare-single-vasp-task)
+      * [1.2 Prepare multiple vasp-tasks](#12-prepare-multiple-vasp-tasks)
+      * [1.3 Parameters](#13-parameters)
+         * [1.3.0 -a](#130--a)
+         * [1.3.1 INCAR](#131-incar)
+         * [1.3.2 KPOINTS](#132-kpoints)
+         * [1.3.3 POTCAR](#133-potcar)
+         * [1.3.4 job.sh](#134-jobsh)
+      * [2. Execution](#2-execution)
+      * [2.1 Execute single vasp-task](#21-execute-single-vasp-task)
+      * [2.2 Execute multiple vasp-tasks](#22-execute-multiple-vasp-tasks)
 
 
 ## 0. Installation
@@ -31,9 +47,12 @@ pyvasp prep_single_vasp -p POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW
 pyvasp prep_single_vasp -p POSCAR -a kppa=4000,node_name=super_q,cpu_num=12
 ```
 
+`-p` parameter is the path of your `POSCAR` file, the default is `POSCAR`.`-a` parameter is the attribute you want to specify.
+
+
 ## 1.2 Prepare multiple vasp-tasks
 
-Noted that,first the work directory must has POSCAR[[:digit::]], and the `digit` must start with 0.
+Noted that,first the work directory must has POSCAR[[:digit:]], and the `digit` must start with 0.
 
 
 A multiple tasks preparation example:
@@ -45,16 +64,14 @@ pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12
 
 ## 1.3 Parameters
 
-### 1.3.0 `-p`
-
-This parameter is the path of your `POSCAR` file, the default is `POSCAR`.
-
-### 1.3.0.5 `-a`
+### 1.3.0 `-a`
 
 This parameter mean attributes, you can specify some attributes in your calculation through this parameter. Noted that each attribute should be separated with `,`, this is the delimiter. <br />
  **!!! Do not** separate these parameters with **blank space**.
 
 __Noted that `prep_single_vasp` will make a new directory to contain those generated files, and the directory is named by `job_name`, default is `task`, and the prep_multi_vasp will generate a serial of directories named by job_name+[[:digit]]__
+
+Below examples are  based on `prep_single_vasp`, which will also be applicable for `prep_multi_vasp`.
 
 ### 1.3.1 `INCAR`
 
