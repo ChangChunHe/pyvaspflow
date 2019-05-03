@@ -52,12 +52,15 @@ pyvasp prep_single_vasp -p POSCAR -a kppa=4000,node_name=super_q,cpu_num=12
 
 ## 1.2 Prepare multiple vasp-tasks
 
-Noted that,first the work directory must has POSCAR[[:digit:]], and the `digit` must start with 0.
-
+Noted that,first the work directory must has POSCAR[[:digit:]], and the `digit` must start with 0. This command will generate separated directories containing `POSCAR, KPOINTS,POTCAR, job.sh`. 
 
 A multiple tasks preparation example:
 
 ```shell
+# -w means the work directory, this directory should contain
+# POSCAR0,POSCAR1,..., this command will automatic
+# find all theses files
+
 pyvasp prep_multi_vasp -w . -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
 pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12
 ```
@@ -69,7 +72,7 @@ pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12
 This parameter mean attributes, you can specify some attributes in your calculation through this parameter. Noted that each attribute should be separated with `,`, this is the delimiter. <br />
  **!!! Do not** separate these parameters with **blank space**.
 
-__Noted that `prep_single_vasp` will make a new directory to contain those generated files, and the directory is named by `job_name`, default is `task`, and the prep_multi_vasp will generate a serial of directories named by job_name+[[:digit]]__
+__Noted that `prep_single_vasp` will make a new directory to contain those generated files, and the directory is named by `job_name`, default is `task`, and the prep_multi_vasp will generate a serial of directories named by job_name+[[:digit:]]__
 
 Below examples are  based on `prep_single_vasp`, which will also be applicable for `prep_multi_vasp`.
 
