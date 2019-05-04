@@ -48,20 +48,24 @@ def run_single_vasp(job_name):
     chdir('..')
 
 
-def run_multi_vasp(job_name,sum_job_num,par_job_num=4):
+def run_multi_vasp(job_name,sum_job_num,start_job_num=0,par_job_num=4):
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     jobs = []
+    sum_job_num,start_job_num,par_job_num = int(sum_job_num),int(start_job_num),int(par_job_num)
     manager = Manager()
     jobs_dict = manager.dict()
-    for ii in range(par_job_num):
-        chdir(job_name+str(ii))
-        p = Process(target=_submit_job,args=(job_name+str(ii),jobs_dict))
+    idx = start_job_num
+    for ii in range(min(par_job_num,sum_job_num-start_job_num)):
+        chdir(job_name+str(ii+start_job_num))
+        p = Process(target=_submit_job,args=(job_name+str(ii+start_job_num),jobs_dict))
         jobs.append(p)
         p.start()
         p.join()
         chdir('..')
+        idx += 1
+    if idx == sum_job_num+1:
+        return
     jobid_pool = jobs_dict.values()
-    idx = par_job_num
     while True:
         inqueue_num = job_inqueue_num(jobid_pool)
         if inqueue_num < par_job_num:
@@ -73,9 +77,9 @@ def run_multi_vasp(job_name,sum_job_num,par_job_num=4):
                 p.join()
                 chdir('..')
                 idx += 1
-                if idx == sum_job_num:
+                if idx == sum_job_num+1:
                     break
         jobid_pool = jobs_dict.values()
         sleep(5)
-        if idx == sum_job_num:
+        if idx == sum_job_num+1:
             break
