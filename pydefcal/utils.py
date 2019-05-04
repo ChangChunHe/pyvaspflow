@@ -470,10 +470,11 @@ class run(runmeta('base_run', (std_output, ), {})):
         return " | ".join([e.command for e in self.chain])
 
 def read_json():
-    from os.path import expanduser
-    home = expanduser("~")
-    if path.isfile(path.join('.','conf.json')):
-        conf_file_path = path.join('.','conf.json')
+    from os import pardir
+    home = path.expanduser("~")
+    wd = path.abspath(pardir)
+    if path.isfile(path.join(wd,'conf.json')):
+        conf_file_path = path.join(wd,'conf.json')
     elif path.isfile(path.join(home,'conf.json')):
         conf_file_path = path.join(home,'conf.json')
     else:
