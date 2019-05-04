@@ -6,8 +6,9 @@ Table of Contents
 =================
 
    * [Defect-Formation-Calculation](#defect-formation-calculation)
-      * [0. Installation](#0-installation)
-      * [1. Preparation](#1-preparation)
+      * [0 Installation](#0-installation)
+      * [0.5 Configuration](#05-configuration)
+      * [1 Preparation](#1-preparation)
       * [1.1 Prepare single vasp-task](#11-prepare-single-vasp-task)
       * [1.2 Prepare multiple vasp-tasks](#12-prepare-multiple-vasp-tasks)
       * [1.3 Parameters](#13-parameters)
@@ -16,12 +17,12 @@ Table of Contents
          * [1.3.2 KPOINTS](#132-kpoints)
          * [1.3.3 POTCAR](#133-potcar)
          * [1.3.4 job.sh](#134-jobsh)
-      * [2. Execution](#2-execution)
-      * [2.1 Execute single vasp-task](#21-execute-single-vasp-task)
-      * [2.2 Execute multiple vasp-tasks](#22-execute-multiple-vasp-tasks)
+      * [2 Execution](#2-execution)
+         * [2.1 Execute single vasp-task](#21-execute-single-vasp-task)
+         * [2.2 Execute multiple vasp-tasks](#22-execute-multiple-vasp-tasks)
 
 
-## 0. Installation
+## 0 Installation
 You can install this package from source code, and use
 
 ```shell
@@ -30,7 +31,28 @@ pip install -e . # -e for developer
 
 This package has the dependency of  `sagar`, you'd better refer to [this guide](https://sagar.readthedocs.io/zh_CN/latest/installation/quick_install.html)  to install `sagar`, noted that this package  will be installed easily in __unix__ system.
 
-## 1. Preparation
+## 0.5 Configuration
+This package need you to set some configurations in order to read `POTCAR` files and write correct `job.sh` files.
+This file should be named as `conf.json` under your `$HOME` directory or in your current directory. And we will **firstly** search  this  file in your **current directory**.
+
+```json
+{
+"potcar_path":
+{"paw_PBE":"/opt/ohpc/pub/apps/vasp/pps/paw_PBE",
+"paw_LDA":"/opt/ohpc/pub/apps/vasp/pps/paw_LDA",
+"paw_PW91":"/opt/ohpc/pub/apps/vasp/pps/paw_PW91",
+"USPP_LDA":"/opt/ohpc/pub/apps/vasp/pps/USPP_LDA",
+"USPP_PW91":"/opt/ohpc/pub/apps/vasp/pps/USPP_PW91"
+},
+"job":{
+"prepend": "module load vasp/5.4.4-impi-mkl",
+"exec": "mpirun -n ${SLURM_NPROCS} vasp_std"
+}
+}
+```
+This file your  should specify your `POTCAR` path and the command of  submitting  jobs.
+
+## 1 Preparation
 
 You can use `--help` to get some help
 
@@ -52,10 +74,11 @@ pyvasp prep_single_vasp -p POSCAR -a kppa=4000,node_name=super_q,cpu_num=12
 
 ## 1.2 Prepare multiple vasp-tasks
 
-Noted that,first the work directory must has POSCAR[[:digit:]], and the `digit` must start with 0. This command will generate separated directories containing `POSCAR, KPOINTS,POTCAR, job.sh`. 
+Noted that,first the work directory must has POSCAR[[:digit:]], and the `digit` must start with 0. This command will generate separated directories containing `POSCAR, KPOINTS,POTCAR, job.sh`.
 
 A multiple tasks preparation example:
 
+supposed that your work directory has POSCAR0,POSCAR1,...,POSCAR12.
 ```shell
 # -w means the work directory, this directory should contain
 # POSCAR0,POSCAR1,..., this command will automatic
@@ -64,12 +87,14 @@ A multiple tasks preparation example:
 pyvasp prep_multi_vasp -w . -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
 pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12
 ```
+This command will generate `task0`,`task1`,...,`task12` because you do not specify parameter `job_name`, the default is `task`. <br \>
+If you specify `job_name=struc_opt`, the names of generated directories will be `struc_opt0`,`struc_opt1`,...,`struc_opt12`.
 
 ## 1.3 Parameters
 
 ### 1.3.0 `-a`
 
-This parameter mean attributes, you can specify some attributes in your calculation through this parameter. Noted that each attribute should be separated with `,`, this is the delimiter. <br />
+This parameter mean attributes, you can specify some attributes in your calculation through this parameter. Noted that each attribute should be separated with `,`( this is the delimiter). <br />
  **!!! Do not** separate these parameters with **blank space**.
 
 __Noted that `prep_single_vasp` will make a new directory to contain those generated files, and the directory is named by `job_name`, default is `task`, and the prep_multi_vasp will generate a serial of directories named by job_name+[[:digit:]]__
@@ -128,9 +153,9 @@ node_name=short_q,cpu_num=24,node_num=1,job_name=task
 pyvasp prep_single_vasp -a node_name=super_q,cpu_num=12,job_name=task
 ```
 
-## 2. Execution
+## 2 Execution
 
-## 2.1 Execute single vasp-task
+### 2.1 Execute single vasp-task
 
 ```shell
 $ pyvasp run_single_vasp --help
@@ -147,7 +172,7 @@ pyvasp run_ringle_vasp  task
 ```
 
 
-## 2.2 Execute multiple vasp-tasks
+### 2.2 Execute multiple vasp-tasks
 
 ```shell
 $ pyvasp run_multi_vasp --help
@@ -165,7 +190,14 @@ The second parameter is the total number of jobs you want to calculate, noted th
 Below example means that there are 20 directories should be calculated, there are task0,task1,...,task19.
 
 ```shell
-pyvasp run_multi_vasp task 20 -p 4
+pyvasp run_multi_vasp -p 4 task 20
 ```
 
 The last parameter is `par_job_num`, this parameter means the number of parallel jobs, namely, you can occupy `par_job_num` node simultaneously, the above example means occupying 4 nodes simultaneously.
+
+And  we also support the parameter `start_job_num`, this is the number of your first directory.
+
+```shell
+pyvasp run_multi_vasp -p 3 -s 13 task 20
+```
+This means that you  will start your jobs from task13 to task 20. The default of  this parameter is 0.
