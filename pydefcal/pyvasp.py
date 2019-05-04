@@ -13,7 +13,6 @@ from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
 from pydefcal.vasp.run_vasp import run_single_vasp as rsv
 from pydefcal.vasp.prep_vasp import prep_multi_vasp as pmv
 from pydefcal.vasp.run_vasp import run_multi_vasp as rmv
-import re
 
 
 @click.group()
@@ -299,33 +298,7 @@ def chem_pot(chem_incar,remove):
 @click.option('--poscar','-p', default='POSCAR', type=str)
 @click.option('--attribute','-a', default='', type=str)
 def prep_single_vasp(poscar,attribute):
-    kw = {}
-    if attribute:
-        if 'kpts' in attribute:
-            res = re.search('kpts=\d+,\d+,\d+',attribute)
-            if res:
-                res = res.group()
-                attribute = attribute.replace(','+res,'')
-                kw['kpts'] = tuple(int(i) for i in res.split('=')[-1].split(','))
-            else:
-                raise ValueError('Format of parameter `kpts` are incorrect, an example: kpt=2,2,2')
-        if 'shift' in attribute:
-            res = re.search('shift=\d+\.\d+,\d+\.\d+,\d+\.\d+',attribute)
-            if res:
-                res = res.group()
-                attribute = attribute.replace(','+res,'')
-                kw['shift'] = tuple(float(i) for i in res.split('=')[-1].split(','))
-            else:
-                raise ValueError('Format of parameter `shift` are incorrect, an example: shift=0,0,0')
-        attribute = [i.split('=')  for i in attribute.split(',')]
-        for att in attribute:
-            key,val = att
-            try:
-                val = float(val)
-                kw[key]=val
-            except ValueError:
-                kw[key]=val
-    psv(poscar=poscar,kw=kw)
+    psv(poscar=poscar,kw=us.get_kw(attribute))
 
 
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
@@ -338,41 +311,18 @@ def run_single_vasp(job_name):
 @click.option('--wd','-w', default='.', type=str)
 @click.option('--attribute','-a', default='', type=str)
 def prep_multi_vasp(wd,attribute):
-    kw = {}
-    if attribute:
-        if 'kpts' in attribute:
-            res = re.search('kpts=\d+,\d+,\d+',attribute)
-            if res:
-                res = res.group()
-                attribute = attribute.replace(','+res,'')
-                kw['kpts'] = tuple(int(i) for i in res.split('=')[-1].split(','))
-            else:
-                raise ValueError('Format of parameter `kpts` are incorrect, an example: kpt=2,2,2')
-        if 'shift' in attribute:
-            res = re.search('shift=\d+\.\d+,\d+\.\d+,\d+\.\d+',attribute)
-            if res:
-                res = res.group()
-                attribute = attribute.replace(','+res,'')
-                kw['shift'] = tuple(float(i) for i in res.split('=')[-1].split(','))
-            else:
-                raise ValueError('Format of parameter `shift` are incorrect, an example: shift=0,0,0')
-        attribute = [i.split('=')  for i in attribute.split(',')]
-        for att in attribute:
-            key,val = att
-            try:
-                val = float(val)
-                kw[key]=val
-            except ValueError:
-                kw[key]=val
-    pmv(wd=wd,kw=kw)
+    pmv(wd=wd,kw=us.get_kw(attribute))
 
 
 @cli.command('run_multi_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<job_name>',nargs=1)
 @click.argument('sum_job_num', metavar='<total number of jobs>',nargs=1)
+@click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
-def run_multi_vasp(job_name,sum_job_num,par_job_num):
-    rmv(job_name=job_name,sum_job_num=sum_job_num,par_job_num=par_job_num)
+def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
+    rmv(job_name=job_name,sum_job_num=sum_job_num,
+        start_job_num=start_job_num,par_job_num=par_job_num)
+
 
 if __name__ == "__main__":
     cli()
