@@ -486,6 +486,29 @@ def read_json():
         json_f = json.load(f)
     return json_f
 
+def get_kw(attribute):
+    kw = {}
+    if attribute:
+        attribute = attribute.split('=')
+        n = len(attribute)
+        if len(attribute[1].split(',')) == 2 :
+            kw[attribute[0]] = attribute[1].split(',')[0]
+        else:
+            kw[attribute[0]] = attribute[1].split(',')[:-1]
+        for ii in range(1,n-1):
+            if len(attribute[ii+1].split(',')) == 2:
+                kw[attribute[ii].split(',')[-1]] = attribute[ii+1].split(',')[0]
+            else:
+                kw[attribute[ii].split(',')[-1]] = attribute[ii+1].split(',')[:-1]
+        if len(attribute[-1].split(',')) > 1:
+            kw[attribute[-2].split(',')[-1]] = attribute[-1].split(',')
+        else:
+            kw[attribute[-2].split(',')[-1]] = attribute[-1]
+        if 'kpts' in kw:
+            kw['kpts'] = tuple(int(i) for i in kw['kpts'])
+        if 'shift' in kw:
+            kw['shift'] = tuple(float(i) for i in kw['shift'])
+    return kw
 
 if __name__ == "__main__":
-    pass
+    print(get_kw('NSW=0'))
