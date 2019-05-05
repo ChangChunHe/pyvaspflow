@@ -84,11 +84,9 @@ supposed that your work directory has POSCAR0,POSCAR1,...,POSCAR12.
 # POSCAR0,POSCAR1,..., this command will automatic
 # find all theses files
 
-pyvasp prep_multi_vasp -w . -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
-pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12
+pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
 ```
-This command will generate `task0`,`task1`,...,`task12` because you do not specify parameter `job_name`, the default is `task`. <br \>
-If you specify `job_name=struc_opt`, the names of generated directories will be `struc_opt0`,`struc_opt1`,...,`struc_opt12`.
+This command will generate  `struc_opt0`,`struc_opt1`,...,`struc_opt12`, because you specify parameter `job_name=struc_opt`, the default is `task`. If you do not  specify `job_name`, the names of generated directories will be `task0`,`task1`,...,`task12`.
 
 ## 1.3 Parameters
 
