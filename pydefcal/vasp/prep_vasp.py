@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from pydefcal.utils import run,read_json
+from pydefcal.utils import read_json
 from os import path,makedirs,chdir,listdir
 from shutil import rmtree,copy2
 from sagar.io.vasp import read_vasp
