@@ -6,7 +6,6 @@ import linecache as lc
 import numpy as np
 import os
 import subprocess
-from pydefcal.utils import get_farther_atom_num
 
 
 class ExtractValue():

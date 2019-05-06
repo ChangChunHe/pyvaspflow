@@ -21,11 +21,10 @@ def cli():
 
 
 @cli.command('main',short_help="Get the value you want")
-@click.argument('file_directory',metavar='<Work_directory>',
-type=click.Path(exists=True))
+@click.option('--wd','-w',default='.')
 @click.option('--attribute','-a', default='energy', type=str)
 @click.option('--number','-n', default=1, type=int)
-def main(file_directory, attribute,number):
+def main(wd, attribute,number):
     """
     First parameter:
 
@@ -38,22 +37,20 @@ def main(file_directory, attribute,number):
 
     Example:
 
-    module load sagar #load the necessay package
+    pyvasp main -a gap . # this can read the gap and vbm, cbm
 
-    pyvasp.py main -a gap . # this can read the gap and vbm, cbm
+    pyvasp main -a fermi . # this can read the fermi energy
 
-    pyvasp.py main -a fermi . # this can read the fermi energy
+    pyvasp main -a energy . # this can read the total energy
 
-    pyvasp.py main -a energy . # this can read the total energy
+    pyvasp main -a ele . # this can read the electrons in your OUTCAR
 
-    pyvasp.py main -a ele . # this can read the electrons in your OUTCAR
+    pyvasp main -a ele-free . # this can get electrons number of  the defect-free system
 
-    pyvasp.py main -a ele-free . # this can get electrons number of  the defect-free system
-
-    pyvasp.py main -a  Ewald . # this can get the Ewald energy of your system
+    pyvasp main -a  Ewald . # this can get the Ewald energy of your system
     """
 
-    EV = ExtractValue(file_directory)
+    EV = ExtractValue(wd)
     if 'gap' in attribute:
         get_gap(EV)
     elif 'fermi' in attribute:
@@ -67,7 +64,7 @@ def main(file_directory, attribute,number):
     elif 'ima' in attribute or 'ewald' in attribute.lower():
         get_Ewald(EV)
     elif 'elect' in attribute and 'static' in attribute:
-        outcar=os.path.join(file_directory,'OUTCAR')
+        outcar=os.path.join(wd,'OUTCAR')
         click.echo('Electrostatic energy of '+str(number)+' atom is: '+str(get_ele_sta(outcar, number)))
 
 def get_gap(EV):
@@ -115,9 +112,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py get_PA defect_free charge_state_1
+    pyvasp get_PA defect_free charge_state_1
     """
     num_def, num_no_def = us.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
             os.path.join(defect_dir,'POSCAR'))
@@ -159,9 +154,7 @@ def cell(pcell_filename, volume):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py cell -v 2 2 2 POSCAR
+    pyvasp cell -v 2 2 2 POSCAR
     """
     pcell = read_vasp(pcell_filename)
     supcell = pcell.extend(np.diag(volume))
@@ -192,9 +185,7 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py get_purity_poscar -i Vacc -o Si POSCAR
+    pyvasp get_purity_poscar -i Vacc -o Si POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
     DM.get_purity_defect(purity_out=purity_out,purity_in=purity_in,symprec=symprec,num=num)
@@ -215,9 +206,7 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py get_tetrahedral_poscar -i H  POSCAR
+    pyvasp get_tetrahedral_poscar -i H  POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
     DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)
@@ -239,17 +228,15 @@ def symmetry(poscar,attr,sympre):
 
     Example:
 
-    module load sagar #load the necessay package
+    pyvasp symmetry -a space POSCAR # get space_group
 
-    pyvasp.py symmetry -a space POSCAR # get space_group
+    pyvasp symmetry -a translations POSCAR # get translations symmetry
 
-    pyvasp.py symmetry -a translations POSCAR # get translations symmetry
+    pyvasp symmetry -a rotations POSCAR # get rotations symmetry
 
-    pyvasp.py symmetry -a rotations POSCAR # get rotations symmetry
+    pyvasp symmetry -a equivalent POSCAR # get equivalent_atoms
 
-    pyvasp.py symmetry -a equivalent POSCAR # get equivalent_atoms
-
-    pyvasp.py symmetry -a primitive POSCAR # get primitive cell
+    pyvasp symmetry -a primitive POSCAR # get primitive cell
     """
     c = read_vasp(poscar)
     if 'space' in attr or 'group' in attr:
@@ -287,9 +274,7 @@ def chem_pot(chem_incar,remove):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py chem_pot chem_incar # get space_group
+    pyvasp chem_pot chem_incar # get space_group
     '''
     plot_2d_chemical_potential_phase(chem_incar,remove)
 
