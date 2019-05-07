@@ -13,7 +13,7 @@ from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
 from pydefcal.vasp.run_vasp import run_single_vasp as rsv
 from pydefcal.vasp.prep_vasp import prep_multi_vasp as pmv
 from pydefcal.vasp.run_vasp import run_multi_vasp as rmv
-
+from pydefcal.vasp import test_para
 
 @click.group()
 def cli():
@@ -21,39 +21,29 @@ def cli():
 
 
 @cli.command('main',short_help="Get the value you want")
-@click.argument('file_directory',metavar='<Work_directory>',
-type=click.Path(exists=True))
+@click.option('--wd','-w',default='.')
 @click.option('--attribute','-a', default='energy', type=str)
 @click.option('--number','-n', default=1, type=int)
-def main(file_directory, attribute,number):
+def main(wd, attribute,number):
     """
-    First parameter:
-
-    calculation directory, the dir path of your calculation
-
-    Sencond parameter:
-
-    this is an option, use this parameter to get some common
-    value in your vasp outfiles
-
     Example:
 
-    module load sagar #load the necessay package
+    pyvasp main -a gap  # this can read the gap and vbm, cbm
 
-    pyvasp.py main -a gap . # this can read the gap and vbm, cbm
+    pyvasp main -a fermi  -w work_dir  # this can read the fermi energy, -w is your work directory
 
-    pyvasp.py main -a fermi . # this can read the fermi energy
+    pyvasp main -a energy  # this can read the total energy
 
-    pyvasp.py main -a energy . # this can read the total energy
+    pyvasp main -a ele  # this can read the electrons in your OUTCAR
 
-    pyvasp.py main -a ele . # this can read the electrons in your OUTCAR
+    pyvasp main -a ele-free  # this can get electrons number of  the defect-free system
 
-    pyvasp.py main -a ele-free . # this can get electrons number of  the defect-free system
+    pyvasp main -a  Ewald  # this can get the Ewald energy of your system
 
-    pyvasp.py main -a  Ewald . # this can get the Ewald energy of your system
+    pyvasp main -a cpu  # this can get CPU time
     """
 
-    EV = ExtractValue(file_directory)
+    EV = ExtractValue(wd)
     if 'gap' in attribute:
         get_gap(EV)
     elif 'fermi' in attribute:
@@ -67,8 +57,10 @@ def main(file_directory, attribute,number):
     elif 'ima' in attribute or 'ewald' in attribute.lower():
         get_Ewald(EV)
     elif 'elect' in attribute and 'static' in attribute:
-        outcar=os.path.join(file_directory,'OUTCAR')
+        outcar = os.path.join(wd,'OUTCAR')
         click.echo('Electrostatic energy of '+str(number)+' atom is: '+str(get_ele_sta(outcar, number)))
+    elif 'cpu' in attribute.lower():
+        click.echo('CPU time is: '+str(EV.get_cpu_time())+'s')
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -115,9 +107,7 @@ def get_PA(no_defect_dir,defect_dir):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py get_PA defect_free charge_state_1
+    pyvasp get_PA defect_free charge_state_1
     """
     num_def, num_no_def = us.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
             os.path.join(defect_dir,'POSCAR'))
@@ -159,9 +149,7 @@ def cell(pcell_filename, volume):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py cell -v 2 2 2 POSCAR
+    pyvasp cell -v 2 2 2 POSCAR
     """
     pcell = read_vasp(pcell_filename)
     supcell = pcell.extend(np.diag(volume))
@@ -192,9 +180,7 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py get_purity_poscar -i Vacc -o Si POSCAR
+    pyvasp get_purity_poscar -i Vacc -o Si POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
     DM.get_purity_defect(purity_out=purity_out,purity_in=purity_in,symprec=symprec,num=num)
@@ -215,9 +201,7 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py get_tetrahedral_poscar -i H  POSCAR
+    pyvasp get_tetrahedral_poscar -i H  POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
     DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)
@@ -239,17 +223,15 @@ def symmetry(poscar,attr,sympre):
 
     Example:
 
-    module load sagar #load the necessay package
+    pyvasp symmetry -a space POSCAR # get space_group
 
-    pyvasp.py symmetry -a space POSCAR # get space_group
+    pyvasp symmetry -a translations POSCAR # get translations symmetry
 
-    pyvasp.py symmetry -a translations POSCAR # get translations symmetry
+    pyvasp symmetry -a rotations POSCAR # get rotations symmetry
 
-    pyvasp.py symmetry -a rotations POSCAR # get rotations symmetry
+    pyvasp symmetry -a equivalent POSCAR # get equivalent_atoms
 
-    pyvasp.py symmetry -a equivalent POSCAR # get equivalent_atoms
-
-    pyvasp.py symmetry -a primitive POSCAR # get primitive cell
+    pyvasp symmetry -a primitive POSCAR # get primitive cell
     """
     c = read_vasp(poscar)
     if 'space' in attr or 'group' in attr:
@@ -287,9 +269,7 @@ def chem_pot(chem_incar,remove):
 
     Example:
 
-    module load sagar #load the necessay package
-
-    pyvasp.py chem_pot chem_incar # get space_group
+    pyvasp chem_pot chem_incar # get space_group
     '''
     plot_2d_chemical_potential_phase(chem_incar,remove)
 
@@ -322,6 +302,32 @@ def prep_multi_vasp(wd,attribute):
 def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
     rmv(job_name=job_name,sum_job_num=sum_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
+
+
+@cli.command('test_encut',short_help="test encut in vasp calculation")
+@click.option('--poscar','-p', default='POSCAR')
+@click.option('-start','-s', default=0.8,type=float)
+@click.option('--end','-e', default=1.3,type=float)
+@click.option('--step','-t', default=10,type=float)
+@click.option('--attribute','-a', default='',type=str)
+def test_encut(poscar,start,end,step,attribute):
+    tp = test_para.TestParameter(poscar=poscar)
+    kw = {'start':start,'end':end,'step':step}
+    kw.update(us.get_kw(attribute))
+    tp.test_encut(kw=kw)
+
+
+@cli.command('test_kpts',short_help="test kpoints in vasp calculation")
+@click.option('--poscar','-p', default='POSCAR')
+@click.option('-start','-s', default=2000,type=int)
+@click.option('--end','-e', default=4000,type=int)
+@click.option('--step','-t', default=300,type=int)
+@click.option('--attribute','-a', default='',type=str)
+def test_kpts(poscar,start,end,step,attribute):
+    tp = test_para.TestParameter(poscar=poscar)
+    kw = {'start':start,'end':end,'step':step}
+    kw.update(us.get_kw(attribute))
+    tp.test_kpts(kw=kw)
 
 
 if __name__ == "__main__":

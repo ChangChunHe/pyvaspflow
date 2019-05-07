@@ -84,11 +84,9 @@ supposed that your work directory has POSCAR0,POSCAR1,...,POSCAR12.
 # POSCAR0,POSCAR1,..., this command will automatic
 # find all theses files
 
-pyvasp prep_multi_vasp -w . -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
-pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12
+pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
 ```
-This command will generate `task0`,`task1`,...,`task12` because you do not specify parameter `job_name`, the default is `task`. <br \>
-If you specify `job_name=struc_opt`, the names of generated directories will be `struc_opt0`,`struc_opt1`,...,`struc_opt12`.
+This command will generate  `struc_opt0`,`struc_opt1`,...,`struc_opt12`, because you specify parameter `job_name=struc_opt`, the default is `task`. If you do not  specify `job_name`, the names of generated directories will be `task0`,`task1`,...,`task12`.
 
 ## 1.3 Parameters
 
@@ -201,3 +199,65 @@ And  we also support the parameter `start_job_num`, this is the number of your f
 pyvasp run_multi_vasp -p 3 -s 13 task 20
 ```
 This means that you  will start your jobs from task13 to task 20. The default of  this parameter is 0.
+
+## 3 Fetch
+
+Here we supply a command interface to get the value you want.
+
+__Noted that, if you get `permission denied`, please use `chmod u+x pyvasp.py` to give the execute right to the file__
+
+### 3.1 pyvasp-help
+```shell
+module load sagar #load the necesary package
+pyvasp --help # you can get some short help from this command
+pyvasp main --help # get the help of a specific command  
+```
+
+### 3.2 pyvasp-`main`
+This command is used to get some common value of your calculation system. For instance, gap, fermi energy, electrons number and so on.
+The last parameter is the directory path of your calculation system, make sure it is right or you will get wrong answer.
+```shell
+pyvasp main -a gap . # this can read the gap and vbm, cbm
+pyvasp main -a fermi . # this can read the fermi energy
+pyvasp main -a energy . # this can read the total energy
+pyvasp main -a ele . # this can read the electrons in your OUTCAR
+pyvasp main -a ele-free . # this can get electrons number of  the defect-free system
+pyvasp main -a image image_corr/ # this can get Ewald energy of your system,  using `pyvasp.py main -a ewald image_corr` can also get the same result.
+```
+
+### 3.3 pyvasp-`cell`
+This command is used to extend your cell and generate a supcell.vasp
+```shell
+pyvasp cell -v 2 2 2 POSCAR
+# extend your POSCAR to 2*2*2 supercell
+```
+
+### 3.4 pyvasp-`get_purity`
+This command is used to get the purity structures , such Si-vacancy, Ga purity in In2O3 system, but noted that each time only one purity atom will be dopped into the system.
+```shell
+pyvasp get_purity -i Vacc -o Si Si-POSCAR # generate a vacancy
+pyvasp get_purity -i Ga -o In In2O3-POSCAR #genrate a Ga defect
+```
+
+### 3.5 pyvasp-`get_tetrahedral`
+This command is used to get the tetrahedral interstitial sites, for example, in YFe2 system, H atom can be inserted into the tetrahedral sites.
+
+```shell
+pyvasp get_tetrahedral -i H YFe2-POSCAR
+```
+
+### 3.6 pyvasp-`get_PA`
+This command can get the electrostatic of your defect system and no defect system of the farther atom from defect atom
+```shell
+pyvasp get_PA defect_free charge_state_1
+```
+
+### 3.7 pyvasp-`symmetry`
+This command can get some symmetry message of your POSCAR.
+
+```shell
+pyvasp symmetry -a spacegroup POSCAR # get space group
+pyvasp symmetry -a equivalent POSCAR # get equivalent atoms
+pyvasp symmetry -a primitive POSCAR
+# generate primitive cell POSCAR
+```

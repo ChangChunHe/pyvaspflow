@@ -6,7 +6,6 @@ import linecache as lc
 import numpy as np
 import os
 import subprocess
-from pydefcal.utils import get_farther_atom_num
 
 
 class ExtractValue():
@@ -43,6 +42,13 @@ class ExtractValue():
     def get_image(self):
         file_image = os.path.join(self.data_folder,'OUTCAR')
         return float(subprocess.run(['grep','Ewald',file_image],stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')[0].split()[-1])
+
+    def get_cpu_time(self):
+        file_outcar = os.path.join(self.data_folder,'OUTCAR')
+        with open(file_outcar) as f:
+            lines = f.readlines()
+        cpu_line = [line for line in lines if 'CPU' in line]
+        return  float(cpu_line[0].split()[-1])
 
     def get_gap(self):
         file_eig = os.path.join(self.data_folder,'EIGENVAL')
