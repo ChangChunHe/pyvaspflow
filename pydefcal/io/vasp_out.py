@@ -43,6 +43,13 @@ class ExtractValue():
         file_image = os.path.join(self.data_folder,'OUTCAR')
         return float(subprocess.run(['grep','Ewald',file_image],stdout=subprocess.PIPE).stdout.decode('utf-8').split('\n')[0].split()[-1])
 
+    def get_cpu_time(self):
+        file_outcar = os.path.join(self.data_folder,'OUTCAR')
+        with open(file_outcar) as f:
+            lines = f.readlines()
+        cpu_line = [line for line in lines if 'CPU' in line]
+        return  float(cpu_line[0].split()[-1])
+
     def get_gap(self):
         file_eig = os.path.join(self.data_folder,'EIGENVAL')
         line6 = np.genfromtxt(file_eig,skip_header=5,max_rows=1)
