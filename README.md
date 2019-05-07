@@ -20,6 +20,17 @@ Table of Contents
       * [2 Execution](#2-execution)
          * [2.1 Execute single vasp-task](#21-execute-single-vasp-task)
          * [2.2 Execute multiple vasp-tasks](#22-execute-multiple-vasp-tasks)
+         * [2.3 Test some parameters](#23-test-some-parameters)
+            * [2.3.1 test ENMAX](#231-test-enmax)
+            * [2.3.2 test KPOINTS](#232-test-kpoints)
+      * [3 Fetch](#3-fetch)
+         * [3.1 pyvasp-help](#31-pyvasp-help)
+         * [3.2 pyvasp-main](#32-pyvasp-main)
+         * [3.3 pyvasp-cell](#33-pyvasp-cell)
+         * [3.4 pyvasp-get_purity](#34-pyvasp-get_purity)
+         * [3.5 pyvasp-get_tetrahedral](#35-pyvasp-get_tetrahedral)
+         * [3.6 pyvasp-get_PA](#36-pyvasp-get_pa)
+         * [3.7 pyvasp-symmetry](#37-pyvasp-symmetry)
 
 
 ## 0 Installation
@@ -200,6 +211,15 @@ pyvasp run_multi_vasp -p 3 -s 13 task 20
 ```
 This means that you  will start your jobs from task13 to task 20. The default of  this parameter is 0.
 
+### 2.3 Test some parameters
+
+#### 2.3.1 test ENMAX
+
+
+#### 2.3.2 test KPOINTS
+
+
+
 ## 3 Fetch
 
 Here we supply a command interface to get the value you want.
@@ -222,7 +242,9 @@ pyvasp main -a fermi . # this can read the fermi energy
 pyvasp main -a energy . # this can read the total energy
 pyvasp main -a ele . # this can read the electrons in your OUTCAR
 pyvasp main -a ele-free . # this can get electrons number of  the defect-free system
-pyvasp main -a image image_corr/ # this can get Ewald energy of your system,  using `pyvasp.py main -a ewald image_corr` can also get the same result.
+pyvasp main -a image image_corr/ # this can get Ewald energy of your system,  
+# using `pyvasp main -a ewald image_corr` can also get the same result.
+pyvasp main -a cpu # get total run time
 ```
 
 ### 3.3 pyvasp-`cell`
