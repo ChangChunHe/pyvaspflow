@@ -303,18 +303,32 @@ def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
     rmv(job_name=job_name,sum_job_num=sum_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
 
+
 @cli.command('test_encut',short_help="test encut in vasp calculation")
 @click.option('--poscar','-p', default='POSCAR')
-@click.option('--functional','-f', default='paw_PBE')
-@click.option('--sym_potcar_map','-m', default='')
 @click.option('-start','-s', default=0.8,type=float)
 @click.option('--end','-e', default=1.3,type=float)
 @click.option('--step','-t', default=10,type=float)
-def test_encut(poscar,functional,sym_potcar_map,start,end,step):
+@click.option('--attribute','-a', default='',type=str)
+def test_encut(poscar,start,end,step,attribute):
     tp = test_para.TestParameter(poscar=poscar)
-    kw = {'functional':functional,'sym_potcar_map':sym_potcar_map,
-    'start':start,'end':end,'step':step}
+    kw = {'start':start,'end':end,'step':step}
+    kw.update(us.get_kw(attribute))
     tp.test_encut(kw=kw)
+
+
+@cli.command('test_kpts',short_help="test kpoints in vasp calculation")
+@click.option('--poscar','-p', default='POSCAR')
+@click.option('-start','-s', default=2000,type=int)
+@click.option('--end','-e', default=4000,type=int)
+@click.option('--step','-t', default=300,type=int)
+@click.option('--attribute','-a', default='',type=str)
+def test_kpts(poscar,start,end,step,attribute):
+    tp = test_para.TestParameter(poscar=poscar)
+    kw = {'start':start,'end':end,'step':step}
+    kw.update(us.get_kw(attribute))
+    tp.test_kpts(kw=kw)
+
 
 if __name__ == "__main__":
     cli()
