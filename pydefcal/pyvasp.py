@@ -13,7 +13,7 @@ from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
 from pydefcal.vasp.run_vasp import run_single_vasp as rsv
 from pydefcal.vasp.prep_vasp import prep_multi_vasp as pmv
 from pydefcal.vasp.run_vasp import run_multi_vasp as rmv
-
+from pydefcal.vasp import test_para
 
 @click.group()
 def cli():
@@ -26,28 +26,21 @@ def cli():
 @click.option('--number','-n', default=1, type=int)
 def main(wd, attribute,number):
     """
-    First parameter:
-
-    calculation directory, the dir path of your calculation
-
-    Sencond parameter:
-
-    this is an option, use this parameter to get some common
-    value in your vasp outfiles
-
     Example:
 
-    pyvasp main -a gap . # this can read the gap and vbm, cbm
+    pyvasp main -a gap  # this can read the gap and vbm, cbm
 
-    pyvasp main -a fermi . # this can read the fermi energy
+    pyvasp main -a fermi  -w work_dir  # this can read the fermi energy, -w is your work directory
 
-    pyvasp main -a energy . # this can read the total energy
+    pyvasp main -a energy  # this can read the total energy
 
-    pyvasp main -a ele . # this can read the electrons in your OUTCAR
+    pyvasp main -a ele  # this can read the electrons in your OUTCAR
 
-    pyvasp main -a ele-free . # this can get electrons number of  the defect-free system
+    pyvasp main -a ele-free  # this can get electrons number of  the defect-free system
 
-    pyvasp main -a  Ewald . # this can get the Ewald energy of your system
+    pyvasp main -a  Ewald  # this can get the Ewald energy of your system
+
+    pyvasp main -a cpu  # this can get CPU time
     """
 
     EV = ExtractValue(wd)
@@ -64,8 +57,10 @@ def main(wd, attribute,number):
     elif 'ima' in attribute or 'ewald' in attribute.lower():
         get_Ewald(EV)
     elif 'elect' in attribute and 'static' in attribute:
-        outcar=os.path.join(wd,'OUTCAR')
+        outcar = os.path.join(wd,'OUTCAR')
         click.echo('Electrostatic energy of '+str(number)+' atom is: '+str(get_ele_sta(outcar, number)))
+    elif 'cpu' in attribute.lower():
+        click.echo('CPU time is: '+str(EV.get_cpu_time())+'s')
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -308,6 +303,18 @@ def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
     rmv(job_name=job_name,sum_job_num=sum_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
 
+@cli.command('test_encut',short_help="test encut in vasp calculation")
+@click.option('--poscar','-p', default='POSCAR')
+@click.option('--functional','-f', default='paw_PBE')
+@click.option('--sym_potcar_map','-m', default='')
+@click.option('-start','-s', default=0.8,type=float)
+@click.option('--end','-e', default=1.3,type=float)
+@click.option('--step','-t', default=10,type=float)
+def test_encut(poscar,functional,sym_potcar_map,start,end,step):
+    tp = test_para.TestParameter(poscar=poscar)
+    kw = {'functional':functional,'sym_potcar_map':sym_potcar_map,
+    'start':start,'end':end,'step':step}
+    tp.test_encut(kw=kw)
 
 if __name__ == "__main__":
     cli()
