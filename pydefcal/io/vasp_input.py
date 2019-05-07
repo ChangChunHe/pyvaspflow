@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-from pydefcal.utils import str_delimited, clean_lines, unlzw, zread,read_json
-from sagar.io.vasp import  read_vasp
+from pydefcal.utils import str_delimited, clean_lines,zread,read_json
 import re,math,json,seekpath
-from collections import namedtuple
 from os import path
 import numpy as np
 from enum import Enum
+from pydefcal.utils import is_2d_structure
 
 class Incar(dict):
 
@@ -430,8 +429,21 @@ class Kpoints:
         ngrid = kppa / len(structure.atoms)
         latt = structure.lattice
         lengths = np.linalg.norm(latt,axis=1)
-        mult = (ngrid * lengths[0] * lengths[1] * lengths[2]) ** (1 / 3)
-        num_div = [int(math.floor(max(mult / l, 1))) for l in lengths]
+        is_2d = is_2d_structure(structure)
+
+        if type(is_2d) is tuple:
+            vac_idx = is_2d[1]
+            atom_idx = np.setdiff1d(range(3),vac_idx)
+            mult = (ngrid * lengths[atom_idx[0]] * lengths[atom_idx[1]]) ** (1 / 2)
+            num_div = np.zeros((3,))
+            num_div[atom_idx[0]] = int(math.floor(max(mult / lengths[atom_idx[0]], 1)))
+            num_div[atom_idx[1]] = int(math.floor(max(mult / lengths[atom_idx[1]], 1)))
+            num_div[vac_idx] = 1
+            num_div = num_div.astype(int).tolist()
+        elif not is_2d :
+            mult = (ngrid * lengths[0] * lengths[1] * lengths[2]) ** (1 / 3)
+            num_div = [int(math.floor(max(mult / l, 1))) for l in lengths]
+
         spg = structure.get_spacegroup()
         if int(spg.split('(')[1].split(')')[0]) in range(168,195):
             is_hexagonal = True#   latt.is_hexagonal()
@@ -715,3 +727,11 @@ class Kpoints:
                    labels=d.get("labels"), tet_number=d.get("tet_number", 0),
                    tet_weight=d.get("tet_weight", 0),
                    tet_connections=d.get("tet_connections"))
+
+
+if __name__ == '__main__':
+    from sagar.io.vasp import read_vasp
+    c = read_vasp('/home/hecc/Documents/python-package/Defect-Formation-Calculation/pydefcal/examples/POSCAR')
+    kpoints = Kpoints()
+    kpoints.automatic_density(structure=c,kppa=3000)
+    kpoints.write_file()

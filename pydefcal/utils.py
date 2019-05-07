@@ -403,5 +403,16 @@ def get_kw(attribute):
             kw['shift'] = tuple(float(i) for i in kw['shift'])
     return kw
 
-if __name__ == "__main__":
-    print(get_kw('NSW=0'))
+def diff_poscar(pos1,pos2):
+    '''
+    To compare two structures are the same or not
+    '''
+    pass
+
+def is_2d_structure(cell):
+    pos = cell.positions
+    pos_std = np.std(pos,axis=0)
+    if min(pos_std) < 0.1*max(pos_std):
+        idx = np.argmin(pos_std)
+        return True,idx
+    return False
