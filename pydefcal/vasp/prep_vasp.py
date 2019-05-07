@@ -35,11 +35,11 @@ def write_incar(kw={}):
         incar.write_file('INCAR')
     return kw
 
-def write_potcar(kw={}):
+def write_potcar(poscar='POSCAR',kw={}):
     if not path.isfile('POTCAR'):
         functional,kw =  clean_parse(kw,'functional','paw_PBE')
         sym_potcar_map,kw =  clean_parse(kw,'sym_potcar_map',None)
-        pot = Potcar(functional=functional,sym_potcar_map=sym_potcar_map)
+        pot = Potcar(poscar=poscar,functional=functional,sym_potcar_map=sym_potcar_map)
         pot.write_file('POTCAR')
     return kw
 
