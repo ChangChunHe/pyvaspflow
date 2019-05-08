@@ -18,7 +18,7 @@ class TestParameter():
         else:
             self.dimen = 3
 
-    def test_encut(self,kw={}):
+    def test_enmax(self,kw={}):
         start,end,step = kw.get('start'),kw.get('end'),kw.get('step')
         kw.pop('start');kw.pop('end');kw.pop('step')
         _kw = kw.copy()
