@@ -212,12 +212,21 @@ pyvasp run_multi_vasp -p 3 -s 13 task 20
 This means that you  will start your jobs from task13 to task 20. The default of  this parameter is 0.
 
 ### 2.3 Test some parameters
+Here we support `parameters-testing` command.
 
 #### 2.3.1 test ENMAX
 
+```shell
+pyvasp test_enmax -p POSCAR -s 0.8 -e 1.3 -t 30
+```
+Here `-s` is the min_enmax, which means 0.8*max(enmax), `-e` is the max_enmax, which means 1.3*max(enmax), `-t` is the step of the test-enmax. This command also supports `-a` parameter, you can specify other attributes.
 
 #### 2.3.2 test KPOINTS
 
+```shell
+pyvasp test_kpts -p POSCAR -s 1000 -e 3000 -t 200
+```
+Here `-s` is the min_kppa, `-e` is the max_kppa, `-t` is the step of the test-kppa. This command also supports `-a` parameter, you can specify other attributes.
 
 
 ## 3 Fetch
@@ -228,7 +237,6 @@ __Noted that, if you get `permission denied`, please use `chmod u+x pyvasp.py` t
 
 ### 3.1 pyvasp-help
 ```shell
-module load sagar #load the necesary package
 pyvasp --help # you can get some short help from this command
 pyvasp main --help # get the help of a specific command  
 ```
