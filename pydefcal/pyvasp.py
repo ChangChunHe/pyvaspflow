@@ -304,17 +304,17 @@ def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
         start_job_num=start_job_num,par_job_num=par_job_num)
 
 
-@cli.command('test_encut',short_help="test encut in vasp calculation")
+@cli.command('test_enmax',short_help="test encut in vasp calculation")
 @click.option('--poscar','-p', default='POSCAR')
 @click.option('-start','-s', default=0.8,type=float)
 @click.option('--end','-e', default=1.3,type=float)
 @click.option('--step','-t', default=10,type=float)
 @click.option('--attribute','-a', default='',type=str)
-def test_encut(poscar,start,end,step,attribute):
+def test_enmax(poscar,start,end,step,attribute):
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step}
     kw.update(us.get_kw(attribute))
-    tp.test_encut(kw=kw)
+    tp.test_enmax(kw=kw)
 
 
 @cli.command('test_kpts',short_help="test kpoints in vasp calculation")
