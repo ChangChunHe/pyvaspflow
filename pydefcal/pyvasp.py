@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import click
-from pydefcal.io.vasp_out import ExtractValue, get_ele_sta
 import numpy as np
-import pydefcal.utils as us
 import linecache as lc
-from sagar.io.vasp import read_vasp, write_vasp
 import os,subprocess
+import click
+import pydefcal.utils as us
+from sagar.io.vasp import read_vasp, write_vasp
+from pydefcal.io.vasp_out import ExtractValue, get_ele_sta
 from pydefcal.defect_cal.defect_maker import DefectMaker
 from pydefcal.defect_cal.chemical_potential import plot_2d_chemical_potential_phase
 from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
@@ -329,6 +329,13 @@ def test_kpts(poscar,start,end,step,attribute):
     kw.update(us.get_kw(attribute))
     tp.test_kpts(kw=kw)
 
+@cli.command('diff_pos',short_help="judge two poscar are the same structures or not")
+@click.argument('pri_pos', metavar='<primitive_poscar>',nargs=1)
+@click.argument('pos1', metavar='<poscar1>',nargs=1)
+@click.argument('pos2', metavar='<poscar2>',nargs=1)
+@click.option('--symprec','-s',default=1e-3,type=float)
+def diff_pos(pri_pos,pos1,pos2,symprec):
+    print(us.diff_poscar(pri_pos,pos1,pos2,symprec=symprec))
 
 if __name__ == "__main__":
     cli()

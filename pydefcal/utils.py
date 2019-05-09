@@ -1,7 +1,9 @@
 import numpy as np
 from sagar.io.vasp import  write_vasp, read_vasp
-from os import path
 from sagar.element.base import periodic_table_dict as ptd
+from sagar.toolkit.mathtool import is_int_np_array
+from sagar.crystal.derive import PermutationGroup as PG
+from os import path
 import json
 
 
@@ -403,11 +405,52 @@ def get_kw(attribute):
             kw['shift'] = tuple(float(i) for i in kw['shift'])
     return kw
 
-def diff_poscar(pos1,pos2):
+def diff_poscar(pri_pos,pos1,pos2,symprec=1e-3):
     '''
     To compare two structures are the same or not
     '''
-    pass
+    cell1,cell2 = read_vasp(pos1),read_vasp(pos2)
+    if sum(sum((cell1.lattice-cell2.lattice)**2))>0.01:
+        raise ValueError("Two POSCARs do not have the same lattice")
+        if  len(cell1.atoms) != len(cell2.atoms):
+            raise ValueError("Two POSCARs do not have the same atoms number")
+            if sum(np.sort(cell1.atoms)-np.sort(cell2.atoms))>0.001:
+                raise ValueError("Two POSCARs do not have the same atoms")
+    cell = read_vasp(pri_pos)
+    if sum(sum((cell1.lattice-cell.lattice)**2))>0.01:
+        raise ValueError("Two POSCAR do not have the same lattice with the primitive POSCAR")
+    idx_1 = get_idx_in_pri_pos(cell.positions,cell1.positions)
+    idx_2 = get_idx_in_pri_pos(cell.positions,cell2.positions)
+    perms = get_perms(cell,symprec=symprec)
+    serial_1 = _get_min_serial(perms,idx_1)
+    serial_2 = _get_min_serial(perms,idx_2)
+    if sum(serial_1-serial_2) <= 0.001:
+        return True
+    return False
+
+def get_idx_in_pri_pos(pri_pos,pos):
+    return [np.argmin(np.linalg.norm(p-pri_pos,axis=1)) for p in pos]
+
+def _get_min_serial(perms,serial):
+    return np.unique(np.sort(perms[:,serial],axis=1),axis=0)[0]
+
+def get_perms(cell,symprec=1e-3):
+    latt = cell.lattice
+    pos = cell.positions
+    pos = np.dot(pos,latt)
+    n = pos.shape[0]
+    pcell = cell.get_primitive_cell()
+    lat_pcell = pcell.lattice
+    mat = np.matmul(latt, np.linalg.inv(lat_pcell))
+    if is_int_np_array(mat):
+        mat = np.around(mat).astype('intc')
+    else:
+        print("cell:\n", lat_cell)
+        print("primitive cell:\n", lat_pcell)
+        raise ValueError(
+        "cell lattice and its primitive cell lattice not convertable")
+    hfpg = PG(pcell, mat)
+    return  hfpg.get_symmetry_perms(symprec)
 
 def is_2d_structure(cell):
     pos = cell.positions
@@ -416,3 +459,7 @@ def is_2d_structure(cell):
         idx = np.argmin(pos_std)
         return True,idx
     return False
+
+
+if __name__ == '__main__':
+    print(diff_poscar('POSCAR','POSCAR1','POSCAR2'))
