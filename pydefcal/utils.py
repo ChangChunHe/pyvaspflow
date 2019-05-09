@@ -3,6 +3,7 @@ from sagar.io.vasp import  write_vasp, read_vasp
 from sagar.element.base import periodic_table_dict as ptd
 from sagar.toolkit.mathtool import is_int_np_array
 from sagar.crystal.derive import PermutationGroup as PG
+from pydefcal.io.vasp_out import ExtractValue
 from os import path
 import json
 
@@ -460,6 +461,12 @@ def is_2d_structure(cell):
         return True,idx
     return False
 
+def get_grd_state(job_name,start_job_num,end_job_num):
+    energy = []
+    for ii in range(start_job_num,end_job_num+1):
+        EV = ExtractValue(data_folder=job_name+str(ii))
+        energy.append(EV.get_energy())
+    return np.argmin(energy)
 
 if __name__ == '__main__':
     print(diff_poscar('POSCAR','POSCAR1','POSCAR2'))

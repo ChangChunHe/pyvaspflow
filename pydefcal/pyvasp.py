@@ -54,20 +54,20 @@ def main(wd, attribute,number):
     if 'gap' in attribute:
         get_gap(EV)
     elif 'fermi' in attribute:
-        get_fermi(EV)
+        click.echo(EV.get_fermi())
     elif 'total' in attribute.lower() or 'energy' in attribute.lower():
-        get_energy(EV)
+        click.echo(EV.get_energy())
     elif 'ele' in attribute.lower() and 'free' in attribute.lower():
-        get_Ne_defect_free(EV)
+        click.echo(EV.get_Ne_defect_free())
     elif 'ele' in attribute.lower() and 'free' not in attribute.lower() and 'static' not in attribute.lower():
-        get_Ne_defect(EV)
+        click.echo(EV.get_Ne_defect())
     elif 'ima' in attribute or 'ewald' in attribute.lower():
-        get_Ewald(EV)
+        clikc.echo(EV.get_image())
     elif 'elect' in attribute and 'static' in attribute:
         outcar = os.path.join(wd,'OUTCAR')
-        click.echo('Electrostatic energy of '+str(number)+' atom is: '+str(get_ele_sta(outcar, number)))
+        click.echo(str(number)+' '+str(get_ele_sta(outcar, number)))
     elif 'cpu' in attribute.lower():
-        click.echo('CPU time is: '+str(EV.get_cpu_time())+'s')
+        click.echo(EV.get_cpu_time())
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -80,23 +80,6 @@ def get_gap(EV):
         '\ncbm_up: '+str(gap_res[0][1])+'\ngap_up: '+str(gap_res[0][2]))
         click.echo('vbm_down: ' + str(gap_res[1][0])+
         '\ncbm_down: '+str(gap_res[1][1])+'\ngap_down: '+str(gap_res[1][2]))
-
-def get_fermi(EV):
-    click.echo('fermi energy: '+str(EV.get_fermi()))
-
-def get_energy(EV):
-    click.echo('total energy: '+str(EV.get_energy()))
-
-def get_Ne_defect_free(EV):
-    click.echo('Number of valance electrons in defect free system: '
-    +str(EV.get_Ne_defect_free()))
-
-def get_Ne_defect(EV):
-    click.echo('Number of valance electrons in your calculation system: '
-    +str(EV.get_Ne_defect()))
-
-def get_Ewald(EV):
-    click.echo(EV.get_image())
 
 
 @cli.command('get_PA',short_help='Get the potential alignment correlation')
@@ -331,10 +314,10 @@ def prep_multi_vasp(wd,attribute):
 
 @cli.command('run_multi_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<job_name>',nargs=1)
-@click.argument('sum_job_num', metavar='<total number of jobs>',nargs=1)
+@click.argument('end_job_num', metavar='<total number of jobs>',nargs=1)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
-def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
+def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     '''
     Example:
 
@@ -344,7 +327,7 @@ def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
 
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
-    rmv(job_name=job_name,sum_job_num=sum_job_num,
+    rmv(job_name=job_name,end_job_num=end_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
 
 
@@ -413,7 +396,25 @@ def diff_pos(pri_pos,pos1,pos2,symprec):
 
     pyvasp diff_pos POSCAR POSCAR1 POSCAR2
     '''
-    print(us.diff_poscar(pri_pos,pos1,pos2,symprec=symprec))
+    click.echo(us.diff_poscar(pri_pos,pos1,pos2,symprec=symprec))
+
+
+@cli.command('get_grd_state',short_help="get the ground state")
+@click.argument('job_name', metavar='<your job name>',nargs=1)
+@click.argument('end_job_num', metavar='<end job number>',nargs=1)
+@click.option('--start_job_num','-s',default=0,type=int)
+def get_grd_state(job_name,end_job_num,start_job_num):
+    '''
+    Exmaple:
+
+    pyvasp get_grd_state task 100
+    '''
+    start_job_num,end_job_num = int(start_job_num),int(end_job_num)
+    idx = us.get_grd_state(job_name,start_job_num=start_job_num,
+               end_job_num=end_job_num)
+    click.echo(str(idx))
+
+
 
 if __name__ == "__main__":
     cli()
