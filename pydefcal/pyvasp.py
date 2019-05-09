@@ -17,6 +17,13 @@ from pydefcal.vasp import test_para
 
 @click.group()
 def cli():
+    '''
+    you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+
+    for more help
+    '''
     pass
 
 
@@ -255,6 +262,7 @@ def symmetry(poscar,attr,sympre):
         pc = c.get_primitive_cell(sympre)
         write_vasp(pc,'primitive_cell')
 
+
 @cli.command('chem_pot',short_help="Get chemical potential phase figure")
 @click.argument('chem_incar', metavar='<chemical-incar-file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
@@ -278,12 +286,30 @@ def chem_pot(chem_incar,remove):
 @click.option('--poscar','-p', default='POSCAR', type=str)
 @click.option('--attribute','-a', default='', type=str)
 def prep_single_vasp(poscar,attribute):
+    '''
+    Example:
+
+    pyvasp prep_single_vasp -p POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
     psv(poscar=poscar,kw=us.get_kw(attribute))
 
 
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
 def run_single_vasp(job_name):
+    '''
+    Example:
+
+    pyvasp run_ringle_vasp  task
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
     rsv(job_name=job_name)
 
 
@@ -291,6 +317,15 @@ def run_single_vasp(job_name):
 @click.option('--wd','-w', default='.', type=str)
 @click.option('--attribute','-a', default='', type=str)
 def prep_multi_vasp(wd,attribute):
+    '''
+    Example:
+
+    pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
     pmv(wd=wd,kw=us.get_kw(attribute))
 
 
@@ -300,6 +335,15 @@ def prep_multi_vasp(wd,attribute):
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
+    '''
+    Example:
+
+    pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
     rmv(job_name=job_name,sum_job_num=sum_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
 
@@ -311,6 +355,15 @@ def run_multi_vasp(job_name,sum_job_num,start_job_num,par_job_num):
 @click.option('--step','-t', default=10,type=float)
 @click.option('--attribute','-a', default='',type=str)
 def test_enmax(poscar,start,end,step,attribute):
+    '''
+    Example:
+
+    pyvasp test_enmax -p POSCAR -s 0.8 -e 1.3 -t 30
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step}
     kw.update(us.get_kw(attribute))
@@ -324,10 +377,20 @@ def test_enmax(poscar,start,end,step,attribute):
 @click.option('--step','-t', default=300,type=int)
 @click.option('--attribute','-a', default='',type=str)
 def test_kpts(poscar,start,end,step,attribute):
+    '''
+    Example:
+
+    pyvasp test_kpts -p POSCAR -s 1000 -e 3000 -t 200
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step}
     kw.update(us.get_kw(attribute))
     tp.test_kpts(kw=kw)
+
 
 @cli.command('diff_pos',short_help="judge two poscar are the same structures or not")
 @click.argument('pri_pos', metavar='<primitive_poscar>',nargs=1)
@@ -335,6 +398,21 @@ def test_kpts(poscar,start,end,step,attribute):
 @click.argument('pos2', metavar='<poscar2>',nargs=1)
 @click.option('--symprec','-s',default=1e-3,type=float)
 def diff_pos(pri_pos,pos1,pos2,symprec):
+    '''
+    This command you should support thress poscar, the first one is the initial poscar.
+    For example, your have a h-BN plane poscar, you substitute a boron atom by a sulfur atom,
+    so you may have two or more sites to be substited, then the fisrt parameter
+    is the perfect h-BN plane, the second and third parameter are the two poscar
+    you want to judge they are the same or not. If you get `True` means they are
+    the same, `False` means they are not.
+
+    There is one optional parameter, `symprec`, this is the precision you can
+    specify, the default is 1e-3.
+
+    Exmaple:
+
+    pyvasp diff_pos POSCAR POSCAR1 POSCAR2
+    '''
     print(us.diff_poscar(pri_pos,pos1,pos2,symprec=symprec))
 
 if __name__ == "__main__":
