@@ -52,10 +52,12 @@ def write_kpoints(poscar='POSCAR',kw={}):
         _kpts = Kpoints()
         if 'auto' in style.lower():
             kppa,kw = clean_parse(kw,'kppa',3000)
+            kppa = float(kppa)
             _kpts.automatic_density(structure=stru,kppa=kppa)
             _kpts.write_file('KPOINTS')
         elif 'gamma' in style.lower() and 'kpts' not in kw:
             kppa,kw = clean_parse(kw,'kppa',3000)
+            kppa = float(kppa)
             _kpts.automatic_gamma_density(structure=stru,kppa=kppa)
             _kpts.write_file('KPOINTS')
         elif 'gamma' in style.lower() and 'kpts' in kw:
