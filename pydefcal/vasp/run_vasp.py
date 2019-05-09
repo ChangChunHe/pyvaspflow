@@ -74,4 +74,5 @@ def run_multi_vasp(job_name,sum_job_num,start_job_num=0,par_job_num=4):
             idx += 1
         sleep(5)
         if idx == sum_job_num+1:
-            break
+            if job_inqueue_num(jobid_pool) == 0:
+                break
