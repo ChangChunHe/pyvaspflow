@@ -11,7 +11,7 @@ from distutils.core import setup
 
 setup(name = "pydefcal",
     version = "0.0.1",
-    description = "Vasp defect formation calculation",
+    description = "Vasp Calculation",
     author = "ChangChunHe",
     author_email = "changchun_he@foxmail.com",
     #Name the folder where your packages live:
@@ -19,7 +19,7 @@ setup(name = "pydefcal",
     #put them into the package directory - they will be found
     #recursively.)
     packages = ['pydefcal'],
-    install_requires=['numpy>=1.15.4','sagar','seekpath'],
+    install_requires=['numpy','sagar','seekpath','matplotlib'],
     entry_points={
         'console_scripts': [
         'pyvasp = pydefcal.pyvasp:cli',
