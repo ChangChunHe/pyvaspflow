@@ -28,7 +28,7 @@ def write_incar(kw={}):
     if not path.isfile('INCAR'):
         incar = Incar()
         if enmax:
-            incar['ENMAX'] = enmax
+            incar['ENCUT'] = enmax
         # incar.update(kw)
         for key,val in kw.items():
             incar[key] = val
