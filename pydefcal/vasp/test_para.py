@@ -3,6 +3,7 @@
 
 
 from pydefcal.vasp import prep_vasp,run_vasp
+from pydefcal.io.vasp_input import Kpoints
 from pydefcal.utils import is_2d_structure
 from pydefcal.io.vasp_out import ExtractValue
 from sagar.io.vasp import read_vasp
@@ -50,24 +51,29 @@ class TestParameter():
     def test_kpts(self,kw={}):
         start,end,step = kw.get('start'),kw.get('end'),kw.get('step')
         kw.pop('start');kw.pop('end');kw.pop('step')
-        idx = 0
+        kpts = Kpoints()
+        kpts_list = set()
         for kppa in range(start,end,step):
+            kpts.automatic_density(structure=read_vasp(self.poscar),kppa=kppa)
+            kpts_list.add(tuple(kpts.kpts[0]))
+        idx = 0
+        for kpt in kpts_list:
             _kw = kw.copy()
-            _kw.update({'kppa':kppa,'style':'auto','job_name':'test_kpts'+str(idx)})
+            _kw.update({'kpts':kpt,'style':'auto','job_name':'test_kpts'+str(idx)})
             prep_vasp.prep_single_vasp(poscar=self.poscar,kw=_kw)
             idx += 1
         run_vasp.run_multi_vasp(job_name='test_kpts',end_job_num=idx-1,par_job_num=1)
-        kpts_list = []
-        kppa = np.arange(start,end,step)
-        for ii in range(len(kppa)):
+        kpts_res = []
+        for ii in range(len(kpts_list)):
             EV = ExtractValue(data_folder='test_kpts'+str(ii))
-            kpts_list.append([kppa[ii],EV.get_energy(),EV.get_cpu_time()])
+            kpts_list.append([kpts_list[ii],EV.get_energy(),EV.get_cpu_time()])
         with open('test_kpts.txt','w') as f:
-            f.writelines('KPPA\tEnergy\tcpu_time\n')
+            f.writelines('KPTS\tEnergy\tcpu_time\n')
             for line in kpts_list:
-                f.writelines(str(line[0])+'\t'+str(line[1])+'\t'+str(line[2])+'\n')
+                f.writelines(str(line[0]).replace('[','').replace(']','').replace(',','')+
+                   '\t'+str(line[1])+'\t'+str(line[2])+'\n')
 
 
 if __name__ == '__main__':
     tp = TestParameter()
-    tp.test_encut()
+    tp.test_kpts(kw={'start':1000,'end':3000,'step':300})
