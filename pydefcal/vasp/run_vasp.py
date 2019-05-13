@@ -17,8 +17,8 @@ def is_inqueue(job_id):
             return True
     return False
 
-def submit_job():
-    res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE)
+def submit_job(job_name):
+    res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
     std = res.stdout.readlines()
     res.stdout.close()
     return std[0].decode('utf-8').split()[-1]
@@ -36,20 +36,21 @@ def clean_parse(kw,key,def_val):
     kw.pop(key,None)
     return val,kw
 
-# def _submit_job(wd,jobs_dict):
-#     res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE)
-#     std = res.stdout.readlines()
-#     res.stdout.close()
-#     jobs_dict[wd] = std[0].decode('utf-8').split()[-1]
+def _submit_job(job_name):
+    res = subprocess.Popen(['mpirun','-n','20','vasp_std'],stdout=subprocess.PIPE,cwd=job_name)
+    std = res.stdout.readlines()
+    res.stdout.close()
 
-def run_single_vasp(job_name):
-    chdir(job_name)
-    job_id = submit_job()
-    while True:
-        if not is_inqueue(job_id):
-            break
-        sleep(5)
-    chdir('..')
+def run_single_vasp(job_name,is_login_node=False):
+    if is_login_node:
+        _submit_job(job_name)
+    else:
+        job_id = submit_job(job_name)
+        while True:
+            if not is_inqueue(job_id):
+                break
+            sleep(5)
+
 
 
 def run_multi_vasp(job_name,end_job_num,start_job_num=0,par_job_num=4):

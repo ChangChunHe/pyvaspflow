@@ -283,7 +283,8 @@ def prep_single_vasp(poscar,attribute):
 
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
-def run_single_vasp(job_name):
+@click.option('--is_login_node','-i',default=False,type=bool)
+def run_single_vasp(job_name,is_login_node):
     '''
     Example:
 
@@ -293,7 +294,7 @@ def run_single_vasp(job_name):
 
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
-    rsv(job_name=job_name)
+    rsv(job_name=job_name,is_login_node=is_login_node)
 
 
 @cli.command('prep_multi_vasp',short_help="Prepare necessary files for multiple vasp calculation")
@@ -331,26 +332,27 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
         start_job_num=start_job_num,par_job_num=par_job_num)
 
 
-@cli.command('test_enmax',short_help="test encut in vasp calculation")
+@cli.command('test_encut',short_help="test encut in vasp calculation")
 @click.option('--poscar','-p', default='POSCAR')
 @click.option('-start','-s', default=0.8,type=float)
 @click.option('--end','-e', default=1.3,type=float)
 @click.option('--step','-t', default=10,type=float)
 @click.option('--attribute','-a', default='',type=str)
-def test_enmax(poscar,start,end,step,attribute):
+@click.option('--is_login_node','-i',default=False,type=bool)
+def test_encut(poscar,start,end,step,attribute,is_login_node):
     '''
     Example:
 
-    pyvasp test_enmax -p POSCAR -s 0.8 -e 1.3 -t 30
+    pyvasp test_encut -p POSCAR -s 0.8 -e 1.3 -t 30
 
     For more help you can refer to
 
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
     tp = test_para.TestParameter(poscar=poscar)
-    kw = {'start':start,'end':end,'step':step}
+    kw = {'start':start,'end':end,'step':step,'is_login_node':is_login_node}
     kw.update(us.get_kw(attribute))
-    tp.test_enmax(kw=kw)
+    tp.test_encut(kw=kw)
 
 
 @cli.command('test_kpts',short_help="test kpoints in vasp calculation")
@@ -359,7 +361,8 @@ def test_enmax(poscar,start,end,step,attribute):
 @click.option('--end','-e', default=4000,type=int)
 @click.option('--step','-t', default=300,type=int)
 @click.option('--attribute','-a', default='',type=str)
-def test_kpts(poscar,start,end,step,attribute):
+@click.option('--is_login_node','-i',default=False,type=bool)
+def test_kpts(poscar,start,end,step,attribute,is_login_node):
     '''
     Example:
 
@@ -370,7 +373,7 @@ def test_kpts(poscar,start,end,step,attribute):
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
     tp = test_para.TestParameter(poscar=poscar)
-    kw = {'start':start,'end':end,'step':step}
+    kw = {'start':start,'end':end,'step':step,'is_login_node':is_login_node}
     kw.update(us.get_kw(attribute))
     tp.test_kpts(kw=kw)
 
