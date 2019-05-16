@@ -3,9 +3,10 @@
 
 
 from pydefcal.vasp import prep_vasp
-from os import chdir
+import os
 from time import sleep
 import subprocess
+from pydefcal.utils import read_json
 
 
 def is_inqueue(job_id):
@@ -37,6 +38,8 @@ def clean_parse(kw,key,def_val):
     return val,kw
 
 def _submit_job(job_name):
+    js = read_json()
+    os.system(js['job']['prepend'])
     res = subprocess.Popen(['mpirun','-n','20','vasp_std'],stdout=subprocess.PIPE,cwd=job_name)
     std = res.stdout.readlines()
     res.stdout.close()
@@ -60,18 +63,18 @@ def run_multi_vasp(job_name,end_job_num,start_job_num=0,par_job_num=4):
     jobid_pool = []
     idx = start_job_num
     for ii in range(min(par_job_num,end_job_num-start_job_num)):
-        chdir(job_name+str(ii+start_job_num))
+        os.chdir(job_name+str(ii+start_job_num))
         jobid_pool.append(submit_job())
-        chdir('..')
+        os.chdir('..')
         idx += 1
     if idx == end_job_num+1:
         return
     while True:
         inqueue_num = job_inqueue_num(jobid_pool)
         if inqueue_num < par_job_num and idx < end_job_num+1:
-            chdir(job_name + str(idx))
+            os.chdir(job_name + str(idx))
             jobid_pool.append(submit_job())
-            chdir('..')
+            os.chdir('..')
             idx += 1
         sleep(5)
         if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
