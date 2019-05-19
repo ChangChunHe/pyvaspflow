@@ -284,7 +284,8 @@ def prep_single_vasp(poscar,attribute):
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
 @click.option('--is_login_node','-i',default=False,type=bool)
-def run_single_vasp(job_name,is_login_node):
+@click.option('--cpu_num','-n',default=20,type=int)
+def run_single_vasp(job_name,is_login_node,cpu_num):
     '''
     Example:
 
@@ -294,7 +295,7 @@ def run_single_vasp(job_name,is_login_node):
 
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
-    rsv(job_name=job_name,is_login_node=is_login_node)
+    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num)
 
 
 @cli.command('prep_multi_vasp',short_help="Prepare necessary files for multiple vasp calculation")

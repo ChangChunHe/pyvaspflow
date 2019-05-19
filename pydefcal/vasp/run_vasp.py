@@ -37,16 +37,15 @@ def clean_parse(kw,key,def_val):
     kw.pop(key,None)
     return val,kw
 
-def _submit_job(job_name):
+def _submit_job(job_name,cpu_num):
     js = read_json()
-    os.system(js['job']['prepend'])
-    res = subprocess.Popen(['mpirun','-n','20','vasp_std'],stdout=subprocess.PIPE,cwd=job_name)
-    std = res.stdout.readlines()
-    res.stdout.close()
+    prep = js['job']['prepend']
+    exe = js['job']['exec']
+    subprocess.check_output(prep+' && '+'mpirun -n '+str(cpu_num)+' '+exe.split()[-1],shell=True,cwd=job_name)
 
-def run_single_vasp(job_name,is_login_node=False):
+def run_single_vasp(job_name,is_login_node=False,cpu_num=20):
     if is_login_node:
-        _submit_job(job_name)
+        _submit_job(job_name,cpu_num=cpu_num)
     else:
         job_id = submit_job(job_name)
         while True:
