@@ -98,19 +98,18 @@ def prep_single_vasp(poscar='POSCAR',kw={}):
     node_num=node_num,cpu_num=cpu_num,job_name=job_name)
     chdir('..')
 
-def prep_multi_vasp(wd='.',kw={}):
+def prep_multi_vasp(start_job_num,end_job_num,kw={}):
     par_job_num,kw = clean_parse(kw,'par_job_num',4)
     node_name,kw = clean_parse(kw,'node_name','short_q')
     cpu_num,kw = clean_parse(kw,'cpu_num',24)
     node_num,kw = clean_parse(kw,'node_num',1)
     job_name,kw = clean_parse(kw,'job_name','task')
     _kw = kw.copy()
-    sum_job_num = len([i for i in listdir(wd) if i.startswith('POSCAR')])
-    for ii in range(sum_job_num):
+    for ii in range(start_job_num,end_job_num+1):
         if path.isdir(job_name+str(ii)):
             rmtree(job_name+str(ii))
         makedirs(job_name+str(ii))
-        copy2(path.join(wd,'POSCAR'+str(ii)),path.join(job_name+str(ii),'POSCAR'))
+        copy2(path.join('./POSCAR'+str(ii)),path.join(job_name+str(ii),'POSCAR'))
         chdir(job_name+str(ii))
         kw = write_potcar(kw=kw)
         kw = write_kpoints(kw=kw)

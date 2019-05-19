@@ -299,9 +299,10 @@ def run_single_vasp(job_name,is_login_node,cpu_num):
 
 
 @cli.command('prep_multi_vasp',short_help="Prepare necessary files for multiple vasp calculation")
-@click.option('--wd','-w', default='.', type=str)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1)
 @click.option('--attribute','-a', default='', type=str)
-def prep_multi_vasp(wd,attribute):
+@click.option('--start_job_num','-s', default=0, type=int)
+def prep_multi_vasp(attribute,start_job_num,end_job_num):
     '''
     Example:
 
@@ -311,12 +312,12 @@ def prep_multi_vasp(wd,attribute):
 
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
-    pmv(wd=wd,kw=us.get_kw(attribute))
+    pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
 
 
 @cli.command('run_multi_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<job_name>',nargs=1)
-@click.argument('end_job_num', metavar='<total number of jobs>',nargs=1)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
