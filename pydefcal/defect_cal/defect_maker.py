@@ -8,7 +8,7 @@ Created on Fri Mar  8 15:22:33 2019
 
 import numpy as np
 from sagar.crystal.derive import ConfigurationGenerator
-from sagar.io.vasp import read_vasp
+from sagar.io.vasp import read_vasp,_read_string
 from sagar.crystal.structure import symbol2number as s2n
 from pydefcal.utils import generate_all_basis, refine_points,wirite_poscar
 from itertools import combinations
@@ -18,9 +18,12 @@ from shutil import rmtree
 
 
 class DefectMaker:
-    def __init__(self, no_defect='POSCAR'):
+    def __init__(self, no_defect='POSCAR',no_defect_string=''):
         # 初始化用 POSCAR路径？
-        self.no_defect_cell = read_vasp(no_defect)
+        if no_defect_string :
+            self.no_defect_cell = _read_string(no_defect_string)
+        else:
+            self.no_defect_cell = read_vasp(no_defect)
         self.lattice = self.no_defect_cell.lattice
         self.positions = self.no_defect_cell.positions
         self.atoms = self.no_defect_cell.atoms
@@ -38,7 +41,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=True, purity_in='H',min_d=1):
+    def get_tetrahedral_defect(self, isunique=True, purity_in='H',min_d=1,folder='tetrahedral-defect'):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
@@ -90,12 +93,11 @@ class DefectMaker:
             third_tetra = refine_points(third_tetra,extend_S,self.lattice,min_d=min_d)
             all_tetra.append(third_tetra)
         if isunique:
-            folder = 'tetrahedral-unique-defect'
-            if not os.path.exists('./'+folder):
-                os.mkdir('./'+folder)
+            if not os.path.exists(folder):
+                os.mkdir(folder)
             else:
-                rmtree('./'+folder)
-                os.mkdir('./'+folder)
+                rmtree(folder)
+                os.mkdir(folder)
             idx = 0
             # deg = []
             for tetra in all_tetra:
@@ -115,12 +117,11 @@ class DefectMaker:
                     idx += 1
             # np.savetxt(folder+'/deg.txt',deg,fmt='%d')
         else:
-            folder = 'tetrahedral-not-unique-defect'
-            if not os.path.exists('./'+folder):
-                os.mkdir('./'+folder)
+            if not os.path.exists(folder):
+                os.mkdir(+folder)
             else:
-                rmtree('./'+folder)
-                os.mkdir('./'+folder)
+                rmtree(folder)
+                os.mkdir(folder)
             idx = 0
             for tetra in all_tetra:
                 if len(tetra) == 0:
