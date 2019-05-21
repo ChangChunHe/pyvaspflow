@@ -35,7 +35,7 @@ def wirite_poscar(cell,purity_atom='',folder='.',idx=0):
     else:
         comment = 'POSCAR-' + purity_atom + '-defect'
         filename = '{:s}_id{:d}'.format(comment, idx)
-    file = path.join('./'+folder, filename)
+    file = path.join(folder, filename)
     write_vasp(cell,file)
 
 
