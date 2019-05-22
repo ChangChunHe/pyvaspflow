@@ -18,21 +18,20 @@ def write_job_file(node_name,cpu_num,node_num,job_name):
         f.writelines(json_f['job']['prepend']+'\n')
         f.writelines(json_f['job']['exec']+'\n')
 
-def write_incar(kw={}):
+def write_incar(incar_file=None,kw={}):
     if path.isfile('POTCAR'):
         with open('POTCAR') as f:
             data = f.readlines()
         enmax = 1.3*max([float(i.split()[2].replace(';','')) for i in [i for i in data if 'ENMAX' in i]])
     else:
         enmax = None
-    if not path.isfile('INCAR'):
-        incar = Incar()
-        if enmax:
-            incar['ENCUT'] = enmax
-        # incar.update(kw)
-        for key,val in kw.items():
-            incar[key] = val
-        incar.write_file('INCAR')
+    incar = Incar()
+    if incar_file:
+        incar.from_file(incar_file)
+    if enmax and 'ENCUT' not in incar:
+        incar['ENCUT'] = enmax
+    incar.update(kw)
+    incar.write_file('INCAR')
     return kw
 
 def write_potcar(poscar='POSCAR',kw={}):
@@ -44,9 +43,9 @@ def write_potcar(poscar='POSCAR',kw={}):
     return kw
 
 def write_kpoints(poscar='POSCAR',kw={}):
-    if not path.isfile('POSCAR'):
+    if not path.isfile(poscar):
         raise FileNotFoundError('Not found POSCAR')
-    stru = read_vasp('POSCAR')
+    stru = read_vasp(poscar)
     style,kw = clean_parse(kw,'style','auto')
     if not path.isfile('KPOINTS'):
         _kpts = Kpoints()

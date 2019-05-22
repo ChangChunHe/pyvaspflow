@@ -12,6 +12,8 @@ from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
 from pydefcal.vasp.run_vasp import run_single_vasp as rsv
 from pydefcal.vasp.prep_vasp import prep_multi_vasp as pmv
 from pydefcal.vasp.run_vasp import run_multi_vasp as rmv
+from pydefcal.vasp.prep_vasp import write_incar as wi
+from pydefcal.vasp.prep_vasp import write_kpoints as wk
 from pydefcal.vasp import test_para
 
 @click.group()
@@ -243,6 +245,38 @@ def symmetry(poscar,attr,sympre):
     elif 'primi' in attr:
         pc = c.get_primitive_cell(sympre)
         write_vasp(pc,'primitive_cell')
+
+
+@cli.command('incar',short_help="Prepare INCAR for vasp calculation")
+@click.option('--attribute','-a', default='', type=str)
+@click.option('--incar_file','-f', default=None, type=str)
+def incar(attribute,incar_file):
+    '''
+    Example:
+
+    pyvasp incar -f INCAR -a NSW=100,EDIFF=1e-6
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
+    wi(incar_file=incar_file,kw=us.get_kw(attribute))
+
+
+@cli.command('kpoints',short_help="Prepare KPOINTS for vasp calculation")
+@click.argument('poscar_file', metavar='<POSCAR_file_path>',nargs=1)
+@click.option('--attribute','-a', default='', type=str)
+def kpoints(poscar_file,attribute):
+    '''
+    Example:
+
+    pyvasp incar -f KPOINTS -a NSW=100,EDIFF=1e-6
+
+    For more help you can refer to
+
+    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    '''
+    wk(poscar_file,kw=us.get_kw(attribute))
 
 
 
