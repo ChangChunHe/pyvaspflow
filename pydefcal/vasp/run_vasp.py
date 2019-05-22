@@ -62,18 +62,14 @@ def run_multi_vasp(job_name,end_job_num,start_job_num=0,par_job_num=4):
     jobid_pool = []
     idx = start_job_num
     for ii in range(min(par_job_num,end_job_num-start_job_num)):
-        os.chdir(job_name+str(ii+start_job_num))
-        jobid_pool.append(submit_job())
-        os.chdir('..')
+        jobid_pool.append(submit_job(job_name+str(ii+start_job_num)))
         idx += 1
     if idx == end_job_num+1:
         return
     while True:
         inqueue_num = job_inqueue_num(jobid_pool)
         if inqueue_num < par_job_num and idx < end_job_num+1:
-            os.chdir(job_name + str(idx))
-            jobid_pool.append(submit_job())
-            os.chdir('..')
+            jobid_pool.append(submit_job(job_name + str(idx)))
             idx += 1
         sleep(5)
         if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
