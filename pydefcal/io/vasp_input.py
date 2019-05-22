@@ -80,10 +80,9 @@ class Incar(dict):
         with open(filename, "wt") as f:
             f.write(self.__str__())
 
-    @staticmethod
-    def from_file(filename):
+    def from_file(self,filename):
         with open(filename, "r") as f:
-            return Incar.from_string(f.read())
+             self.update(Incar.from_string(f.read()))
 
     @staticmethod
     def from_string(string):
@@ -97,7 +96,7 @@ class Incar(dict):
                     val = m.group(2).strip()
                     val = Incar.proc_val(key, val)
                     params[key] = val
-        return Incar(params)
+        return params
 
     @staticmethod
     def proc_val(key, val):
