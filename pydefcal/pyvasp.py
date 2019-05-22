@@ -8,7 +8,6 @@ import pydefcal.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from pydefcal.io.vasp_out import ExtractValue, get_ele_sta
 from pydefcal.defect_cal.defect_maker import DefectMaker
-from pydefcal.defect_cal.chemical_potential import plot_2d_chemical_potential_phase
 from pydefcal.vasp.prep_vasp import prep_single_vasp as psv
 from pydefcal.vasp.run_vasp import run_single_vasp as rsv
 from pydefcal.vasp.prep_vasp import prep_multi_vasp as pmv
@@ -246,24 +245,6 @@ def symmetry(poscar,attr,sympre):
         write_vasp(pc,'primitive_cell')
 
 
-@cli.command('chem_pot',short_help="Get chemical potential phase figure")
-@click.argument('chem_incar', metavar='<chemical-incar-file>',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
-@click.option('--remove','-r', default=0, type=int)
-def chem_pot(chem_incar,remove):
-    '''
-    argument:
-
-    chem_incar, some necessay compound energy
-
-    remove, the dismension you want to remove
-
-    Example:
-
-    pyvasp chem_pot chem_incar # get space_group
-    '''
-    plot_2d_chemical_potential_phase(chem_incar,remove)
-
 
 @cli.command('prep_single_vasp',short_help="Prepare necessary files for single vasp calculation")
 @click.option('--poscar','-p', default='POSCAR', type=str)
@@ -306,7 +287,9 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     '''
     Example:
 
-    pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
+    pyvasp prep_multi_vasp -s 2  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 20
+
+    prepare multiple vasp task from POSCAR2 to POSCAR20
 
     For more help you can refer to
 
@@ -324,7 +307,9 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     '''
     Example:
 
-    pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
+    pyvasp run_multi_vasp -s 3 -p 6 task 20
+
+    run multiple vasp task from task3 to task20 with 6 nodes in queue
 
     For more help you can refer to
 
