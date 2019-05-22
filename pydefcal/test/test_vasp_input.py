@@ -3,6 +3,7 @@
 
 import unittest
 from pydefcal.io import vasp_input
+from pydefcal.vasp.prep_vasp import write_incar
 class Test_io(unittest.TestCase):
 
     def test_incar(self):
@@ -13,6 +14,10 @@ class Test_io(unittest.TestCase):
         self.assertEqual(incar['EDIFF'],1e-7)
         self.assertEqual(incar['NSW'],1000)
         self.assertEqual(incar['LCHGCAR'],True)
+
+    def test_incar_from_file(self):
+        kw = {"NSW":1000,"EDIFF":1e-6}
+        write_incar(incar_file='test_INCAR',kw=kw)
 
 
     def test_kpoints(self):
