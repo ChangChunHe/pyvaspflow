@@ -50,10 +50,16 @@ def write_kpoints(poscar='POSCAR',kw={}):
     if not path.isfile('KPOINTS'):
         _kpts = Kpoints()
         if 'auto' in style.lower():
-            kppa,kw = clean_parse(kw,'kppa',3000)
-            kppa = float(kppa)
-            _kpts.automatic_density(structure=stru,kppa=kppa)
-            _kpts.write_file('KPOINTS')
+            if 'kpts' not in kw :
+                kppa,kw = clean_parse(kw,'kppa',3000)
+                kppa = float(kppa)
+                _kpts.automatic_density(structure=stru,kppa=kppa)
+                _kpts.write_file('KPOINTS')
+            else:
+                kpts,kw = clean_parse(kw,'kpts',(1,1,1))
+                shift,kw = clean_parse(kw,'shift',(0,0,0))
+                _kpts.gamma_automatic(kpts=kpts,shift=shift)
+                _kpts.write_file('KPOINTS')
         elif 'gamma' in style.lower() and 'kpts' not in kw:
             kppa,kw = clean_parse(kw,'kppa',3000)
             kppa = float(kppa)
