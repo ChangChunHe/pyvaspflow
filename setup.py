@@ -18,7 +18,7 @@ setup(name = "pydefcal",
     #(If you have other packages (dirs) or modules (py files) then
     #put them into the package directory - they will be found
     #recursively.)
-    packages = ['pydefcal'],
+    packages = ['pydefcal','pydefcal.io','pydefcal.vasp','pydefcal.defect_cal'],
     install_requires=['numpy','sagar','seekpath','matplotlib'],
     entry_points={
         'console_scripts': [
