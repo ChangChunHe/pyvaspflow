@@ -91,11 +91,13 @@ A multiple tasks preparation example:
 
 supposed that your work directory has POSCAR0,POSCAR1,...,POSCAR12.
 ```shell
-# -w means the work directory, this directory should contain
-# POSCAR0,POSCAR1,..., this command will automatic
-# find all theses files
+$ pyvasp prep_multi_vasp --help
+Usage: pyvasp prep_multi_vasp [OPTIONS] <the last number of jobs>
 
-pyvasp prep_multi_vasp -w . -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt
+# current directory should contain POSCAR0,POSCAR1,...,
+#  this command will automatic find all theses files
+
+pyvasp prep_multi_vasp  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 12
 ```
 This command will generate  `struc_opt0`,`struc_opt1`,...,`struc_opt12`, because you specify parameter `job_name=struc_opt`, the default is `task`. If you do not  specify `job_name`, the names of generated directories will be `task0`,`task1`,...,`task12`.
 
@@ -119,6 +121,12 @@ pyvasp prep_single_vasp -a NSW=143.2,LCHARG=True,EDIFF=1e-4,NELECT=145
 ```
 We can interpret `NSW=143.2` to `NSW=143` for this parameter should be an `INTEGER`.
 
+We supply a single command to generate INCAR file
+
+```shell
+pyvasp incar -a NSW=143.2,LCHARG=True,EDIFF=1e-4,NELECT=145
+```
+
 ### 1.3.2 `KPOINTS`
 You can choose `style`=`auto`,`gamma`,`monkhorst`,`line` to generate different KPOINTS.
 
@@ -139,6 +147,12 @@ pyvasp prep_single_vasp -a style=monkhorst,kpts=5,6,7
 # line mode for band structure calculation,style=line or band
 # num_kpt means  the points inserted between two nearest K-points.
 pyvasp prep_single_vasp -a style=line,num_kpt=20
+```
+
+Also we supply a single command to write KPOINTS file, all usage is the same.
+
+```shell
+pyvasp kpoints -a style=line,num_kpt=20
 ```
 
 ### 1.3.3 `POTCAR`
@@ -276,13 +290,7 @@ This command is used to get the tetrahedral interstitial sites, for example, in 
 pyvasp get_tetrahedral -i H YFe2-POSCAR
 ```
 
-### 3.6 pyvasp-`get_PA`
-This command can get the electrostatic of your defect system and no defect system of the farther atom from defect atom
-```shell
-pyvasp get_PA defect_free charge_state_1
-```
-
-### 3.7 pyvasp-`symmetry`
+### 3.6 pyvasp-`symmetry`
 This command can get some symmetry message of your POSCAR.
 
 ```shell
@@ -291,3 +299,36 @@ pyvasp symmetry -a equivalent POSCAR # get equivalent atoms
 pyvasp symmetry -a primitive POSCAR
 # generate primitive cell POSCAR
 ```
+### 3.6 pyvasp-`diff_pos`
+
+  This command you should support three poscar, the first one is the initial poscar. For example, your have a h-BN plane poscar, you substitute a boron atom by a sulfur atom, so you may have two or more sites to be substituted, then the first parameter is the perfect h-BN plane, the second and third parameter are the two poscar you want to judge they are the same or not. If you get `True` means they are the same, `False` means they are
+  not.
+
+  There is one optional parameter, `symprec`, this is the precision you can
+  specify, the default is 1e-3.
+
+```shell
+$ pyvasp diff_pos --help
+Usage: pyvasp diff_pos [OPTIONS] <primitive_poscar> <poscar1> <poscar2>
+
+pyvasp diff_pos POSCAR POSCAR1 POSCAR2
+```
+
+### 3.7 pyvasp-`get_grd_state`
+This commmand will return the number of  ground state structure.
+
+```shell
+$ pyvasp get_grd_state --help
+Usage: pyvasp get_grd_state [OPTIONS] <your job name> <end job number>
+
+pyvasp get_grd_state task 100
+```
+
+### 3.8 pyvasp-`get_def_form_energy`
+This command will plot a defect formation energy figure and write a defect-log file. For more help please refer to [here](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pydefcal/examples/common_calculations/readme.md)
+```shell
+$ pyvasp get_def_form_energy --help
+Usage: pyvasp get_def_form_energy [OPTIONS] <your data main direcroty> <your data defect calculation direcroty>
+
+pyvasp get_def_form_energy  test  test/H-vacc-defect test/Mg-vacc-defect
+```                              
