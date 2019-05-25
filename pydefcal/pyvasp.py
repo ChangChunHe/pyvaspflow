@@ -82,34 +82,6 @@ def get_gap(EV):
         click.echo('vbm_down: ' + str(gap_res[1][0])+
         '\ncbm_down: '+str(gap_res[1][1])+'\ngap_down: '+str(gap_res[1][2]))
 
-
-@cli.command('get_PA',short_help='Get the potential alignment correlation')
-@click.argument('no_defect_dir',nargs=1, metavar='no-defect-dir')
-@click.argument('defect_dir',nargs=1,metavar='defect-dir')
-
-def get_PA(no_defect_dir,defect_dir):
-    """
-    Noted that: you should do self-consistent-field calculation,
-    so the no_defect_dir should have a subdirectory scf, and so as defect_dir
-
-    First parameter: no_defect_dir, the directory path of the defece free system
-
-    Sencond parameter: defect_dir, the directory path of defect_dir
-
-    Example:
-
-    pyvasp get_PA defect_free charge_state_1
-    """
-    num_def, num_no_def = us.get_farther_atom_num(os.path.join(no_defect_dir,'CONTCAR'), \
-            os.path.join(defect_dir,'POSCAR'))
-    pa_def = get_ele_sta(os.path.join(defect_dir,'scf','OUTCAR'),num_def)[1]
-    pa_no_def = get_ele_sta(os.path.join(no_defect_dir,'scf','OUTCAR'),num_no_def)[1]
-    click.echo('Electrostatic of the farther atom '+str(num_def)+' from defect atom in defect system is: ')
-    click.echo(pa_def)
-    click.echo('Electrostatic of the farther atom '+str(num_no_def)+' from defect atom in defect-free system is: ')
-    click.echo(pa_no_def)
-    click.echo('Potential alignment correlation is: '+str(pa_def-pa_no_def))
-
 def get_ele_sta(no_defect_outcar,number):
     number = int(number)
     tmp_match_line = _get_line(no_defect_outcar,rematch='electrostatic')
@@ -131,7 +103,6 @@ def _get_line(file_tmp,rematch=None):
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
 @click.option('--volume', '-v', nargs=3, type=int, metavar='<x> <y> <z>',default=(1,1,1),
               help="Expand cell to supercell of dismension <x> <y> <z>")
-
 def cell(pcell_filename, volume):
     """
     First parameter: pcell_filename, the  path of your initial POSCAR
@@ -145,7 +116,6 @@ def cell(pcell_filename, volume):
     pcell = read_vasp(pcell_filename)
     supcell = pcell.extend(np.diag(volume))
     write_vasp(supcell, 'supcell')
-
 
 
 @cli.command('get_purity',short_help="Get purity POSCAR")
@@ -196,7 +166,6 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique):
     """
     DM = DefectMaker(no_defect=poscar)
     DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)
-
 
 
 @cli.command('symmetry',short_help="Get symmetry of POSCAR")
@@ -277,7 +246,6 @@ def kpoints(poscar_file,attribute):
     https://github.com/ChangChunHe/Defect-Formation-Calculation
     '''
     wk(poscar_file,kw=us.get_kw(attribute))
-
 
 
 @cli.command('prep_single_vasp',short_help="Prepare necessary files for single vasp calculation")
@@ -406,9 +374,9 @@ def test_kpts(poscar,start,end,step,attribute,is_login_node):
 @click.option('--symprec','-s',default=1e-3,type=float)
 def diff_pos(pri_pos,pos1,pos2,symprec):
     '''
-    This command you should support thress poscar, the first one is the initial poscar.
+    This command you should support three poscar, the first one is the initial poscar.
     For example, your have a h-BN plane poscar, you substitute a boron atom by a sulfur atom,
-    so you may have two or more sites to be substited, then the fisrt parameter
+    so you may have two or more sites to be substituted, then the fisrt parameter
     is the perfect h-BN plane, the second and third parameter are the two poscar
     you want to judge they are the same or not. If you get `True` means they are
     the same, `False` means they are not.
