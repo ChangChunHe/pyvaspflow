@@ -29,8 +29,11 @@ Table of Contents
          * [3.3 pyvasp-cell](#33-pyvasp-cell)
          * [3.4 pyvasp-get_purity](#34-pyvasp-get_purity)
          * [3.5 pyvasp-get_tetrahedral](#35-pyvasp-get_tetrahedral)
-         * [3.6 pyvasp-get_PA](#36-pyvasp-get_pa)
-         * [3.7 pyvasp-symmetry](#37-pyvasp-symmetry)
+         * [3.6 pyvasp-symmetry](#36-pyvasp-symmetry)
+         * [3.6 pyvasp-diff_pos](#36-pyvasp-diff_pos)
+         * [3.7 pyvasp-get_grd_state](#37-pyvasp-get_grd_state)
+         * [3.8 pyvasp-get_def_form_energy](#38-pyvasp-get_def_form_energy)
+
 
 
 ## 0 Installation
