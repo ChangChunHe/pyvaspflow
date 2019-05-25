@@ -112,22 +112,24 @@ def get_farther_atom_num(no_defect_poscar, one_defect_poscar):
     one_def_pos = one_defect.positions
     c = no_defect.lattice
     no_def_pos = np.dot(no_def_pos,c)
+    one_def_pos = np.dot(one_def_pos,c)
     ii,d = get_delete_atom_num(no_defect_poscar,one_defect_poscar)
     defect_atom = no_def_pos[ii]
-    d = []
-    for i in range(no_def_pos.shape[0]):
-        if i != ii:
-            d.append([i, min([np.linalg.norm(defect_atom - (no_def_pos[i] \
-                    + sum(c*basis))) for basis in all_basis])])
-    d = np.asarray(d)
-    max_idx_no_def = int(d[np.argmax(d[:,1]),0])#no-defect-farther-atom-number
+    extend_S = []
+
+    d,idx = np.zeros((no_def_pos.shape[0],27)),0
+    for basis in all_basis:
+        i,j,k = basis
+        d[:,idx] = np.linalg.norm(defect_atom-(no_def_pos+i*c[0]+j*c[1]+k*c[2]),axis=1)
+        idx += 1
+    max_idx_no_def = np.argmax(np.min(d,axis=1))#no-defect-farther-atom-number
     # import pdb;pdb.set_trace()
-    d = []
-    for i in range(one_def_pos.shape[0]):
-        d.append([i, min([np.linalg.norm(defect_atom - (one_def_pos[i] \
-                    + sum(c*basis))) for basis in all_basis])])
-    d = np.asarray(d)
-    max_idx_one_def = int(d[np.argmax(d[:,1]),0])
+    d,idx = np.zeros((one_def_pos.shape[0],27)),0
+    for basis in all_basis:
+        i,j,k = basis
+        d[:,idx] = np.linalg.norm(defect_atom-(one_def_pos+i*c[0]+j*c[1]+k*c[2]),axis=1)
+        idx += 1
+    max_idx_one_def = np.argmax(np.min(d,axis=1))
     return max_idx_one_def+1,max_idx_no_def+1
 
 
