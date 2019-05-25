@@ -1,6 +1,5 @@
 Defect-Formation-Calculation
 
-=====
 
 .. image:: https://travis-ci.org/ChangChunHe/Defect-Formation-Calculation.svg?branch=master
     :target: https://travis-ci.org/ChangChunHe/Defect-Formation-Calculation
@@ -14,6 +13,5 @@ Defect-Formation-Calculation
     :target: https://opensource.org/licenses/mit-license.php
     :alt: Open Source Love
 
-.. image :: https://img.shields.io/pypi/pyversions/ansicolortags.svg
-    :target: https://pypi.python.org/pypi/ansicolortags/
-    :alt: PyPI pyversions
+
+This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and extracting necessary data to calculate defect formation energy. If you have any problems when using this package, you can new an issue or email me at changchun_he@foxmail.com.
