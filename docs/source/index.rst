@@ -10,6 +10,9 @@ Welcome to Defect-Formation-Calculation's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   installation
+
+
 
 
 Indices and tables
