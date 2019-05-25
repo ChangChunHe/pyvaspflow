@@ -5,8 +5,8 @@ Defect-Formation-Calculation
     :target: https://travis-ci.org/ChangChunHe/Defect-Formation-Calculation
     :alt: Build Status
 
-.. image ::https://codecov.io/gh/scut-ccmp/sagar/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/scut-ccmp/sagar
+.. image :: https://codecov.io/gh/ChangChunHe/Defect-Formation-Calculation/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/ChangChunHe/Defect-Formation-Calculation
     :alt: codecov
     
 .. image :: https://badges.frapsoft.com/os/mit/mit.svg?v=103
