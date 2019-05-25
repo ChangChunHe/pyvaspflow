@@ -20,6 +20,7 @@ setup(name = "pydefcal",
     #recursively.)
     packages = ['pydefcal','pydefcal.io','pydefcal.vasp','pydefcal.defect_cal'],
     install_requires=['numpy','sagar','seekpath','matplotlib'],
+    url="https://github.com/ChangChunHe/Defect-Formation-Calculation",
     entry_points={
         'console_scripts': [
         'pyvasp = pydefcal.pyvasp:cli',
