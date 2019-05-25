@@ -15,11 +15,6 @@ class Test_io(unittest.TestCase):
         self.assertEqual(incar['NSW'],1000)
         self.assertEqual(incar['LCHGCAR'],True)
 
-    def test_incar_from_file(self):
-        kw = {"NSW":1000,"EDIFF":1e-6}
-        write_incar(incar_file='test_INCAR',kw=kw)
-
-
     def test_kpoints(self):
         pass
 
