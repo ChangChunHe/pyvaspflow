@@ -2,8 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess
-import click
+import os,subprocess,click
 import pydefcal.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from pydefcal.io.vasp_out import ExtractValue, get_ele_sta
@@ -15,6 +14,7 @@ from pydefcal.vasp.run_vasp import run_multi_vasp as rmv
 from pydefcal.vasp.prep_vasp import write_incar as wi
 from pydefcal.vasp.prep_vasp import write_kpoints as wk
 from pydefcal.vasp import test_para
+from pydefcal.defect_cal.defect_formation_energy import get_defect_formation_energy
 
 @click.group()
 def cli():
@@ -438,6 +438,12 @@ def get_grd_state(job_name,end_job_num,start_job_num):
                end_job_num=end_job_num)
     click.echo(str(idx))
 
+
+@cli.command('get_def_form_energy',short_help="get defect formation energy")
+@click.argument('data_dir', metavar='<your data main direcroty>',nargs=1)
+@click.argument('defect_dirs', metavar='<your data defect calculation direcroty>',nargs=-1)
+def get_def_form_energy(data_dir,defect_dirs):
+    get_defect_formation_energy(data_dir,defect_dirs)
 
 
 if __name__ == "__main__":
