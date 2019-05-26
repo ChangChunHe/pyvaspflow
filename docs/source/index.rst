@@ -13,6 +13,7 @@ pyvaspflow source code address: https://github.com/ChangChunHe/pyvaspflow
    :caption: Contents:
 
    installation
+   gen_str
    prepare
    incar
    kpoints
