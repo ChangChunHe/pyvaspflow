@@ -13,7 +13,7 @@ job 文件
 
     mpirun -n ${SLURM_NPROCS} vasp_std
 
-你可以通过指定 `node_name`, `node_num`, `cpu_num` and `job_name`在你的`job.sh`文件中
+你可以通过指定 ``node_name`` , ``node_num`` , ``cpu_num`` and ``job_name`` 在你的 ``job.sh`` 文件中
 这里默认是设置是: node_name=short_q,cpu_num=24,node_num=1,job_name=task
 
 举一个例子::

@@ -22,8 +22,8 @@ pyvasp prep_single_vasp 有两个可选参数, 分别为 ``-p, -a``. 这里 ``-p
 
     $ pyvasp prep_single_vasp -p POSCAR -a NSW=100,job_name=task,style=band
 
-和明显 NSW=100是设置 ``INCAR`` 的参数, ``style=band``是设置线性的k点用于计算能带.这
-里的``job_name``是指会生成一个为``task``的文件夹, 所生成的文件都在这个文件夹里面.
+和明显 NSW=100是设置 ``INCAR`` 的参数, ``style=band`` 是设置线性的k点用于计算能带.这
+里的 ``job_name`` 是指会生成一个为 ``task`` 的文件夹, 所生成的文件都在这个文件夹里面.
 
 
 
