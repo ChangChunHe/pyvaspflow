@@ -9,7 +9,8 @@ Welcome to pyvaspflow's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
+   
+   genindex
    installation
    prepare
    incar
@@ -17,7 +18,6 @@ Welcome to pyvaspflow's documentation!
    potcar
    job
    execute
-
 
 
 
