@@ -376,10 +376,7 @@ def read_json():
     elif path.isfile(path.join(home,'.config','pyflow','conf.json')):
         conf_file_path = path.join(home,'.config','pyflow','conf.json')
     else:
-        raise FileNotFoundError('You should put conf.json file in your \
-                               $HOME directory or your current directory\
-                               and we will first check conf.json is under your\
-                               current direcroty or not')
+        raise FileNotFoundError('You should put conf.json file in your $HOME/.config/pyflow directory or your current directory and we will first check conf.json is under your current direcroty or not')
     with open(conf_file_path) as f:
         json_f = json.load(f)
     return json_f
