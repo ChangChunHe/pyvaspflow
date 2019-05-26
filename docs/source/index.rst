@@ -14,6 +14,8 @@ Welcome to pyvaspflow's documentation!
 
    prepare
 
+   incar
+
 
 
 
