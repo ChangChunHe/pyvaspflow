@@ -11,15 +11,13 @@ KPOINTS 参数的设置也是在 ``-a`` 中, 下面介绍几种KPOINTS文件的�
 1. 默认设置
 ===============
 
-默认是按照你的结构生成Monkhorst-Pack的格点或者Gamma中心的网格k点, 计算的mesh方法如下:
+默认是按照你的结构生成Monkhorst-Pack的格点或者Gamma中心的网格k点, 计算的mesh方法:
 Uses a simple approach scaling the number of divisions along each
 reciprocal lattice vector proportional to its length.
 
-ngrid = kppa/atom_num
-
-mult = (ngrid*a*b*c)**1/3
-
-k-mesh = [mult/a, mult/b, mult/c]
+ .. math:: ngrid = kppa/atom_num
+           mult = (ngrid*a*b*c)^(1/3)
+           k-mesh = [mult/a, mult/b, mult/c]
 
 关于k点的关键字什么都不写就是用这种方式生成k点, 默认 ``kppa=3000`` ::
 
