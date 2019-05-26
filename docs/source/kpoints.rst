@@ -61,3 +61,5 @@ k-mesh = [mult/a mult/b mult/c]
 
 
     $ pyvasp kpoints -a style=line,num_kpt=20
+
+.. _seekpath: https://github.com/giovannipizzi/seekpath
