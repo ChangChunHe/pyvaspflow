@@ -14,13 +14,13 @@ KPOINTS 参数的设置也是在 ``-a`` 中, 下面介绍几种KPOINTS文件的�
 默认是按照你的结构生成Monkhorst-Pack的格点或者Gamma中心的网格k点, 计算的mesh方法:
 Uses a simple approach scaling the number of divisions along each
 reciprocal lattice vector proportional to its length.
-          
+
  .. math ::
           \begin{equation}
           \begin{split}
-                     ngrid &= kppa/atom_num\\
+                     ngrid &= kppa/atom_{num}\\
                      mult &= \sqrt[3]{ngrid*a*b*c}\\
-                     k-mesh &= [mult/a, mult/b, mult/c]
+                     k_{mesh} &= [mult/a, mult/b, mult/c]
           \end{split}
           \end{equation}
 
