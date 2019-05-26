@@ -1,17 +1,17 @@
 Defect-Formation-Calculation
 
 
-.. image:: https://travis-ci.org/ChangChunHe/pyvaspflow.svg?branch=master
-    :target: https://travis-ci.org/ChangChunHe/pyvaspflow
+.. image:: https://travis-ci.com/ChangChunHe/pyvaspflow.svg?branch=master
+    :target: https://travis-ci.com/ChangChunHe/pyvaspflow
     :alt: Build Status
 
 .. image:: https://codecov.io/gh/ChangChunHe/pyvaspflow/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/ChangChunHe/pyvaspflow
     :alt: codecov
 
-.. image:: https://readthedocs.org/projects/defect-formation-calculation/badge/?version=latest
-  :target: https://defect-formation-calculation.readthedocs.io/en/latest/?badge=latest
-  :alt: Documentation Status
+.. image:: https://readthedocs.org/projects/pyvaspflow/badge/?version=latest
+    :target: https://pyvaspflow.readthedocs.io/zh/latest/?badge=latest
+    :alt: Documentation Status
 
 .. image :: https://badges.frapsoft.com/os/mit/mit.svg?v=103
     :target: https://opensource.org/licenses/mit-license.php
