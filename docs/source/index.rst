@@ -19,6 +19,7 @@ pyvaspflow source code address: https://github.com/ChangChunHe/pyvaspflow
    potcar
    job
    execute
+   test_para
 
 
 
