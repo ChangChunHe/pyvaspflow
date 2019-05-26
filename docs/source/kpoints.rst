@@ -19,7 +19,7 @@ reciprocal lattice vector proportional to its length.
           \begin{equation}
           \begin{split}
                      ngrid &= kppa/atom_num\\
-                     mult &= (ngrid*a*b*c)^(1/3)\\
+                     mult &= \sqrt[3]{ngrid*a*b*c}\\
                      k-mesh &= [mult/a, mult/b, mult/c]
           \end{split}
           \end{equation}
