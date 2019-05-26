@@ -11,10 +11,11 @@ Welcome to pyvaspflow's documentation!
    :caption: Contents:
 
    installation
-
    prepare
-
    incar
+   kpoints
+   potcar
+   job
 
 
 
