@@ -15,11 +15,14 @@ KPOINTS 参数的设置也是在 ``-a`` 中, 下面介绍几种KPOINTS文件的�
 Uses a simple approach scaling the number of divisions along each
 reciprocal lattice vector proportional to its length.
           
- .. math:: 
- 
-           ngrid &= kppa/atom_num\\
-           mult &= (ngrid*a*b*c)^(1/3)\\
-           k-mesh &= [mult/a, mult/b, mult/c]
+ .. math ::
+          \begin{equation}
+          \begin{split}
+                     ngrid &= kppa/atom_num\\
+                     mult &= (ngrid*a*b*c)^(1/3)\\
+                     k-mesh &= [mult/a, mult/b, mult/c]
+          \end{split}
+          \end{equation}
 
 关于k点的关键字什么都不写就是用这种方式生成k点, 默认 ``kppa=3000`` ::
 
