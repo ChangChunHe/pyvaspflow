@@ -16,6 +16,7 @@ Welcome to pyvaspflow's documentation!
    kpoints
    potcar
    job
+   execute
 
 
 
