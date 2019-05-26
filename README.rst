@@ -10,7 +10,7 @@ Defect-Formation-Calculation
     :alt: codecov
 
 .. image:: https://readthedocs.org/projects/pyvaspflow/badge/?version=latest
-    :target: https://pyvaspflow.readthedocs.io/zh/latest/?badge=latest
+    :target: https://pyvaspflow.readthedocs.io/zh_CN/latest/
     :alt: Documentation Status
 
 .. image :: https://badges.frapsoft.com/os/mit/mit.svg?v=103
