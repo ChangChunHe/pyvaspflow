@@ -3,7 +3,7 @@ from sagar.io.vasp import  write_vasp, read_vasp
 from sagar.element.base import periodic_table_dict as ptd
 from sagar.toolkit.mathtool import is_int_np_array
 from sagar.crystal.derive import PermutationGroup as PG
-from pydefcal.io.vasp_out import ExtractValue
+from pyflow.io.vasp_out import ExtractValue
 from os import path
 import json
 
@@ -373,8 +373,8 @@ def read_json():
     wd = path.abspath(pardir)
     if path.isfile(path.join(wd,'conf.json')):
         conf_file_path = path.join(wd,'conf.json')
-    elif path.isfile(path.join(home,'conf.json')):
-        conf_file_path = path.join(home,'conf.json')
+    elif path.isfile(path.join(home,'.config','pyflow','conf.json')):
+        conf_file_path = path.join(home,'.config','pyflow','conf.json')
     else:
         raise FileNotFoundError('You should put conf.json file in your \
                                $HOME directory or your current directory\
