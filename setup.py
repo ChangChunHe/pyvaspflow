@@ -9,7 +9,7 @@ from distutils.core import setup
 #You could be more specific.
 
 
-setup(name = "pydefcal",
+setup(name = "pyflow",
     version = "0.0.1",
     description = "Vasp Calculation",
     author = "ChangChunHe",
@@ -18,11 +18,11 @@ setup(name = "pydefcal",
     #(If you have other packages (dirs) or modules (py files) then
     #put them into the package directory - they will be found
     #recursively.)
-    packages = ['pydefcal','pydefcal.io','pydefcal.vasp','pydefcal.defect_cal'],
+    packages = ['pyflow','pyflow.io','pyflow.vasp','pyflow.defect_cal'],
     install_requires=['numpy','sagar','seekpath','matplotlib'],
     url="https://github.com/ChangChunHe/Defect-Formation-Calculation",
     entry_points={
         'console_scripts': [
-        'pyvasp = pydefcal.pyvasp:cli',
+        'pyvasp = pyflow.pyvasp:cli',
         ]}
 )

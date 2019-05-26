@@ -328,7 +328,7 @@ pyvasp get_grd_state task 100
 ```
 
 ### 3.8 pyvasp-`get_def_form_energy`
-This command will plot a defect formation energy figure and write a defect-log file. For more help please refer to [here](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pydefcal/examples/common_calculations/readme.md)
+This command will plot a defect formation energy figure and write a defect-log file. For more help please refer to [here](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyflow/examples/common_calculations/readme.md)
 ```shell
 $ pyvasp get_def_form_energy --help
 Usage: pyvasp get_def_form_energy [OPTIONS] <your data main direcroty> <your data defect calculation direcroty>

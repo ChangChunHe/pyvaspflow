@@ -1,9 +1,9 @@
-.. Defect-Formation-Calculation documentation master file, created by
+.. pyflow documentation master file, created by
    sphinx-quickstart on Sat May 25 19:47:24 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Defect-Formation-Calculation's documentation!
+Welcome to pyflow's documentation!
 ========================================================
 
 .. toctree::

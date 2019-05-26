@@ -4,7 +4,7 @@
 from sagar.io.vasp import read_vasp,write_vasp
 from sagar.crystal.structure import Cell
 import numpy as np
-from pydefcal.utils import generate_all_basis
+from pyflow.utils import generate_all_basis
 from sagar.crystal.derive import PermutationGroup as PG
 from sagar.toolkit.mathtool import is_int_np_array
 from itertools import combinations

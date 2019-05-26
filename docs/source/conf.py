@@ -20,7 +20,7 @@ sys.setrecursionlimit(1500)
 
 # -- Project information -----------------------------------------------------
 
-project = 'Defect-Formation-Calculation'
+project = 'pyflow'
 copyright = '2019, ChangChunHe'
 author = 'ChangChunHe'
 
