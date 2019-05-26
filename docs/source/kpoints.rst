@@ -4,7 +4,7 @@ KPOINTS 文件
 
 KPOINTS 参数的设置也是在 ``-a`` 中, 下面介绍几种KPOINTS文件的写法
 
-你可以选择 `style`=`auto`,`gamma`,`monkhorst`,`line` 来生成不同样式的 KPOINTS.
+你可以选择 style=auto,gamma,monkhorst,line 来生成不同样式的 KPOINTS.
 
 
 
@@ -16,8 +16,10 @@ Uses a simple approach scaling the number of divisions along each
 reciprocal lattice vector proportional to its length.
 
 ngrid = kppa/atom_num
+
 mult = (ngrid*a*b*c)**1/3
-k-mesh = [mult/a mult/b mult/c]
+
+k-mesh = [mult/a, mult/b, mult/c]
 
 关于k点的关键字什么都不写就是用这种方式生成k点, 默认 ``kppa=3000`` ::
 
