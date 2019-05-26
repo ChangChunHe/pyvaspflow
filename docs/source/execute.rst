@@ -23,7 +23,7 @@ execute single vasp task
 
 
 
-Execute multiple vasp-tasks
+execute multiple vasp-tasks
 ============
 
 
@@ -40,7 +40,7 @@ Execute multiple vasp-tasks
 
 
 第一个参数是 ``job_name``, 这个就是你之前生成的文件夹的前缀, 比如之前你生成
-了 ``task0,task1,task2,...,task20``, 那么这里的job_name就应该填入 ``task``,
+了 task0,task1,task2,...,task20, 那么这里的job_name就应该填入 ``task``,
 这里的 `-s`是开始的任务号, 比如你可以指定从 ``task4`` 开始计算, ``-s 4`` 即可, 该参数默认为0. ``-p`` 是队列里同时有的最大任务数目.
 默认是4, 具体的意思就是比如你有10个任务, 最开始一次性提交4个任务, 接着如果第一个计算完毕了, 而且二三四都没有计算完毕, 那么第五个任务就会被
 提交上去, 会一直保持任务队列中有4个任务直到所有任务结束为止. 比如::

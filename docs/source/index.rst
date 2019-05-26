@@ -10,7 +10,6 @@ Welcome to pyvaspflow's documentation!
    :maxdepth: 2
    :caption: Contents:
    
-   genindex
    installation
    prepare
    incar
