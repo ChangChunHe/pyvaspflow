@@ -18,9 +18,9 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-	.PHONY: xelatexpdf
-	xelatexpdf:
-		$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
-		@echo "Running LaTeX files through xelatex..."
-		$(MAKE) PDFLATEX=xelatex -C $(BUILDDIR)/latex all-pdf
-		@echo "xelatex finished; the PDF files are in $(BUILDDIR)/latex."
+.PHONY: xelatexpdf
+xelatexpdf:
+	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
+	@echo "Running LaTeX files through xelatex..."
+	$(MAKE) PDFLATEX=xelatex -C $(BUILDDIR)/latex all-pdf
+	@echo "xelatex finished; the PDF files are in $(BUILDDIR)/latex."
