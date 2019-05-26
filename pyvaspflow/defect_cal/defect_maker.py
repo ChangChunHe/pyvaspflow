@@ -10,7 +10,7 @@ import numpy as np
 from sagar.crystal.derive import ConfigurationGenerator
 from sagar.io.vasp import read_vasp,_read_string
 from sagar.crystal.structure import symbol2number as s2n
-from pyflow.utils import generate_all_basis, refine_points,wirite_poscar
+from pyvaspflow.utils import generate_all_basis, refine_points,wirite_poscar
 from itertools import combinations
 from sagar.crystal.structure import Cell
 import os

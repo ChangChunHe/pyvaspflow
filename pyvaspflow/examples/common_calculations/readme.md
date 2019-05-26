@@ -3,7 +3,7 @@
 
 In fact, it is easy to construct your job through this package.
 
-Here we supply some common vasp calculation shell scripts, they are [band.sh](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyflow/examples/common_calculations/band.sh), [dos.sh](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyflow/examples/common_calculations/dos.sh). You should supply a `POSCAR` file in your current directory.
+Here we supply some common vasp calculation shell scripts, they are [band.sh](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyvaspflow/examples/common_calculations/band.sh), [dos.sh](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyvaspflow/examples/common_calculations/dos.sh). You should supply a `POSCAR` file in your current directory.
 
 
 

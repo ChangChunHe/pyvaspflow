@@ -1,12 +1,12 @@
 Defect-Formation-Calculation
 
 
-.. image:: https://travis-ci.org/ChangChunHe/pyflow.svg?branch=master
-    :target: https://travis-ci.org/ChangChunHe/pyflow
+.. image:: https://travis-ci.org/ChangChunHe/pyvaspflow.svg?branch=master
+    :target: https://travis-ci.org/ChangChunHe/pyvaspflow
     :alt: Build Status
 
-.. image:: https://codecov.io/gh/ChangChunHe/pyflow/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/ChangChunHe/pyflow
+.. image:: https://codecov.io/gh/ChangChunHe/pyvaspflow/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/ChangChunHe/pyvaspflow
     :alt: codecov
 
 .. image:: https://readthedocs.org/projects/defect-formation-calculation/badge/?version=latest

@@ -1,9 +1,9 @@
-.. pyflow documentation master file, created by
+.. pyvaspflow documentation master file, created by
    sphinx-quickstart on Sat May 25 19:47:24 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pyflow's documentation!
+Welcome to pyvaspflow's documentation!
 ========================================================
 
 .. toctree::
@@ -11,6 +11,8 @@ Welcome to pyflow's documentation!
    :caption: Contents:
 
    installation
+
+   prepare
 
 
 

@@ -6,8 +6,8 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import warnings,sys,os
 import numpy as np
-from pyflow.io.vasp_out import ExtractValue,get_ele_sta,read_incar
-from pyflow.utils import get_farther_atom_num
+from pyvaspflow.io.vasp_out import ExtractValue,get_ele_sta,read_incar
+from pyvaspflow.utils import get_farther_atom_num
 
 def get_defect_formation_energy(data_dir,defect_dirs):
     print('The main direcroty is: ', data_dir)

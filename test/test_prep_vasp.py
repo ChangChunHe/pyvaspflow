@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import unittest
-from pyflow.vasp import prep_vasp
+from pyvaspflow.vasp import prep_vasp
 class Test_Vasp(unittest.TestCase):
 
     def test_write_incar(self):

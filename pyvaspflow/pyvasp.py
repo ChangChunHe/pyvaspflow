@@ -3,18 +3,18 @@
 import numpy as np
 import linecache as lc
 import os,subprocess,click
-import pyflow.utils as us
+import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
-from pyflow.io.vasp_out import ExtractValue, get_ele_sta
-from pyflow.defect_cal.defect_maker import DefectMaker
-from pyflow.vasp.prep_vasp import prep_single_vasp as psv
-from pyflow.vasp.run_vasp import run_single_vasp as rsv
-from pyflow.vasp.prep_vasp import prep_multi_vasp as pmv
-from pyflow.vasp.run_vasp import run_multi_vasp as rmv
-from pyflow.vasp.prep_vasp import write_incar as wi
-from pyflow.vasp.prep_vasp import write_kpoints as wk
-from pyflow.vasp import test_para
-from pyflow.defect_cal.defect_formation_energy import get_defect_formation_energy
+from pyvaspflow.io.vasp_out import ExtractValue, get_ele_sta
+from pyvaspflow.defect_cal.defect_maker import DefectMaker
+from pyvaspflow.vasp.prep_vasp import prep_single_vasp as psv
+from pyvaspflow.vasp.run_vasp import run_single_vasp as rsv
+from pyvaspflow.vasp.prep_vasp import prep_multi_vasp as pmv
+from pyvaspflow.vasp.run_vasp import run_multi_vasp as rmv
+from pyvaspflow.vasp.prep_vasp import write_incar as wi
+from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
+from pyvaspflow.vasp import test_para
+from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
 
 @click.group()
 def cli():

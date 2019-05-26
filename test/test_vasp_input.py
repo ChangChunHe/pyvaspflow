@@ -2,8 +2,8 @@
 # coding: utf-8
 
 import unittest
-from pyflow.io import vasp_input
-from pyflow.vasp.prep_vasp import write_incar
+from pyvaspflow.io import vasp_input
+from pyvaspflow.vasp.prep_vasp import write_incar
 class Test_io(unittest.TestCase):
 
     def test_incar(self):

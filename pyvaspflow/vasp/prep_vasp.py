@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-from pyflow.utils import read_json
+from pyvaspflow.utils import read_json
 from os import path,makedirs,chdir,listdir
 from shutil import rmtree,copy2
 from sagar.io.vasp import read_vasp
-from pyflow.io.vasp_input import Incar,Kpoints,Potcar
+from pyvaspflow.io.vasp_input import Incar,Kpoints,Potcar
 
 
 def write_job_file(node_name,cpu_num,node_num,job_name):

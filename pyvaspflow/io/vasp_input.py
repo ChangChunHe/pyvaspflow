@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-from pyflow.utils import str_delimited, clean_lines,zread,read_json
+from pyvaspflow.utils import str_delimited, clean_lines,zread,read_json
 import re,math,json,seekpath
 from os import path
 import numpy as np
 from enum import Enum
-from pyflow.utils import is_2d_structure
+from pyvaspflow.utils import is_2d_structure
 
 class Incar(dict):
 
@@ -730,7 +730,7 @@ class Kpoints:
 
 if __name__ == '__main__':
     from sagar.io.vasp import read_vasp
-    c = read_vasp('/home/hecc/Documents/python-package/Defect-Formation-Calculation/pyflow/examples/POSCAR')
+    c = read_vasp('/home/hecc/Documents/python-package/Defect-Formation-Calculation/pyvaspflow/examples/POSCAR')
     kpoints = Kpoints()
     kpoints.automatic_density(structure=c,kppa=3000)
     kpoints.write_file()

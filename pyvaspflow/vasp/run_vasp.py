@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-from pyflow.vasp import prep_vasp
+from pyvaspflow.vasp import prep_vasp
 import os
 from time import sleep
 import subprocess
-from pyflow.utils import read_json
+from pyvaspflow.utils import read_json
 
 
 def is_inqueue(job_id):

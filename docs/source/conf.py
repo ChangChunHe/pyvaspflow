@@ -20,7 +20,7 @@ sys.setrecursionlimit(1500)
 
 # -- Project information -----------------------------------------------------
 
-project = 'pyflow'
+project = 'pyvaspflow'
 copyright = '2019, ChangChunHe'
 author = 'ChangChunHe'
 

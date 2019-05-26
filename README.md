@@ -68,116 +68,7 @@ This file your  should specify your `POTCAR` path and the command of  submitting
 
 ## 1 Preparation
 
-You can use `--help` to get some help
 
-## 1.1 Prepare single vasp-task
-
-```shell
-pyvasp prep_single_vasp --help # to get help
-```
-
-A single task  preparation example:
-
-```shell
-pyvasp prep_single_vasp -p POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
-pyvasp prep_single_vasp -p POSCAR -a kppa=4000,node_name=super_q,cpu_num=12
-```
-
-`-p` parameter is the path of your `POSCAR` file, the default is `POSCAR`.`-a` parameter is the attribute you want to specify.
-
-
-## 1.2 Prepare multiple vasp-tasks
-
-Noted that,first the work directory must has POSCAR[[:digit:]], and the `digit` must start with 0. This command will generate separated directories containing `POSCAR, KPOINTS,POTCAR, job.sh`.
-
-A multiple tasks preparation example:
-
-supposed that your work directory has POSCAR0,POSCAR1,...,POSCAR12.
-```shell
-$ pyvasp prep_multi_vasp --help
-Usage: pyvasp prep_multi_vasp [OPTIONS] <the last number of jobs>
-
-# current directory should contain POSCAR0,POSCAR1,...,
-#  this command will automatic find all theses files
-
-pyvasp prep_multi_vasp  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 12
-```
-This command will generate  `struc_opt0`,`struc_opt1`,...,`struc_opt12`, because you specify parameter `job_name=struc_opt`, the default is `task`. If you do not  specify `job_name`, the names of generated directories will be `task0`,`task1`,...,`task12`.
-
-## 1.3 Parameters
-
-### 1.3.0 `-a`
-
-This parameter mean attributes, you can specify some attributes in your calculation through this parameter. Noted that each attribute should be separated with `,`( this is the delimiter). <br />
- **!!! Do not** separate these parameters with **blank space**.
-
-__Noted that `prep_single_vasp` will make a new directory to contain those generated files, and the directory is named by `job_name`, default is `task`, and the prep_multi_vasp will generate a serial of directories named by job_name+[[:digit:]]__
-
-Below examples are  based on `prep_single_vasp`, which will also be applicable for `prep_multi_vasp`.
-
-### 1.3.1 `INCAR`
-
-You can write any parameters  in INCAR  after `pyvasp -a`. Example:
-
-```shell
-pyvasp prep_single_vasp -a NSW=143.2,LCHARG=True,EDIFF=1e-4,NELECT=145
-```
-We can interpret `NSW=143.2` to `NSW=143` for this parameter should be an `INTEGER`.
-
-We supply a single command to generate INCAR file
-
-```shell
-pyvasp incar -a NSW=143.2,LCHARG=True,EDIFF=1e-4,NELECT=145
-```
-
-### 1.3.2 `KPOINTS`
-You can choose `style`=`auto`,`gamma`,`monkhorst`,`line` to generate different KPOINTS.
-
-Example:
-```shell
-# the default will choose G or M according to your structure, kppa=3000
-pyvasp prep_single_vasp
-
-# gamma center,kppa=5000
-pyvasp prep_single_vasp -a style=gamma,kppa=5000
-
-# gamma center, k-mesh=5*6*7, shift=0.5 0.5 0.5, default shift is 0 0 0
-pyvasp prep_single_vasp -a style=gamma,kpts=5,6,7,shift=0.5,0.5,0.5
-
-# similar as the above one
-pyvasp prep_single_vasp -a style=monkhorst,kpts=5,6,7
-
-# line mode for band structure calculation,style=line or band
-# num_kpt means  the points inserted between two nearest K-points.
-pyvasp prep_single_vasp -a style=line,num_kpt=20
-```
-
-Also we supply a single command to write KPOINTS file, all usage is the same.
-
-```shell
-pyvasp kpoints -a style=line,num_kpt=20
-```
-
-### 1.3.3 `POTCAR`
-You can specify `functional` and `sym_potcar_map` to generate POTCAR.
-
-
-```shell
-# this will generate Zr_sv of paw_LDA POTCAR
-# for those not specified in `sym_potcar_map` will using the default
-# the default is the element itself
-
-pyvasp prep_single_vasp -a functional=paw_LDA,sym_potcar_map=Zr_sv
-```
-
-### 1.3.4 `job.sh`
-You can specify `node_name`, `node_num`, `cpu_num` and `job_name` in your `job.sh`.<br \>
-Default:<br \>
-node_name=short_q,cpu_num=24,node_num=1,job_name=task
-
-```shell
-pyvasp prep_single_vasp -a node_name=super_q,cpu_num=12,job_name=task
-```
 
 ## 2 Execution
 
@@ -328,7 +219,7 @@ pyvasp get_grd_state task 100
 ```
 
 ### 3.8 pyvasp-`get_def_form_energy`
-This command will plot a defect formation energy figure and write a defect-log file. For more help please refer to [here](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyflow/examples/common_calculations/readme.md)
+This command will plot a defect formation energy figure and write a defect-log file. For more help please refer to [here](https://github.com/ChangChunHe/Defect-Formation-Calculation/blob/master/pyvaspflow/examples/common_calculations/readme.md)
 ```shell
 $ pyvasp get_def_form_energy --help
 Usage: pyvasp get_def_form_energy [OPTIONS] <your data main direcroty> <your data defect calculation direcroty>

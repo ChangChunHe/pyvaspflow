@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-from pyflow.vasp import prep_vasp,run_vasp
-from pyflow.io.vasp_input import Kpoints
-from pyflow.utils import is_2d_structure
-from pyflow.io.vasp_out import ExtractValue
+from pyvaspflow.vasp import prep_vasp,run_vasp
+from pyvaspflow.io.vasp_input import Kpoints
+from pyvaspflow.utils import is_2d_structure
+from pyvaspflow.io.vasp_out import ExtractValue
 from sagar.io.vasp import read_vasp
 from os import makedirs,path,chdir,remove
 from shutil import rmtree,copy2
