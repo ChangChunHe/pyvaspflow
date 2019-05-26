@@ -151,8 +151,9 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 @click.argument('poscar', metavar='<primitive_cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
 @click.option('--purity_in','-i', default='H', type=str)
-@click.option('--isunique','-u', default=True, type=bool)
-def get_tetrahedral_poscar(poscar,purity_in,isunique):
+@click.option('--isunique','-u', default=False, type=bool)
+@click.option('--min_d','-d',default=1.5,type=float)
+def get_tetrahedral_poscar(poscar,purity_in,isunique,min_d):
     """
     argument:
 
@@ -165,7 +166,7 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique):
     pyvasp get_tetrahedral_poscar -i H  POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
-    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in)
+    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in,min_d=min_d)
 
 
 @cli.command('symmetry',short_help="Get symmetry of POSCAR")

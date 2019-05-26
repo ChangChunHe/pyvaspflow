@@ -41,7 +41,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=True, purity_in='H',min_d=1,folder='tetrahedral-defect'):
+    def get_tetrahedral_defect(self, isunique=False, purity_in='H',min_d=1,folder='tetrahedral-defect'):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
@@ -60,7 +60,7 @@ class DefectMaker:
         first_tetra,sec_tetra,third_tetra = [],[],[]
         for ii in range(n):
             temp_d = sorted(d[ii])
-            idx = np.where(abs(d[ii] - temp_d[1])<1.5)[0]
+            idx = np.where(abs(d[ii] - temp_d[1])<min_d)[0]
             if len(idx) < 3:
                 continue
             for comb in combinations(idx,3):
