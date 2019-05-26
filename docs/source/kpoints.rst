@@ -47,7 +47,7 @@ k-mesh = [mult/a mult/b mult/c]
 4. 指定设置线性的k点
 ===============
 
-只需要设置 ``style=band`` 或者 ``style=line`` 就可以了, 生成的高对称点是调用 ``seekpath``_
+只需要设置 ``style=band`` 或者 ``style=line`` 就可以了, 生成的高对称点是调用 `seekpath`_
 的, num_kpt是用于指定两个高对称点之间插入的k点的数目, 默认是16个.
 
 例子::
