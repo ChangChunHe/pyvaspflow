@@ -2,8 +2,8 @@
 # coding: utf-8
 
 import unittest
-from pydefcal.io import vasp_input
-from pydefcal.vasp.prep_vasp import write_incar
+from pyflow.io import vasp_input
+from pyflow.vasp.prep_vasp import write_incar
 class Test_io(unittest.TestCase):
 
     def test_incar(self):
@@ -15,8 +15,16 @@ class Test_io(unittest.TestCase):
         self.assertEqual(incar['NSW'],1000)
         self.assertEqual(incar['LCHGCAR'],True)
 
-    def test_kpoints(self):
-        pass
+    def test_auto_kpoints(self):
+        kpoints = vasp_input.Kpoints()
+        kpoints.automatic([1,2,3])
+        self.assertEqual(kpoints.kpts[0][0],[1,2,3])
+
+    def test_gamma_kpoints(self):
+        kpoints = vasp_input.Kpoints()
+        kpoints.gamma_automatic([1,1,1],[0.5,0.5,0.5])
+        self.assertEqual(kpoints.kpts_shift,[0.5,0.5,0.5])
+        self.assertEqual(kpoints.kpts[0],[1,1,1])
 
     def test_potcar(self):
         pass
