@@ -21,7 +21,7 @@ def cli():
     '''
     you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/index.html
 
     for more help
     '''
@@ -228,7 +228,7 @@ def incar(attribute,incar_file):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/incar.html
     '''
     wi(incar_file=incar_file,kw=us.get_kw(attribute))
 
@@ -244,7 +244,7 @@ def kpoints(poscar_file,attribute):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/kpoints.html
     '''
     wk(poscar_file,kw=us.get_kw(attribute))
 
@@ -260,7 +260,7 @@ def prep_single_vasp(poscar,attribute):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-single-vasp
     '''
     psv(poscar=poscar,kw=us.get_kw(attribute))
 
@@ -277,7 +277,7 @@ def run_single_vasp(job_name,is_login_node,cpu_num):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
     '''
     rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num)
 
@@ -296,7 +296,7 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
     '''
     pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
 
@@ -316,7 +316,7 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
     '''
     rmv(job_name=job_name,end_job_num=end_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
@@ -337,7 +337,7 @@ def test_encut(poscar,start,end,step,attribute,is_login_node):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/test_para.html#id2
     '''
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step,'is_login_node':is_login_node}
@@ -360,7 +360,7 @@ def test_kpts(poscar,start,end,step,attribute,is_login_node):
 
     For more help you can refer to
 
-    https://github.com/ChangChunHe/Defect-Formation-Calculation
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/test_para.html#k
     '''
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step,'is_login_node':is_login_node}
@@ -388,6 +388,10 @@ def diff_pos(pri_pos,pos1,pos2,symprec):
     Exmaple:
 
     pyvasp diff_pos POSCAR POSCAR1 POSCAR2
+
+    For more help you can refer to
+
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/fetch.html#pyvasp-diff-pos
     '''
     click.echo(us.diff_poscar(pri_pos,pos1,pos2,symprec=symprec))
 
