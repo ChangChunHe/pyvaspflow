@@ -30,7 +30,7 @@ cp task${grd_idx}/CONTCAR grd_poscar
 total_ele=`pyvasp main -a ele-free -w  task0`
 for q in -2 -1 0 1 2
 do
-let ele=${total_ele}+$q
+let ele=${total_ele}-$q
 pyvasp prep_single_vasp -p grd_poscar -a NELECT=$ele,job_name=charge_state_$q,node_name=long_q
 pyvasp run_single_vasp charge_state_$q
 cd charge_state_$q
