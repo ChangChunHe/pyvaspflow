@@ -14,7 +14,7 @@ class Incar(dict):
     def __init__(self, params=None):
         self.update({'ISIF':2,'ISTART':0,'ICHARG':2,'NSW':50,'IBRION':2,
         'EDIFF':1E-5,'EDIFFG':-0.01,'ISMEAR':0,'NPAR':4,'LREAL':'Auto',
-        'LWAVE':'F','LCHARG':'F','ALGO':'All'})
+        'LWAVE':'F','LCHARG':'F'})
         if params:
             if (params.get("MAGMOM") and isinstance(params["MAGMOM"][0], (int, float))) \
                     and (params.get("LSORBIT") or params.get("LNONCOLLINEAR")):
