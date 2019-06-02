@@ -234,7 +234,7 @@ def incar(attribute,incar_file):
 
 
 @cli.command('kpoints',short_help="Prepare KPOINTS for vasp calculation")
-@click.argument('poscar_file', metavar='<POSCAR_file_path>',nargs=1)
+@click.option('--poscar_file','-p', default='POSCAR', type=str)
 @click.option('--attribute','-a', default='', type=str)
 def kpoints(poscar_file,attribute):
     '''
