@@ -21,7 +21,7 @@ autodoc_mock_imports = ['spglib', 'ase']
 # -- Project information -----------------------------------------------------
 
 project = 'pyvaspflowdoc'
-copyright = '2018, ChangChun He'
+copyright = '2019, ChangChun He'
 author = 'ChangChun He'
 
 # The short X.Y version

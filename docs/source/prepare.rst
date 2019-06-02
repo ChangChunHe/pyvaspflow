@@ -14,8 +14,8 @@ prep_single_vasp
      $ pyvasp prep_single_vasp --help
      Usage: pyvasp prep_single_vasp [OPTIONS]
 
-pyvasp prep_single_vasp 有两个可选参数, 分别为 ``-p, -a``. 这里 ``-p`` 是为了指定 ``POSCAR``的位置
-默认值为 ``POSCAR`` , ``-a`` 是为了设置一些任务的参数, 例如 ``INCAR, KPOINTS, POTCAR, job.sh``中的
+pyvasp prep_single_vasp 有两个可选参数, 分别为 ``-p, -a``. 这里 ``-p`` 是为了指定 ``POSCAR`` 的位置
+默认值为 ``POSCAR`` , ``-a`` 是为了设置一些任务的参数, 例如 ``INCAR, KPOINTS, POTCAR, job.sh`` 中的
 参数设置, 后面会仔细介绍 ``-a``  这个参数的用法.
 
 这里举一个例子::
