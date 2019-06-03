@@ -135,8 +135,8 @@ pyvasp get_grd_state::
 I. 提交以下任务::
 
      #/bin/bash
-    
-    
+
+
      # relax calculation and scf calculation
      pyvasp prep_single_vasp -a ISIF=3,node_name=long_q,job_name=supercell
      pyvasp run_single_vasp supercell
@@ -144,11 +144,11 @@ I. 提交以下任务::
      pyvasp prep_single_vasp -p  CONTCAR -a kppa=4000,job_name=scf,node_name=long_q,NSW=0
      pyvasp run_single_vasp scf
      cd ..
-    
-    
+
+
      # get ground state of defect configurations
      pyvasp get_purity -i Vacc -o Si supercell/scf/CONTCAR
-    
+
      cd Si-Vacc-defect
      i=0
      for f in `ls`
@@ -160,8 +160,8 @@ I. 提交以下任务::
      pyvasp run_multi_vasp task $((i-1))
      grd_idx=`pyvasp get_grd_state task $((i-1)) `
      cp task${grd_idx}/CONTCAR grd_poscar
-    
-    
+
+
      ## calculate possible charge states
      total_ele=`pyvasp main -a ele-free -w  task0`
      for q in -2 -1 0 1 2
@@ -174,9 +174,9 @@ I. 提交以下任务::
      pyvasp run_single_vasp scf
      cd ..
      done
-    
+
      cd ..
-    
+
      ## calculate image correlation
      sed -n '1,5p' supercell/scf/POSCAR >poscar_img
      echo H >> poscar_img
@@ -190,7 +190,7 @@ I. 提交以下任务::
      pyvasp prep_single_vasp -p poscar_img -a ISIF=2,job_name=image_corr,node_name=long_q
      rm poscar_img
      pyvasp run_single_vasp image_corr
-    
+
 
 II. 计算完成后可以得到以下目录结构 (重要)
 .. image:: image6.png
@@ -257,7 +257,9 @@ II. 运行以下命令::
 III. 得到目标相图chemical-potential.png以及chemical_log.txt
 
 如下：
+
 .. image:: image9.png
 
 以及:
+
 .. image:: image10.png
