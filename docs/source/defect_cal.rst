@@ -4,7 +4,8 @@
 ******************
 1.1 基础知识：
 ==============
-    .. image1:: 
+
+    .. image:: image1.jpg
     
     *图片引用于：Goyal A , Gorai P , Peng H , et al. A computational framework for automation of point defect calculations[J]. Computational Materials Science, 2017, 130:1-9.*
     
@@ -21,13 +22,14 @@
 1.2 公式中各个部分的简单讲解
 =============================
     1.2.1 带缺陷、不带缺陷结构的总能的计算 （Defect and Host Supercell）
-        .. image2::
+    
+        .. image:: image2.png
         
         通过以上流程便可以将超胞能量EH和缺陷能量ED,q求出。值得注意的是在不同的带电情况下可以求出不同的缺陷形成能（比如带-1、0、+1的缺陷能量，即ED,-1 、ED,0 、ED,1）
     
         
     1.2.2 化学势的计算 (chemical potentials from phase stability)
-        .. image3::
+        .. image:: image3.png
         
         计算不同的环境下（如富氧，贫氧环境下）的化学势。如上图所示，A、B两点为贫氧环境下各个元素的化学势（具体数值可以由程序得出），而C、D两点则是富氧环境下各个元素的化学势。
 
@@ -37,10 +39,10 @@
     1.2.4 缺陷形成能的修正计算 （Finite size corrections）
         修正项的详细内容请参考第一张图中的文章。其中，修正项主要有两项组成：
             ①线性修正：
-                .. image4:: 
+                .. image:: image4.png
 
             ②电荷校正：
-                .. image5:: 
+                .. image:: image5.png
 
 
 1.3 具体操作方法（以单空位的Si为例子）
@@ -124,7 +126,7 @@
 
 
      II. 计算完成后可以得到以下目录结构（重要）
-            .. image6:: 
+            .. image:: image6.png 
 
     1.3.4 计算最终的缺陷形成能
 
@@ -149,10 +151,10 @@
      III. 查看结果
     
         在运行完上述命令后会生成defect_formation_energy.png和defect-log.txt
-           .. image7:: 
+           .. image:: image7.png 
 
         
-           .. image8:: 
+           .. image:: image8.png
     
     1.3.5 化学势的计算 (chemical potentials from phase stability)
 	        对于三组分体系，在不同环境（如贫氧和富氧）下，defect-incar中的化学势是不一样的，因此需要对此进行分析。以ZnGa2O3为例；需要提供chemical-incar文件以生成相图；    
@@ -179,7 +181,7 @@
                 III. 得到目标相图chemical-potential.png以及chemical_log.txt
 
             如下：
-                .. image9:: 
+                .. image:: image9.png 
 
             以及:
-                .. image10:: 
+                .. image:: image10.png
