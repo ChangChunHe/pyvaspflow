@@ -23,7 +23,7 @@ pyvaspflow source code address: https://github.com/ChangChunHe/pyvaspflow
    test_para
    fetch
    example
-
+   defect_cal
 
 
 Indices and tables
