@@ -134,64 +134,63 @@ pyvasp get_grd_state::
 
 I. 提交以下任务::
 
-    $ #/bin/bash
-    $
-    $
-    $ # relax calculation and scf calculation
-    $ pyvasp prep_single_vasp -a ISIF=3,node_name=long_q,job_name=supercell
-    $ pyvasp run_single_vasp supercell
-    $ cd supercell
-    $ pyvasp prep_single_vasp -p  CONTCAR -a kppa=4000,job_name=scf,node_name=long_q,NSW=0
-    $ pyvasp run_single_vasp scf
-    $ cd ..
-    $
-    $
-    $ # get ground state of defect configurations
-    $ pyvasp get_purity -i Vacc -o Si supercell/scf/CONTCAR
-    $
-    $ cd Si-Vacc-defect
-    $ i=0
-    $ for f in `ls`
-    $ do
-    $ mv $f POSCAR$i
-    $ let i=i+1
-    $ done
-    $ pyvasp prep_multi_vasp $((i-1)) -a node_name=long_q
-    $ pyvasp run_multi_vasp task $((i-1))
-    $ grd_idx=`pyvasp get_grd_state task $((i-1)) `
-    $ cp task${grd_idx}/CONTCAR grd_poscar
-    $
-    $
-    $ ## calculate possible charge states
-    $ total_ele=`pyvasp main -a ele-free -w  task0`
-    $ for q in -2 -1 0 1 2
-    $ do
-    $ let ele=${total_ele}-$q
-    $ pyvasp prep_single_vasp -p grd_poscar -a NELECT=$ele,job_name=charge_state_$q,node_name=long_q
-    $ pyvasp run_single_vasp charge_state_$q
-    $ cd charge_state_$q
-    $ pyvasp prep_single_vasp -p  CONTCAR -a NELECT=$ele,job_name=scf,node_name=long_q,NSW=0
-    $ pyvasp run_single_vasp scf
-    $ cd ..
-    $ done
-    $
-    $ cd ..
-    $
-    $ ## calculate image correlation
-    $ sed -n '1,5p' supercell/scf/POSCAR >poscar_img
-    $ echo H >> poscar_img
-    $ echo 1 >> poscar_img
-    $ echo direct >>poscar_img
-    $ echo "0.5 0.5 0.5 "  >>poscar_img
-    $ if [ ! -d image_corr ]
-    $ then
-    $ mkdir image_corr
-    $ fi
-    $ pyvasp prep_single_vasp -p poscar_img -a ISIF=2,job_name=image_corr,node_name=long_q
-    $ rm poscar_img
-    $ pyvasp run_single_vasp image_corr
-    $
-
+     #/bin/bash
+    
+    
+     # relax calculation and scf calculation
+     pyvasp prep_single_vasp -a ISIF=3,node_name=long_q,job_name=supercell
+     pyvasp run_single_vasp supercell
+     cd supercell
+     pyvasp prep_single_vasp -p  CONTCAR -a kppa=4000,job_name=scf,node_name=long_q,NSW=0
+     pyvasp run_single_vasp scf
+     cd ..
+    
+    
+     # get ground state of defect configurations
+     pyvasp get_purity -i Vacc -o Si supercell/scf/CONTCAR
+    
+     cd Si-Vacc-defect
+     i=0
+     for f in `ls`
+     do
+     mv $f POSCAR$i
+     let i=i+1
+     done
+     pyvasp prep_multi_vasp $((i-1)) -a node_name=long_q
+     pyvasp run_multi_vasp task $((i-1))
+     grd_idx=`pyvasp get_grd_state task $((i-1)) `
+     cp task${grd_idx}/CONTCAR grd_poscar
+    
+    
+     ## calculate possible charge states
+     total_ele=`pyvasp main -a ele-free -w  task0`
+     for q in -2 -1 0 1 2
+     do
+     let ele=${total_ele}-$q
+     pyvasp prep_single_vasp -p grd_poscar -a NELECT=$ele,job_name=charge_state_$q,node_name=long_q
+     pyvasp run_single_vasp charge_state_$q
+     cd charge_state_$q
+     pyvasp prep_single_vasp -p  CONTCAR -a NELECT=$ele,job_name=scf,node_name=long_q,NSW=0
+     pyvasp run_single_vasp scf
+     cd ..
+     done
+    
+     cd ..
+    
+     ## calculate image correlation
+     sed -n '1,5p' supercell/scf/POSCAR >poscar_img
+     echo H >> poscar_img
+     echo 1 >> poscar_img
+     echo direct >>poscar_img
+     echo "0.5 0.5 0.5 "  >>poscar_img
+     if [ ! -d image_corr ]
+     then
+     mkdir image_corr
+     fi
+     pyvasp prep_single_vasp -p poscar_img -a ISIF=2,job_name=image_corr,node_name=long_q
+     rm poscar_img
+     pyvasp run_single_vasp image_corr
+    
 
 II. 计算完成后可以得到以下目录结构 (重要)
 .. image:: image6.png
@@ -203,15 +202,15 @@ I. 计算前必须在./Si的目录文件下提供defect-incar文件
 
 文件内容::
 
-    $ epsilon=13.36   #介电常数
-    $ mu_Si = -5.41     #化学势
+
+     epsilon=13.36   #介电常数
+     mu_Si = -5.41     #化学势
 
 II. 计算缺陷形成能::
 
 
     $ pyvasp get_def_form_energy --help
     $ Usage: pyvasp get_def_form_energy [OPTIONS] <your data main direcroty> <your data defect calculation direcroty>
-
     $ pyvasp get_def_form_energy  Si  Si/Si-Vacc-defect
 
 注：./Si 与Si/Si-Vacc-defect为目录结构，可参考上一步操作最后生成的目录结构。
@@ -239,17 +238,17 @@ I. 提供chemical-incar
 文件内容：（以下是该元素或者化合物的总能，可以通过DFT计算获得，也可以通过查询Aflow得到)::
 
 
-    $ Ga=-2.916203375
-    $
-    $ Ga8O12=-121.098
-    $
-    $ O2=-8.9573588
-    $
-    $ Zn=-2.5493
-    $
-    $ #Zn8Ga16O32=-328.32564
-    $
-    $ ZnO=-10.586057
+     Ga=-2.916203375
+
+     Ga8O12=-121.098
+
+     O2=-8.9573588
+
+     Zn=-2.5493
+
+     #Zn8Ga16O32=-328.32564
+
+     ZnO=-10.586057
 
 II. 运行以下命令::
 
