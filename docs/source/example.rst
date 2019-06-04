@@ -112,14 +112,19 @@ pyvasp get_grd_state::
 1.3 具体操作方法（以单空位的Si为例子）
 ---------
 
-1.3.1 扩包至超胞内至少100个原子::
+1.3.1 扩包至超胞内至少100个原子
 >>>>>>>>>
+
+扩胞命令::
 
 
     pyvasp cell -v 5 5 5 POSCAR
 
 1.3.2 获取多个不等价的Si缺陷结构::
 >>>>>>>>>
+
+扩胞命令::
+
 
     pyvasp get_purity -i Vacc -o Si Si-POSCAR   # generate a vacancy
 
@@ -135,6 +140,7 @@ pyvasp get_grd_state::
 ③计算各种修正项
 
 I. 提交以下任务::
+
 
     #/bin/bash
     # relax calculation and scf calculation
@@ -255,7 +261,8 @@ I. 提供chemical-incar
 
 II. 运行以下命令::
 
-    $ pyvasp chem_pot -r 0 chemical-incar
+
+    pyvasp chem_pot -r 0 chemical-incar
 
 III. 得到目标相图chemical-potential.png以及chemical_log.txt
 
