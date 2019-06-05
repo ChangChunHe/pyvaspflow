@@ -1,5 +1,7 @@
 #/bin/bash
 
+module load pyvaspflow # we make a module in our server
+
 
 # relax calculation and scf calculation
 pyvasp prep_single_vasp -a ISIF=3,node_name=long_q,job_name=supercell

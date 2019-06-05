@@ -2,6 +2,8 @@
 # make sure you have install pyvasp in your current environment
 # make sure current directory has POSCAR
 
+module load pyvaspflow # we make a module in our server
+
 pyvasp prep_single_vasp -a ISIF=3,job_name=stru_relax
 pyvasp run_single_vasp stru_relax
 pyvasp prep_single_vasp -p stru_relax/CONTCAR -a job_name=scf,NSW=0,LCHARG=True
