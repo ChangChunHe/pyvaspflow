@@ -13,10 +13,13 @@ from pyvaspflow.vasp.prep_vasp import prep_multi_vasp as pmv
 from pyvaspflow.vasp.run_vasp import run_multi_vasp as rmv
 from pyvaspflow.vasp.prep_vasp import write_incar as wi
 from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
-from pyvaspflow.vasp import test_para
+
 from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
 
-@click.group()
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     '''
     you can refer to
