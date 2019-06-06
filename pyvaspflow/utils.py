@@ -4,6 +4,8 @@ from sagar.element.base import periodic_table_dict as ptd
 from sagar.toolkit.mathtool import is_int_np_array
 from sagar.crystal.derive import PermutationGroup as PG
 from pyvaspflow.io.vasp_out import ExtractValue
+from sagar.element.base import periodic_table_dict as ptd
+from itertools import combinations
 from os import path
 import json
 
@@ -70,20 +72,70 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
     elif len(no_defect.atoms) == len(one_defect.atoms):
         no_def_atoms,def_atoms = np.unique(no_defect.atoms),np.unique(one_defect.atoms)
         purity_atom = np.setdiff1d(def_atoms,no_def_atoms)
-        idx = np.where(one_defect.atoms==purity_atom)[0]
-        d = np.linalg.norm(one_def_pos[idx]-no_def_pos,axis=1)
-        ii,d = np.argmin(d), np.min(d)
-        for key,val in ptd.items():
-            if val == no_defect.atoms[ii]:
-                rm_atom = key
-            if val == purity_atom:
-                in_atom = key
-        print('This is a purity defect','atom: \n',
-            rm_atom, ii+1,'in the defect-free POSCAR has benn dopped by', in_atom)
-        with open('element-in-out','w') as f:
-            f.writelines(str(rm_atom)+'='+str(1)+'\n')
-            f.writelines(str(in_atom)+'='+str(-1)+'\n')
-        return ii,d
+        if len(purity_atom) != 0: # introduce a new atom purity
+            idx = np.where(one_defect.atoms==purity_atom)[0]
+            d = np.linalg.norm(one_def_pos[idx]-no_def_pos,axis=1)
+            ii,d = np.argmin(d), np.min(d)
+            for key,val in ptd.items():
+                if val == no_defect.atoms[ii]:
+                    rm_atom = key
+                if val == purity_atom:
+                    in_atom = key
+            print('This is a purity defect','atom: \n',
+                rm_atom, ii+1,'in the defect-free POSCAR has benn dopped by', in_atom)
+            with open('element-in-out','w') as f:
+                f.writelines(str(rm_atom)+'='+str(1)+'\n')
+                f.writelines(str(in_atom)+'='+str(-1)+'\n')
+            return ii,d
+        else:
+            purity_atom = []
+            for _atom in no_def_atoms:
+                idx_num_1,idx_num_2 = len(np.where(_atom==no_defect.atoms)[0]),len(np.where(_atom==one_defect.atoms)[0])
+                if abs(idx_num_2-idx_num_1) == 1:
+                    purity_atom.append(_atom)
+                elif abs(idx_num_1-idx_num_2) > 1:
+                    raise ValueError("The POSCAR has two or more defect atoms")
+            if len(purity_atom) > 2:
+                raise ValueError("The POSCAR has two or more defect atoms")
+            no_def_pos_0 = no_def_pos[no_defect.atoms==purity_atom[0]]
+            no_def_pos_1 = no_def_pos[no_defect.atoms==purity_atom[1]]
+
+            one_def_pos_0 = one_def_pos[one_defect.atoms==purity_atom[0]]
+            one_def_pos_1 = one_def_pos[one_defect.atoms==purity_atom[1]]
+
+            if no_def_pos_0.shape[0]- one_def_pos_0.shape[0] == 1:
+                purity_in = purity_atom[1]
+                purity_out = purity_atom[0]
+                d = [min(np.linalg.norm(pos-one_def_pos_0,axis=1)) for pos in no_def_pos_0]
+                idx = np.argmax(d)
+                for key,val in ptd.items():
+                    if val == purity_out:
+                        rm_atom = key
+                    if val == purity_in:
+                        in_atom = key
+                print('This is a purity defect','atom: \n',
+                    rm_atom, idx+1,'in the defect-free POSCAR has benn dopped by', in_atom)
+                with open('element-in-out','w') as f:
+                    f.writelines(str(rm_atom)+'='+str(1)+'\n')
+                    f.writelines(str(in_atom)+'='+str(-1)+'\n')
+                return idx,d[idx]
+            else:
+                purity_in = purity_atom[0]
+                purity_out = purity_atom[1]
+                d = [min(np.linalg.norm(pos-one_def_pos_0,axis=1)) for pos in no_def_pos_0]
+                idx = np.argmax(d)
+                for key,val in ptd.items():
+                    if val == purity_out:
+                        rm_atom = key
+                    if val == purity_in:
+                        in_atom = key
+                print('This is a purity defect','atom: \n',
+                    rm_atom, idx+1,'in the defect-free POSCAR has benn dopped by', in_atom)
+                with open('element-in-out','w') as f:
+                    f.writelines(str(rm_atom)+'='+str(1)+'\n')
+                    f.writelines(str(in_atom)+'='+str(-1)+'\n')
+                return idx,d[idx]
+
     else:
         print('This kind of defect is not supported here right now')
 
@@ -468,4 +520,4 @@ def get_grd_state(job_name,start_job_num,end_job_num):
     return np.argmin(energy)
 
 if __name__ == '__main__':
-    print(diff_poscar('POSCAR','POSCAR1','POSCAR2'))
+    print(get_delete_atom_num('supercell','supercell_'))
