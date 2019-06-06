@@ -107,6 +107,7 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
                 purity_in = purity_atom[1]
                 purity_out = purity_atom[0]
                 d = [min(np.linalg.norm(pos-one_def_pos_0,axis=1)) for pos in no_def_pos_0]
+                ahead_num = np.where(no_defect.atoms==purity_out)[0][0]
                 idx = np.argmax(d)
                 for key,val in ptd.items():
                     if val == purity_out:
@@ -114,27 +115,29 @@ def get_delete_atom_num(no_defect_poscar,one_defect_poscar):
                     if val == purity_in:
                         in_atom = key
                 print('This is a purity defect','atom: \n',
-                    rm_atom, idx+1,'in the defect-free POSCAR has benn dopped by', in_atom)
+                    rm_atom, ahead_num+idx+1,'in the defect-free POSCAR has benn dopped by', in_atom)
                 with open('element-in-out','w') as f:
                     f.writelines(str(rm_atom)+'='+str(1)+'\n')
                     f.writelines(str(in_atom)+'='+str(-1)+'\n')
-                return idx,d[idx]
+                return ahead_num+idx,d[idx]
             else:
                 purity_in = purity_atom[0]
                 purity_out = purity_atom[1]
-                d = [min(np.linalg.norm(pos-one_def_pos_0,axis=1)) for pos in no_def_pos_0]
+                d = [min(np.linalg.norm(pos-one_def_pos_1,axis=1)) for pos in no_def_pos_1]
                 idx = np.argmax(d)
+                ahead_num = np.where(no_defect.atoms==purity_out)[0][0]
+                # import pdb; pdb.set_trace()
                 for key,val in ptd.items():
                     if val == purity_out:
                         rm_atom = key
                     if val == purity_in:
                         in_atom = key
                 print('This is a purity defect','atom: \n',
-                    rm_atom, idx+1,'in the defect-free POSCAR has benn dopped by', in_atom)
+                    rm_atom, ahead_num+idx+1,'in the defect-free POSCAR has benn dopped by', in_atom)
                 with open('element-in-out','w') as f:
                     f.writelines(str(rm_atom)+'='+str(1)+'\n')
                     f.writelines(str(in_atom)+'='+str(-1)+'\n')
-                return idx,d[idx]
+                return ahead_num+idx,d[idx]
 
     else:
         print('This kind of defect is not supported here right now')
@@ -520,4 +523,5 @@ def get_grd_state(job_name,start_job_num,end_job_num):
     return np.argmin(energy)
 
 if __name__ == '__main__':
-    print(get_delete_atom_num('supercell','supercell_'))
+    print(get_delete_atom_num('/home/hecc/Desktop/5.defect/supercell/scf/POSCAR'
+    ,'/home/hecc/Desktop/5.defect/Ga-Li-defect/charge_state_-1/scf/POSCAR'))
