@@ -2,7 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess,click
+import os,subprocess,click,re
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from pyvaspflow.io.vasp_out import ExtractValue, get_ele_sta
@@ -31,9 +31,25 @@ def cli():
     pass
 
 
+def get_main_attribute(ctx, args, incomplete):
+    return [k for k in ['gap','fermi','energy','electron',
+    'electron-free','ewald','cpu','image','electrostatic'] if k.startswith(incomplete)]
+
+def get_poscar_files(ctx, args, incomplete):
+    if incomplete:
+        return [k for k in os.listdir() if  k.startswith(incomplete)]
+    else:
+        return [k for k in os.listdir() if  k.lower().startswith('poscar') or k.endswith('vasp')]
+
+def get_dir_name(ctx, args, incomplete):
+    if incomplete:
+        return [k for k in os.listdir() if  k.startswith(incomplete)]
+    else:
+        return [k for k in os.listdir() if os.path.isdir(k)]
+
 @cli.command('main',short_help="Get the value you want")
 @click.option('--wd','-w',default='.')
-@click.option('--attribute','-a', default='energy', type=str)
+@click.argument('attribute', type=click.STRING, autocompletion=get_main_attribute)
 @click.option('--number','-n', default=1, type=int)
 def main(wd, attribute,number):
     """
@@ -101,9 +117,12 @@ def _get_line(file_tmp,rematch=None):
     return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
 
 
+
+
 @cli.command('cell', short_help="Expanding primitive cell to specific range of volumes.")
 @click.argument('pcell_filename', metavar='<primitive_cell_file>',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
 @click.option('--volume', '-v', nargs=3, type=int, metavar='<x> <y> <z>',default=(1,1,1),
               help="Expand cell to supercell of dismension <x> <y> <z>")
 def cell(pcell_filename, volume):
@@ -123,7 +142,8 @@ def cell(pcell_filename, volume):
 
 @cli.command('get_purity',short_help="Get purity POSCAR")
 @click.argument('poscar', metavar='<primitive_cell_file>',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
 @click.option('--purity_in','-i', default='Vacc', type=str,help='the element you want to purity into the system')
 @click.option('--purity_out','-o', default='all', type=str,help='the element you want to remove out of the system')
 @click.option('--symprec','-s', default='1e-3', type=float,help='system precision')
@@ -152,7 +172,8 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 
 @cli.command('get_tetrahedral',short_help="Get get tetrahedral sites of POSCAR")
 @click.argument('poscar', metavar='<primitive_cell_file>',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
 @click.option('--purity_in','-i', default='H', type=str)
 @click.option('--isunique','-u', default=False, type=bool)
 @click.option('--min_d','-d',default=1.5,type=float)
@@ -172,10 +193,15 @@ def get_tetrahedral_poscar(poscar,purity_in,isunique,min_d):
     DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in,min_d=min_d)
 
 
+def get_symmetry_attr(ctx, args, incomplete):
+    return [k for k in ['space_group','equivalent_atoms','primitive_cell'] if k.startswith(incomplete)]
+
+
 @cli.command('symmetry',short_help="Get symmetry of POSCAR")
+@click.argument('attr', type=str,autocompletion=get_symmetry_attr)
 @click.argument('poscar', metavar='<cell_file>',
-                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
-@click.option('--attr','-a', default='space_group', type=str)
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
 @click.option('--sympre','-s', default=1e-3, type=float)
 def symmetry(poscar,attr,sympre):
     """
@@ -189,10 +215,6 @@ def symmetry(poscar,attr,sympre):
 
     pyvasp symmetry -a space POSCAR # get space_group
 
-    pyvasp symmetry -a translations POSCAR # get translations symmetry
-
-    pyvasp symmetry -a rotations POSCAR # get rotations symmetry
-
     pyvasp symmetry -a equivalent POSCAR # get equivalent_atoms
 
     pyvasp symmetry -a primitive POSCAR # get primitive cell
@@ -200,12 +222,6 @@ def symmetry(poscar,attr,sympre):
     c = read_vasp(poscar)
     if 'space' in attr or 'group' in attr:
         print('Space group: ', c.get_spacegroup(sympre))
-    elif 'symme' in attr:
-        print('Symmetry: ', c.get_symmetry(sympre))
-    elif 'trans' in attr:
-        print('Translations Symmetry: ', c.get_symmetry(sympre)['translations'])
-    elif 'rotat' in attr:
-        print('Rotations Symmetry: ', c.get_symmetry(sympre)['rotations'])
     elif 'equiv' in attr:
         equ_atom = c.get_symmetry(sympre)['equivalent_atoms']
         atom_type = np.unique(equ_atom)
@@ -216,6 +232,9 @@ def symmetry(poscar,attr,sympre):
         for key, val in atom_species.items():
             print(key,val)
     elif 'primi' in attr:
+        if c.is_primitive():
+            click.echo('This poscar is a primitive cell, or you can decrease symprec to try to get a primitive cell')
+            return
         pc = c.get_primitive_cell(sympre)
         write_vasp(pc,'primitive_cell')
 
@@ -237,7 +256,7 @@ def incar(attribute,incar_file):
 
 
 @cli.command('kpoints',short_help="Prepare KPOINTS for vasp calculation")
-@click.option('--poscar_file','-p', default='POSCAR', type=str)
+@click.argument('poscar_file', type=str,autocompletion=get_poscar_files)
 @click.option('--attribute','-a', default='', type=str)
 def kpoints(poscar_file,attribute):
     '''
@@ -253,7 +272,7 @@ def kpoints(poscar_file,attribute):
 
 
 @cli.command('prep_single_vasp',short_help="Prepare necessary files for single vasp calculation")
-@click.option('--poscar','-p', default='POSCAR', type=str)
+@click.argument('poscar', type=str, autocompletion=get_poscar_files)
 @click.option('--attribute','-a', default='', type=str)
 def prep_single_vasp(poscar,attribute):
     '''
@@ -269,7 +288,7 @@ def prep_single_vasp(poscar,attribute):
 
 
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
-@click.argument('job_name', metavar='<single_vasp_dir>',nargs=1)
+@click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
 @click.option('--is_login_node','-i',default=False,type=bool)
 @click.option('--cpu_num','-n',default=20,type=int)
 def run_single_vasp(job_name,is_login_node,cpu_num):
@@ -284,9 +303,19 @@ def run_single_vasp(job_name,is_login_node,cpu_num):
     '''
     rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num)
 
+def get_prep_end_job_num(ctx, args, incomplete):
+    dir_names = [i for i in os.listdir() if os.path.isfile(i)]
+    prefix = 'POSCAR'
+    max_num = []
+    for dir_name in dir_names:
+        if dir_name.startswith(prefix):
+            res = re.search('\d+',dir_name)
+            if res:
+                max_num.append(int(float(res.group())))
+    return [str(max(max_num))]
 
 @cli.command('prep_multi_vasp',short_help="Prepare necessary files for multiple vasp calculation")
-@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_prep_end_job_num)
 @click.option('--attribute','-a', default='', type=str)
 @click.option('--start_job_num','-s', default=0, type=int)
 def prep_multi_vasp(attribute,start_job_num,end_job_num):
@@ -304,9 +333,49 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
 
 
+def get_job_name(ctx, args, incomplete):
+    dir_names = [i for i in os.listdir() if os.path.isdir(i)]
+    prefix_list = []
+    num_list = []
+    for dir_name in dir_names:
+        res = re.match('([^\d]+?)(\d+)',dir_name)
+        if res:
+            prefix = res.groups()[0]
+            num = 0
+            for _dir_name in dir_names:
+                if _dir_name.startswith(prefix):
+                    num += 1
+            prefix_list.append([prefix])
+            num_list.append(num)
+    return prefix_list[np.argmax(num_list)]
+
+def get_run_end_job_num(ctx, args, incomplete):
+    dir_names = [i for i in os.listdir() if os.path.isdir(i)]
+    prefix_list = []
+    num_list = []
+    for dir_name in dir_names:
+        res = re.match('([^\d]+?)(\d+)',dir_name)
+        if res:
+            prefix = res.groups()[0]
+            num = 0
+            for _dir_name in dir_names:
+                if _dir_name.startswith(prefix):
+                    num += 1
+            prefix_list.append(prefix)
+            num_list.append(num)
+    prefix = prefix_list[np.argmax(num_list)]
+    max_num = []
+    for dir_name in dir_names:
+        if dir_name.startswith(prefix):
+            res = re.match('([^\d]+?)(\d+)',dir_name)
+            if res:
+                max_num.append(int(float(res.groups()[1])))
+    return [str(max(max_num))]
+
+
 @cli.command('run_multi_vasp',short_help="run single vasp calculation")
-@click.argument('job_name', metavar='<job_name>',nargs=1)
-@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1)
+@click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
@@ -326,7 +395,7 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
 
 
 @cli.command('test_encut',short_help="test encut in vasp calculation")
-@click.option('--poscar','-p', default='POSCAR')
+@click.argument('poscar', type=str, autocompletion=get_poscar_files)
 @click.option('-start','-s', default=0.8,type=float)
 @click.option('--end','-e', default=1.3,type=float)
 @click.option('--step','-t', default=10,type=float)
@@ -349,7 +418,7 @@ def test_encut(poscar,start,end,step,attribute,is_login_node):
 
 
 @cli.command('test_kpts',short_help="test kpoints in vasp calculation")
-@click.option('--poscar','-p', default='POSCAR')
+@click.argument('poscar', type=str, autocompletion=get_poscar_files)
 @click.option('-start','-s', default=2000,type=int)
 @click.option('--end','-e', default=4000,type=int)
 @click.option('--step','-t', default=300,type=int)
@@ -400,8 +469,8 @@ def diff_pos(pri_pos,pos1,pos2,symprec):
 
 
 @cli.command('get_grd_state',short_help="get the ground state")
-@click.argument('job_name', metavar='<your job name>',nargs=1)
-@click.argument('end_job_num', metavar='<end job number>',nargs=1)
+@click.argument('job_name', metavar='<your job name>',nargs=1,autocompletion=get_job_name)
+@click.argument('end_job_num', metavar='<end job number>',nargs=1,autocompletion=get_run_end_job_num)
 @click.option('--start_job_num','-s',default=0,type=int)
 def get_grd_state(job_name,end_job_num,start_job_num):
     '''
