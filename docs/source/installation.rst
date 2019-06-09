@@ -45,3 +45,17 @@ job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运�
 该文件请放置在$HOME/.config/pyvaspflow/conf.json, 当然你可以可以放在当前文件夹, 我们会优先读取当前文件夹是否有配置文件, 如果没有才会到$HOME/.config/pyvaspflow/conf.json下面找. 所以你可以在$HOME/.config/pyvaspflow/conf.json下面设置一个常用的配置文件, 对与特殊的需要可以拷贝一份放在当前文件夹作为特殊用处.
 
 例如你一般会使用 ``vasp_std`` , 然后只是偶尔需要计算分子的能量, 此时需要使用gamma版本的vasp, 那么你就可以拷贝一份配置文件在当前文件夹, 并把 ``vasp_std`` 改成 ``vasp_gam`` 即可.
+
+
+自动补齐命令
+===============
+``pyvasp`` 是支持自动补齐命令的, 例如 ``pyvasp symm`` 按下tab键是可以自动补
+齐成 ``pyvasp symmetry`` 的, 接着按下两次tab键可以
+给出候选项 ``equivalent_atoms  primitive_cell    space_group `` , 你可以接着键入 ``p`` 来补齐命令.
+这个是需要配置的, 需要你在 ``bashrc`` 里面加入::
+
+    eval "$(_PYVASP_COMPLETE=source pyvasp)"
+
+如果你使用 ``zsh`` , 那么需要在你的 ``zshrc`` 就加入::
+
+    eval "$(_PYVASP_COMPLETE=source_zsh pyvasp)"
