@@ -51,7 +51,8 @@ job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运�
 ===============
 ``pyvasp`` 是支持自动补齐命令的, 例如 ``pyvasp symm`` 按下tab键是可以自动补
 齐成 ``pyvasp symmetry`` 的, 接着按下两次tab键可以
-给出候选项 ``equivalent_atoms  primitive_cell    space_group `` , 你可以接着键入 ``p`` 来补齐命令.
+给出候选项 ``equivalent_atoms  primitive_cell    space_group `` ,
+你可以接着键入 ``p`` 来补齐命令.
 这个是需要配置的, 需要你在 ``bashrc`` 里面加入::
 
     eval "$(_PYVASP_COMPLETE=source pyvasp)"
