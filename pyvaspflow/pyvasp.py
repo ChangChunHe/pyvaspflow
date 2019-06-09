@@ -13,11 +13,10 @@ from pyvaspflow.vasp.prep_vasp import prep_multi_vasp as pmv
 from pyvaspflow.vasp.run_vasp import run_multi_vasp as rmv
 from pyvaspflow.vasp.prep_vasp import write_incar as wi
 from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
-
 from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
+from pyvaspflow.vasp import test_para
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
-
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
@@ -31,15 +30,12 @@ def cli():
     pass
 
 
-def get_main_attribute(ctx, args, incomplete):
-    return [k for k in ['gap','fermi','energy','electron',
-    'electron-free','ewald','cpu','image','electrostatic'] if k.startswith(incomplete)]
-
 def get_poscar_files(ctx, args, incomplete):
     if incomplete:
         return [k for k in os.listdir() if  k.startswith(incomplete)]
     else:
-        return [k for k in os.listdir() if  k.lower().startswith('poscar') or k.endswith('vasp')]
+        return [k for k in os.listdir() if  (k.lower().startswith('poscar') \
+        or k.endswith('vasp')) and os.path.isfile(k)]
 
 def get_dir_name(ctx, args, incomplete):
     if incomplete:
@@ -47,47 +43,64 @@ def get_dir_name(ctx, args, incomplete):
     else:
         return [k for k in os.listdir() if os.path.isdir(k)]
 
-@cli.command('main',short_help="Get the value you want")
-@click.option('--wd','-w',default='.')
-@click.argument('attribute', type=click.STRING, autocompletion=get_main_attribute)
-@click.option('--number','-n', default=1, type=int)
-def main(wd, attribute,number):
-    """
-    Example:
 
-    pyvasp main -a gap  # this can read the gap and vbm, cbm
-
-    pyvasp main -a fermi  -w work_dir  # this can read the fermi energy, -w is your work directory
-
-    pyvasp main -a energy  # this can read the total energy
-
-    pyvasp main -a ele  # this can read the electrons in your OUTCAR
-
-    pyvasp main -a ele-free  # this can get electrons number of  the defect-free system
-
-    pyvasp main -a  Ewald  # this can get the Ewald energy of your system
-
-    pyvasp main -a cpu  # this can get CPU time
-    """
-
+@cli.command('gap',short_help="Get band gap and vbm cbm")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def gap(wd):
     EV = ExtractValue(wd)
-    if 'gap' in attribute:
-        get_gap(EV)
-    elif 'fermi' in attribute:
-        click.echo(EV.get_fermi())
-    elif 'total' in attribute.lower() or 'energy' in attribute.lower():
-        click.echo(EV.get_energy())
-    elif 'ele' in attribute.lower() and 'free' in attribute.lower():
-        click.echo(EV.get_Ne_defect_free())
-    elif 'ele' in attribute.lower() and 'free' not in attribute.lower() and 'static' not in attribute.lower():
-        click.echo(EV.get_Ne_defect())
-    elif 'ima' in attribute or 'ewald' in attribute.lower():
-        clikc.echo(EV.get_image())
-    elif 'elect' in attribute and 'static' in attribute:
-        outcar = os.path.join(wd,'OUTCAR')
-        click.echo(str(number)+' '+str(get_ele_sta(outcar, number)))
-    elif 'cpu' in attribute.lower():
-        click.echo(EV.get_cpu_time())
+    get_gap(EV)
+
+@cli.command('fermi',short_help="Get fermi energy level")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def fermi(wd):
+    EV = ExtractValue(wd)
+    click.echo(EV.get_fermi())
+
+@cli.command('energy',short_help="Get total energy")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def energy(wd):
+    EV = ExtractValue(wd)
+    click.echo(EV.get_energy())
+
+@cli.command('electron_defect_free',short_help="Get electron number of defect free system")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def electron_defect_free(wd):
+    EV = ExtractValue(wd)
+    click.echo(EV.get_Ne_defect_free())
+
+@cli.command('electron_number',short_help="Get electron number of current system")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def electron_number(wd):
+    EV = ExtractValue(wd)
+    click.echo(EV.get_Ne_defect())
+
+@cli.command('ewald',short_help="Get ewald energy of current system")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def ewald(wd):
+    EV = ExtractValue(wd)
+    click.echo(EV.get_image())
+
+@cli.command('electrostatic',short_help="Get electrostatic energy of current system")
+@click.argument('number', type=int,nargs=1)
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def ewald(wd,number):
+    outcar = os.path.join(wd,'OUTCAR')
+    click.echo(': '.join(get_ele_sta(outcar, number)))
+
+@cli.command('cpu',short_help="Get cpu time of current system")
+@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+def cpu(wd):
+    EV = ExtractValue(wd)
+    click.echo(EV.get_cpu_time())
+
 
 def get_gap(EV):
     gap_res = EV.get_gap()
@@ -110,13 +123,11 @@ def get_ele_sta(no_defect_outcar,number):
         rows -= 1
         col = 4
     tmp_line = lc.getlines(no_defect_outcar)[tmp_match_line[0]+rows+3].split()
-    return [float(i) for i in tmp_line[2*col:2*col+2]]
+    return [str(i) for i in tmp_line[2*col:2*col+2]]
 
 def _get_line(file_tmp,rematch=None):
     grep_res = subprocess.Popen(['grep', rematch, file_tmp,'-n'],stdout=subprocess.PIPE)
     return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
-
-
 
 
 @cli.command('cell', short_help="Expanding primitive cell to specific range of volumes.")
@@ -174,9 +185,9 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 @click.argument('poscar', metavar='<primitive_cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
                 autocompletion=get_poscar_files)
-@click.option('--purity_in','-i', default='H', type=str)
+@click.option('--purity_in','-i', default='H', type=str,show_default=True)
 @click.option('--isunique','-u', default=False, type=bool)
-@click.option('--min_d','-d',default=1.5,type=float)
+@click.option('--min_d','-d',default=1.5,type=float,show_default=True)
 def get_tetrahedral_poscar(poscar,purity_in,isunique,min_d):
     """
     argument:
@@ -290,7 +301,7 @@ def prep_single_vasp(poscar,attribute):
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
 @click.option('--is_login_node','-i',default=False,type=bool)
-@click.option('--cpu_num','-n',default=20,type=int)
+@click.option('--cpu_num','-n',default=24,type=int)
 def run_single_vasp(job_name,is_login_node,cpu_num):
     '''
     Example:
@@ -441,9 +452,9 @@ def test_kpts(poscar,start,end,step,attribute,is_login_node):
 
 
 @cli.command('diff_pos',short_help="judge two poscar are the same structures or not")
-@click.argument('pri_pos', metavar='<primitive_poscar>',nargs=1)
-@click.argument('pos1', metavar='<poscar1>',nargs=1)
-@click.argument('pos2', metavar='<poscar2>',nargs=1)
+@click.argument('pri_pos', metavar='<primitive_poscar>',nargs=1,autocompletion=get_poscar_files)
+@click.argument('pos1', metavar='<poscar1>',nargs=1,autocompletion=get_poscar_files)
+@click.argument('pos2', metavar='<poscar2>',nargs=1,autocompletion=get_poscar_files)
 @click.option('--symprec','-s',default=1e-3,type=float)
 def diff_pos(pri_pos,pos1,pos2,symprec):
     '''
@@ -485,8 +496,10 @@ def get_grd_state(job_name,end_job_num,start_job_num):
 
 
 @cli.command('get_def_form_energy',short_help="get defect formation energy")
-@click.argument('data_dir', metavar='<your data main direcroty>',nargs=1)
-@click.argument('defect_dirs', metavar='<your data defect calculation direcroty>',nargs=-1)
+@click.argument('data_dir', metavar='<your data main direcroty>',nargs=1,
+autocompletion=get_dir_name)
+@click.argument('defect_dirs', metavar='<your data defect calculation direcroty>',
+nargs=-1,autocompletion=get_dir_name)
 def get_def_form_energy(data_dir,defect_dirs):
     get_defect_formation_energy(data_dir,defect_dirs)
 
