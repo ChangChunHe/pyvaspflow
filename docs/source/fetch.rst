@@ -3,22 +3,22 @@
 ============
 
 
-1 pyvasp main
+1 pyvasp
 ============
 这个命令是的到一些基本的信息, 例如能量, 带隙, 费米能级, Ewald能, 电子数等等. 例子::
 
-    $ pyvasp main -a gap  -w . # this can read the gap and vbm, cbm
-    $ pyvasp main -a fermi  # this can read the fermi energy
-    $ pyvasp main -a energy  # this can read the total energy
-    $ pyvasp main -a ele  # this can read the electrons in your OUTCAR
-    $ pyvasp main -a ele-free . # this can get electrons number of  the defect-free system
-    $ pyvasp main -a image  # this can get Ewald energy of your system,
-    $ # using `pyvasp main -a ewald image_corr` can also get the same result.
-    $ pyvasp main -a cpu # get total run time
+    $ pyvasp  gap  -w . # this can read the gap and vbm, cbm
+    $ pyvasp  fermi  # this can read the fermi energy
+    $ pyvasp  energy  # this can read the total energy
+    $ pyvasp electron_number  # this can read the electrons in your OUTCAR
+    $ pyvasp  electron_defect_free . # this can get electrons number of  the defect-free system
+    $ pyvasp image  # this can get Ewald energy of your system,
+    $ # using `pyvasp  ewald image_corr` can also get the same result.
+    $ pyvasp  cpu # get total run time
 
 ``-w``  指定计算的文件夹, 默认是当前文件夹. 这里还有一个是的到electrostatic能的命令是::
 
-    $ pyvasp main -a electrostatic  23 # 得到 23 号原子的静电势能
+    $ pyvasp  electrostatic  23 # 得到 23 号原子的静电势能
 
 
 2 pyvasp symmetry
