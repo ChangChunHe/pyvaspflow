@@ -416,7 +416,7 @@ def test_encut(poscar,start,end,step,attribute,is_login_node):
     '''
     Example:
 
-    pyvasp test_encut -p POSCAR -s 0.8 -e 1.3 -t 30
+    pyvasp test_encut  POSCAR -s 0.8 -e 1.3 -t 30
 
     For more help you can refer to
 
@@ -439,7 +439,7 @@ def test_kpts(poscar,start,end,step,attribute,is_login_node):
     '''
     Example:
 
-    pyvasp test_kpts -p POSCAR -s 1000 -e 3000 -t 200
+    pyvasp test_kpts  POSCAR -s 1000 -e 3000 -t 200
 
     For more help you can refer to
 

@@ -10,7 +10,7 @@
 
 这里是测试截断能的命令::
 
-    $ pyvasp test_enmax -p POSCAR -s 0.8 -e 1.3 -t 30
+    $ pyvasp test_enmax  POSCAR -s 0.8 -e 1.3 -t 30
 
 
 这里 ``-s`` 是  0.8*max_enmax, enmax 是你的赝势中的最大的 ``ENMAX`` ,
@@ -23,6 +23,6 @@
 
 这里是测试截断能的命令::
 
-    $ pyvasp test_kpts -p POSCAR -s 1000 -e 3000 -t 200
+    $ pyvasp test_kpts  POSCAR -s 1000 -e 3000 -t 200
 
 这里与上面是类似的, ``-s`` 是起始的kppa, ``-e`` 是最终的kppa, ``-t`` 指定了间隔, 同样的也支持 ``-a`` 参数.
