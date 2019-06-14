@@ -33,7 +33,7 @@ pyvasp prep_single_vasp 有可选参数 ``-a``, ``-a`` 是为了设置一些任�
 
 这里举一个例子::
 
-    $ pyvasp prep_single_vasp -p POSCAR -a NSW=100,job_name=task,style=band
+    $ pyvasp prep_single_vasp  POSCAR -a NSW=100,job_name=task,style=band
 
 这里的 ``NSW=100`` 是设置 ``INCAR`` 的参数, ``style=band`` 是设置线性的k点用于计算能带.这
 里的 ``job_name`` 是指会生成一个为 ``task`` 的文件夹, 所生成的文件都在这个文件夹里面.

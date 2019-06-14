@@ -21,7 +21,7 @@ reciprocal lattice vector proportional to its length.
 
 关于k点的关键字什么都不写就是用这种方式生成k点, 默认 ``kppa=3000`` ::
 
-    $ pyvasp prep_single_vasp
+    $ pyvasp prep_single_vasp POSCAR
 
 
 
@@ -30,7 +30,7 @@ reciprocal lattice vector proportional to its length.
 
 例子::
 
-    $ pyvasp prep_single_vasp -a style=gamma,kppa=5000
+    $ pyvasp prep_single_vasp POSCAR -a style=gamma,kppa=5000
 
 3. 指定mesh设置k点
 ===============
@@ -38,11 +38,11 @@ reciprocal lattice vector proportional to its length.
 例子::
 
     $ # gamma center, k-mesh=5*6*7, shift=0.5 0.5 0.5, default shift is 0 0 0
-    $ pyvasp prep_single_vasp -a style=gamma,kpts=5,6,7,shift=0.5,0.5,0.5
+    $ pyvasp prep_single_vasp POSCAR -a style=gamma,kpts=5,6,7,shift=0.5,0.5,0.5
 
 
 
-    $ pyvasp prep_single_vasp -a style=monkhorst,kpts=5,6,7
+    $ pyvasp prep_single_vasp POSCAR -a style=monkhorst,kpts=5,6,7
 
 4. 指定设置线性的k点
 ===============
@@ -52,7 +52,7 @@ reciprocal lattice vector proportional to its length.
 
 例子::
 
-    $ pyvasp prep_single_vasp -a style=line,num_kpt=20
+    $ pyvasp prep_single_vasp POSCAR -a style=line,num_kpt=20
 
 
 

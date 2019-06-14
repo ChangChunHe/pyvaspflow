@@ -9,4 +9,4 @@ POTCRA 文件
     # for those not specified in `sym_potcar_map` will using the default
     # the default is the element itself
 
-    $ pyvasp prep_single_vasp -a functional=paw_LDA,sym_potcar_map=Zr_sv
+    $ pyvasp prep_single_vasp POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv
