@@ -20,7 +20,7 @@ setup(name = "pyvaspflow",
     #recursively.)
     packages = ['pyvaspflow','pyvaspflow.io','pyvaspflow.vasp','pyvaspflow.defect_cal'],
     install_requires=['numpy','sagar','seekpath','matplotlib'],
-    url="https://github.com/ChangChunHe/Defect-Formation-Calculation",
+    url="https://github.com/ChangChunHe/pyvaspflow",
     entry_points={
         'console_scripts': [
         'pyvasp = pyvaspflow.pyvasp:cli',
