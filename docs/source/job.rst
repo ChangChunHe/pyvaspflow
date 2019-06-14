@@ -4,7 +4,7 @@ job 文件
 
 这里我们生成的 ``job.sh`` 文件是::
 
-    #!/bin/bash -l
+    #!/bin/bash 
     # NOTE the -l flag!
     #SBATCH -J task
     #SBATCH -p short_q -N 1 -n 24
@@ -18,4 +18,4 @@ job 文件
 
 举一个例子::
 
-    $ pyvasp prep_single_vasp -a node_name=super_q,cpu_num=12,job_name=task
+    $ pyvasp prep_single_vasp POSCAR -a node_name=super_q,cpu_num=12,job_name=task

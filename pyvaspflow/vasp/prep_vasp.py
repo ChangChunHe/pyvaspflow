@@ -12,7 +12,7 @@ from pyvaspflow.io.vasp_input import Incar,Kpoints,Potcar
 def write_job_file(node_name,cpu_num,node_num,job_name):
     json_f = read_json()
     with open('job.sh','w') as f:
-        f.writelines('#!/bin/bash -l\n')
+        f.writelines('#!/bin/bash \n')
         f.writelines('#SBATCH -J '+job_name+'\n')
         f.writelines('#SBATCH -p '+node_name+' -N '+ str(int(node_num)) +' -n '+str(int(cpu_num))+'\n\n')
         f.writelines(json_f['job']['prepend']+'\n')

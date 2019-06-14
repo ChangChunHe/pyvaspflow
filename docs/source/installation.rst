@@ -33,7 +33,7 @@ potcar_path
 ===============
 配置文件需要指定赝势的文件位置以及对应的泛函的位置, 注意到这里的"paw_PBE,paw_LDA"等也即为在命令行中生成赝势所需要指定的"functional".
 
-:code:`pyvasp prep_single_vasp -a functional=paw_PBE`
+:code:`pyvasp prep_single_vasp POSCAR -a functional=paw_PBE`
 
 这里指定的"paw_PBE"也即为说明程序会自动向“/opt/ohpc/pub/apps/vasp/pps/paw_PBE”中寻找对应的赝势文件.
 
