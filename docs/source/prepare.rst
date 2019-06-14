@@ -11,18 +11,31 @@ prep_single_vasp
 ===============
 首先你可以通过使用 ``help`` 命令来获取帮助::
 
-     $ pyvasp prep_single_vasp --help
-     Usage: pyvasp prep_single_vasp [OPTIONS]
+     $ pyvasp prep_single_vasp -h
+     Usage: pyvasp prep_single_vasp [OPTIONS] POSCAR
 
-pyvasp prep_single_vasp 有两个可选参数, 分别为 ``-p, -a``. 这里 ``-p`` 是为了指定 ``POSCAR`` 的位置
-默认值为 ``POSCAR`` , ``-a`` 是为了设置一些任务的参数, 例如 ``INCAR, KPOINTS, POTCAR, job.sh`` 中的
+        Example:
+
+        pyvasp prep_single_vasp  -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
+
+        For more help you can refer to
+
+        https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-single-
+        vasp
+
+      Options:
+        -a, --attribute TEXT
+        -h, --help            Show this message and exit.
+
+
+pyvasp prep_single_vasp 有可选参数 ``-a``, ``-a`` 是为了设置一些任务的参数, 例如 ``INCAR, KPOINTS, POTCAR, job.sh`` 中的
 参数设置, 后面会仔细介绍 ``-a``  这个参数的用法.
 
 这里举一个例子::
 
     $ pyvasp prep_single_vasp -p POSCAR -a NSW=100,job_name=task,style=band
 
-很明显 NSW=100是设置 ``INCAR`` 的参数, ``style=band`` 是设置线性的k点用于计算能带.这
+这里的 ``NSW=100`` 是设置 ``INCAR`` 的参数, ``style=band`` 是设置线性的k点用于计算能带.这
 里的 ``job_name`` 是指会生成一个为 ``task`` 的文件夹, 所生成的文件都在这个文件夹里面.
 
 

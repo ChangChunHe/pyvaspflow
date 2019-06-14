@@ -273,7 +273,7 @@ def kpoints(poscar_file,attribute):
     '''
     Example:
 
-    pyvasp incar -f KPOINTS -a NSW=100,EDIFF=1e-6
+    pyvasp kpoints POSCAR -a kppa=3000,style=gamma
 
     For more help you can refer to
 
@@ -289,7 +289,7 @@ def prep_single_vasp(poscar,attribute):
     '''
     Example:
 
-    pyvasp prep_single_vasp -p POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
+    pyvasp prep_single_vasp  POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
 
     For more help you can refer to
 
@@ -306,7 +306,7 @@ def run_single_vasp(job_name,is_login_node,cpu_num):
     '''
     Example:
 
-    pyvasp run_ringle_vasp  task
+    pyvasp run_ringle_vasp  task &
 
     For more help you can refer to
 
@@ -333,7 +333,7 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     '''
     Example:
 
-    pyvasp prep_multi_vasp -s 2  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 20
+    pyvasp prep_multi_vasp -s 2  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 20 &
 
     prepare multiple vasp task from POSCAR2 to POSCAR20
 
@@ -393,7 +393,7 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     '''
     Example:
 
-    pyvasp run_multi_vasp -s 3 -p 6 task 20
+    pyvasp run_multi_vasp -s 3 -p 6 task 20 &
 
     run multiple vasp task from task3 to task20 with 6 nodes in queue
 
