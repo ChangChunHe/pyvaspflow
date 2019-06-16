@@ -252,7 +252,8 @@ def symmetry(poscar,attr,sympre):
 
 @cli.command('incar',short_help="Prepare INCAR for vasp calculation")
 @click.option('--attribute','-a', default='', type=str)
-@click.option('--incar_file','-f', default=None, type=str)
+@click.option('--incar_file','-f', default=None,
+type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True))
 def incar(attribute,incar_file):
     '''
     Example:

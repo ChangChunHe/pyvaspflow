@@ -46,7 +46,7 @@ def write_kpoints(poscar='POSCAR',kw={}):
     if not path.isfile(poscar):
         raise FileNotFoundError('Not found POSCAR')
     stru = read_vasp(poscar)
-    style,kw = clean_parse(kw,'style','auto')
+    style,kw = clean_parse(kw,'style','gamma')
     if not path.isfile('KPOINTS'):
         _kpts = Kpoints()
         if 'auto' in style.lower():
