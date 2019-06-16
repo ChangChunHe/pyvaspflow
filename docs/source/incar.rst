@@ -41,3 +41,5 @@ INCAR 参数的设置也是在 ``-a`` 中, 只需要指定INCAR的参数就可�
 
     # generate a INCAR based on an old INCAR file
     $ pyvasp incar -f INCAR -a NSW=100,EDIFF=1e-6
+
+下面这个例子是指可以基于已有的INCAR文件生成一个新的INCAR, ``-a`` 后面的参数会更新到INCAR文件中。

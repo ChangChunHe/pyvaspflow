@@ -12,11 +12,11 @@ prep_single_vasp
 首先你可以通过使用 ``help`` 命令来获取帮助::
 
      $ pyvasp prep_single_vasp -h
-     Usage: pyvasp prep_single_vasp [OPTIONS] POSCAR
+      Usage: pyvasp prep_single_vasp [OPTIONS] POSCAR
 
         Example:
 
-        pyvasp prep_single_vasp  -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
+        pyvasp prep_single_vasp  POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv,NSW=100,style=band
 
         For more help you can refer to
 

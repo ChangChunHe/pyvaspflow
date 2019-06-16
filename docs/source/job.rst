@@ -4,8 +4,7 @@ job 文件
 
 这里我们生成的 ``job.sh`` 文件是::
 
-    #!/bin/bash 
-    # NOTE the -l flag!
+    #!/bin/bash
     #SBATCH -J task
     #SBATCH -p short_q -N 1 -n 24
 
