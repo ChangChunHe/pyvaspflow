@@ -29,18 +29,17 @@ class TestParameter():
             lines = f.readlines()
         en_line = [i for i in lines if 'ENMAX' in i]
         enmax = max([float(i.split()[2].replace(';','')) for i in en_line])
-        enmin = min([float(i.split()[5].replace(';','')) for i in en_line])
         remove('POTCAR')
         idx = 0
-        for en in np.arange(start*enmin,end*enmax,step):
+        for en in np.arange(start*enmax,end*enmax,step):
             _kw = kw.copy()
-            _kw.update({'ENMAX':int(en),'job_name':'test_encut'+str(idx),'NSW':0})
+            _kw.update({'ENCUT':int(en),'job_name':'test_encut'+str(idx),'NSW':0})
             prep_vasp.prep_single_vasp(poscar=self.poscar,kw=_kw)
             idx += 1
         for i in range(idx):
             run_vasp.run_single_vasp(job_name='test_encut'+str(i),is_login_node=is_login_node)
         encut_list = []
-        encut = np.arange(start*enmin,end*enmax,step)
+        encut = np.arange(start*enmax,end*enmax,step)
         for ii in range(len(encut)):
             EV = ExtractValue(data_folder='test_encut'+str(ii))
             encut_list.append([encut[ii],EV.get_energy(),EV.get_cpu_time()])
