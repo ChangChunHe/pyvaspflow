@@ -10,7 +10,7 @@ import numpy as np
 from sagar.crystal.derive import ConfigurationGenerator
 from sagar.io.vasp import read_vasp,_read_string
 from sagar.crystal.structure import symbol2number as s2n
-from pyvaspflow.utils import generate_all_basis, refine_points,wirite_poscar
+from pyvaspflow.utils import generate_all_basis, refine_points,write_poscar
 from itertools import combinations
 from sagar.crystal.structure import Cell
 import os
@@ -113,7 +113,7 @@ class DefectMaker:
                     new_uniq_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((1,))))
                     new_uniq_cell = Cell(self.lattice,new_uniq_pos,new_uniq_atoms)
                     # deg.append(len(np.where(equi_atoms == atom_type)[0]))
-                    wirite_poscar(new_uniq_cell,purity_in,folder,idx)
+                    write_poscar(new_uniq_cell,purity_in,folder,idx)
                     idx += 1
             # np.savetxt(folder+'/deg.txt',deg,fmt='%d')
         else:
@@ -129,7 +129,7 @@ class DefectMaker:
                 new_pos = np.vstack((self.positions,tetra))
                 new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
-                wirite_poscar(new_cell,purity_in,folder,idx)
+                write_poscar(new_cell,purity_in,folder,idx)
                 idx += 1
 
 
@@ -149,7 +149,7 @@ class DefectMaker:
             os.mkdir('./'+folder)
         idx = 0
         for c, _ in confs:
-            wirite_poscar(c,purity_out+'-'+purity_in,folder,idx)
+            write_poscar(c,purity_out+'-'+purity_in,folder,idx)
             idx += 1
 
 

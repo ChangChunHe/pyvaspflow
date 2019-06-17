@@ -31,7 +31,7 @@ def refine_points(tetra,extend_S,C,min_d=1):
     return np.unique(final_res,axis=0)
 
 
-def wirite_poscar(cell,purity_atom='',folder='.',idx=0):
+def write_poscar(cell,purity_atom='',folder='.',idx=0):
     if purity_atom == '':
         filename = 'POSCAR-idx-' + str(idx)
     else:
