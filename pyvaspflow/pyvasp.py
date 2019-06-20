@@ -15,6 +15,7 @@ from pyvaspflow.vasp.prep_vasp import write_incar as wi
 from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
 from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
 from pyvaspflow.vasp import test_para
+from pyvaspflow.io.vasp_out import read_doscar
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -504,6 +505,10 @@ nargs=-1,autocompletion=get_dir_name)
 def get_def_form_energy(data_dir,defect_dirs):
     get_defect_formation_energy(data_dir,defect_dirs)
 
+@cli.command('save_pdos',short_help="save your DOS to txt file")
+@click.option('--wd','-w',default='.')
+def save_pdos(wd):
+    read_doscar(wd)
 
 if __name__ == "__main__":
     cli()

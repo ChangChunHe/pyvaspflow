@@ -5,6 +5,7 @@
 import linecache as lc
 import numpy as np
 import os
+from sagar.io.vasp import read_vasp
 import subprocess
 
 
@@ -135,3 +136,17 @@ def read_incar(incar):
         line = re.sub(r"\s+","",line,flags=re.UNICODE).split('=')
         res[line[0]] = line[1]
     return res
+
+def read_doscar(wd):
+    c = read_vasp(os.path.join(wd,'POSCAR'))
+    line6 = np.genfromtxt(os.path.join(wd,'DOSCAR'),skip_header=5,max_rows=1)
+    n_dos = int(line6[2])
+    sum_dos = np.genfromtxt(os.path.join(wd,'DOSCAR'),skip_header=6,max_rows=n_dos)
+    np.savetxt(os.path.join(wd,'sum_dos.txt'),sum_dos,fmt="%.5f")
+    incar = read_incar(os.path.join(wd,'INCAR'))
+    if 'LORBIT' not in incar:
+        return
+    if int(incar['LORBIT']) == 11:
+        for ii in range(c.atoms.shape[0]):
+            p_dos = np.genfromtxt(os.path.join(wd,'DOSCAR'),skip_header=6+(1+n_dos)*(ii+1),max_rows=n_dos)
+            np.savetxt(os.path.join(wd,'p_dos'+str(ii)+'.txt'),p_dos,fmt="%.5f")
