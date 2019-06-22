@@ -133,6 +133,8 @@ def read_incar(incar):
     with open(incar,'r') as f:
         lines = f.readlines()
     for line in lines:
+        if line.strip() is '':
+            continue
         line = re.sub(r"\s+","",line,flags=re.UNICODE).split('=')
         res[line[0]] = line[1]
     return res
