@@ -149,9 +149,8 @@ class DefectMaker:
             os.mkdir('./'+folder)
         idx = 0
         for c, _ in confs:
-            # write_poscar(c,purity_out+'-'+purity_in,folder,idx)
+            write_poscar(c,purity_out+'-'+purity_in,folder,idx)
             idx += 1
-        print(idx)
 
 
 def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
