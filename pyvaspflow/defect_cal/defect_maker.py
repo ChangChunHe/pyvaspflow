@@ -67,7 +67,7 @@ class DefectMaker:
                 comb_list = list(comb)
                 tmp = d[comb_list][:,comb_list]
                 comb_list.append(ii)
-                if np.std(tmp[tmp>0]) < 0.001:
+                if np.std(tmp[tmp>0]) < 0.01:
                     if abs(tmp[0,1]-temp_d[1]) < 0.1:
                         first_tetra.append(comb_list)
                     else:
@@ -76,8 +76,8 @@ class DefectMaker:
                     tmp = d[comb_list][:,comb_list]
                     tmp = np.triu(tmp)
                     tmp = sorted(tmp[tmp>0])
-                    if (np.std(tmp[0:4]) < 0.01 or np.std(tmp[1:5]) <
-                     0.01 or np.std(tmp[2:])<0.01) and np.std(tmp) < 0.5:
+                    if (np.std(tmp[0:4]) < 0.2 or np.std(tmp[1:5]) < 0.2 or
+                    np.std(tmp[2:]) < 0.2) and np.std(tmp) < 0.5:
                         third_tetra.append(comb_list)
         all_tetra = []
         if len(first_tetra) != 0:
@@ -118,7 +118,7 @@ class DefectMaker:
             # np.savetxt(folder+'/deg.txt',deg,fmt='%d')
         else:
             if not os.path.exists(folder):
-                os.mkdir(+folder)
+                os.mkdir(folder)
             else:
                 rmtree(folder)
                 os.mkdir(folder)
@@ -149,8 +149,9 @@ class DefectMaker:
             os.mkdir('./'+folder)
         idx = 0
         for c, _ in confs:
-            write_poscar(c,purity_out+'-'+purity_in,folder,idx)
+            # write_poscar(c,purity_out+'-'+purity_in,folder,idx)
             idx += 1
+        print(idx)
 
 
 def _get_sites(atoms, purity_out='all', purity_in='Vacc'):

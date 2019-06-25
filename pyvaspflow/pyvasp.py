@@ -494,7 +494,7 @@ def get_grd_state(job_name,end_job_num,start_job_num):
     start_job_num,end_job_num = int(start_job_num),int(end_job_num)
     idx = us.get_grd_state(job_name,start_job_num=start_job_num,
                end_job_num=end_job_num)
-    click.echo(str(idx))
+    click.echo(str(idx+start_job_num))
 
 
 @cli.command('get_def_form_energy',short_help="get defect formation energy")
