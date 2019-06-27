@@ -1,5 +1,6 @@
 import numpy as np
 from sagar.toolkit.mathtool import refine_positions
+from sagar.molecule.structure import Molecule
 from sagar.io.vasp import  write_vasp, read_vasp
 from sagar.element.base import periodic_table_dict as ptd
 from sagar.toolkit.mathtool import is_int_np_array
