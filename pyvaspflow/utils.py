@@ -1,4 +1,5 @@
 import numpy as np
+from sagar.toolkit.mathtool import refine_positions
 from sagar.io.vasp import  write_vasp, read_vasp
 from sagar.element.base import periodic_table_dict as ptd
 from sagar.toolkit.mathtool import is_int_np_array
@@ -33,7 +34,7 @@ def refine_points(tetra,extend_S,C,min_d=1):
 
 def write_poscar(cell,purity_atom='',folder='.',idx=0):
     if purity_atom == '':
-        filename = 'POSCAR-idx-' + str(idx)
+        filename = 'POSCAR' + str(idx)
     else:
         comment = 'POSCAR-' + purity_atom + '-defect'
         filename = '{:s}_id{:d}'.format(comment, idx)
@@ -522,6 +523,25 @@ def get_grd_state(job_name,start_job_num,end_job_num):
         energy.append(EV.get_energy())
     return np.argmin(energy)
 
-if __name__ == '__main__':
-    print(get_delete_atom_num('/home/hecc/Desktop/5.defect/supercell/scf/POSCAR'
-    ,'/home/hecc/Desktop/5.defect/Ga-Li-defect/charge_state_-1/scf/POSCAR'))
+def get_perms(poscar,str_type='crystal',symprec=1e-3):
+    cell = read_vasp(poscar)
+    latt = cell.lattice
+    pos = cell.positions
+    pos = np.dot(pos,latt)
+    if str_type == "crystal":
+        symm = cell.get_symmetry()
+        trans,rots = symm['translations'],symm['rotations']
+        perms = np.zeros((np.shape(trans)[0],len(cell.atoms)))
+        origin_positions = refine_positions(cell.positions)
+        for ix, rot in enumerate(rots):
+            for iy,o_pos in enumerate(origin_positions):
+                new_pos = np.dot(rot,o_pos.T) + trans[ix]
+                new_pos = np.mod(new_pos,1)
+                new_pos = refine_positions(new_pos)
+                idx = np.argmin(np.linalg.norm(new_pos-origin_positions,axis=1))
+                perms[ix,iy] = idx
+        perms_table = np.unique(perms,axis=0)
+    else:
+        mol = Molecule(pos,cell.atoms)
+        perms_table = mol.get_symmetry_permutation(symprec)
+    return perms_table
