@@ -11,7 +11,7 @@ from sagar.crystal.derive import ConfigurationGenerator
 from sagar.io.vasp import read_vasp,_read_string
 from sagar.crystal.structure import symbol2number as s2n
 from pyvaspflow.utils import generate_all_basis, refine_points,write_poscar
-from itertools import combinations
+from itertools import combinations,chain
 from sagar.crystal.structure import Cell
 import os
 from shutil import rmtree
@@ -41,7 +41,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=False, purity_in='H',min_d=1,folder='tetrahedral-defect'):
+    def get_tetrahedral_defect(self, isunique=False, doped_in='H',min_d=1,folder='tetrahedral-defect'):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
@@ -104,16 +104,16 @@ class DefectMaker:
                 if len(tetra) == 0:
                     continue
                 new_pos = np.vstack((self.positions,tetra))
-                new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
+                new_atoms = np.hstack((self.atoms,s2n(doped_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
                 equi_atoms = new_cell.get_symmetry()['equivalent_atoms']
                 purity_atom_type = np.unique(equi_atoms[-tetra.shape[0]:])
                 for atom_type in purity_atom_type:
                     new_uniq_pos = np.vstack((self.positions,new_pos[atom_type]))
-                    new_uniq_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((1,))))
+                    new_uniq_atoms = np.hstack((self.atoms,s2n(doped_in)*np.ones((1,))))
                     new_uniq_cell = Cell(self.lattice,new_uniq_pos,new_uniq_atoms)
                     # deg.append(len(np.where(equi_atoms == atom_type)[0]))
-                    write_poscar(new_uniq_cell,purity_in,folder,idx)
+                    write_poscar(new_uniq_cell,folder,idx)
                     idx += 1
             # np.savetxt(folder+'/deg.txt',deg,fmt='%d')
         else:
@@ -127,21 +127,24 @@ class DefectMaker:
                 if len(tetra) == 0:
                     continue
                 new_pos = np.vstack((self.positions,tetra))
-                new_atoms = np.hstack((self.atoms,s2n(purity_in)*np.ones((tetra.shape[0],))))
+                new_atoms = np.hstack((self.atoms,s2n(doped_in)*np.ones((tetra.shape[0],))))
                 new_cell = Cell(self.lattice,new_pos,new_atoms)
-                write_poscar(new_cell,purity_in,folder,idx)
+                write_poscar(new_cell,folder,idx)
                 idx += 1
 
 
-    def get_purity_defect(self,symprec=1e-3,purity_out='all',purity_in='Vacc',num=1):
+    def get_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1]):
         cg = ConfigurationGenerator(self.no_defect_cell, symprec)
-        sites = _get_sites(list(self.atoms), purity_out=purity_out, purity_in=purity_in)
-        if purity_out == 'all':
-            confs = cg.cons_specific_cell(sites, e_num=(len(self.atoms)-num, num), symprec=symprec)
+        sites = _get_sites(list(self.atoms), doped_out=doped_out, doped_in=doped_in)
+        if doped_out == 'all':
+            if len(np.unique(self.atoms)) > 1 and len(doped_in) > 1:
+                raise ValueError("Multiple species elements  doped in and multiple elements doped out is ambiguous")
+            confs = cg.cons_specific_cell(sites, e_num=[len(self.atoms)-sum(num)]+num, symprec=symprec)
         else:
-            purity_atom_num = np.where(self.atoms==s2n(purity_out))[0].size
-            confs = cg.cons_specific_cell(sites, e_num=(purity_atom_num-num, num), symprec=symprec)
-        folder = purity_out + '-' + purity_in + '-defect'
+            purity_atom_num = np.where(self.atoms==s2n(doped_out))[0].size
+            confs = cg.cons_specific_cell(sites, e_num=[purity_atom_num-sum(num)]+num, symprec=symprec)
+        comment = list(chain(*zip(doped_in, [str(i) for i in num])))
+        folder = doped_out +'-'+'-'.join(comment) + '-defect'
         if not os.path.exists('./'+folder):
             os.mkdir('./'+folder)
         else:
@@ -149,21 +152,15 @@ class DefectMaker:
             os.mkdir('./'+folder)
         idx = 0
         for c, _ in confs:
-            write_poscar(c,purity_out+'-'+purity_in,folder,idx)
+            write_poscar(c,folder,idx)
             idx += 1
 
 
-def _get_sites(atoms, purity_out='all', purity_in='Vacc'):
-    if purity_out == 'all':
-        return [(i, s2n(purity_in)) for i in atoms]
+def _get_sites(atoms,doped_out,doped_in):
+    doped_in = [s2n(i) for i in doped_in]
+    if doped_out == 'all':
+        return  [tuple([atom]+doped_in)  for atom in atoms]
     else:
-        return [(i, s2n(purity_in)) if i == s2n(purity_out) else (i,) for i in atoms]
-
-# charge_state = {'Vacc': 0,
-#                'H': 1, 'He': 0,
-#                'Li': 1, 'Be': 2, 'B': 3, 'C': 4, 'N': 5, 'O': 6, 'F': 7, 'Ne': 0,
-#                'Na': 1, 'Mg': 2, 'Al': 3, 'Si': 4, 'P': 5, 'S': 6, 'Cl': 7, 'Ar': 0,
-#                'K': 1, 'Ca': 2, 'Sc': 3, 'Ti': 4, 'V': 5, 'Cr': 2, 'Mn': 2, 'Fe': 2, 'Co': 2, 'Ni': 2, 'Cu': 1, 'Zn': 2, 'Ga': 3, 'Ge': 4, 'As': 5, 'Se': 6, 'Br': 7, 'Kr': 0,
-#                'Rb': 1, 'Sr': 2, 'Y': 3, 'Zr': 4, 'Nb': 3, 'Mo': 3, 'Tc': 6, 'Ru': 3, 'Rh': 4, 'Pd': 2, 'Ag': 1, 'Cd': 2, 'In': 3, 'Sn': 4, 'Sb': 5, 'Te': 6, 'I': 7, 'Xe': 0,
-#                'Cs': 1, 'Ba': 2, 'Hf': 4, 'Ta': 5, 'W': 6, 'Re': 2, 'Os': 3, 'Ir': 3, 'Pt': 2, 'Au': 1, 'Hg': 1, 'Tl': 1, 'Pb': 2, 'Bi': 3, 'Po': 2, 'At': 0, 'Rn': 0,
-#                'Fr': 1, 'Ra': 2}
+        doped_out = s2n(doped_out)
+        _ins = tuple([doped_out]+doped_in)
+        return [_ins if atom == doped_out else (atom,) for atom in atoms]
