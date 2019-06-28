@@ -2,7 +2,7 @@
 运行任务
 ============
 
-这里我们提供了两种执行任务的命令, 分别为执行单个任务和多个任务( ``run_ringle_vasp`` , ``run_multi_vasp`` ).
+这里我们提供了两种执行任务的命令, 分别为执行单个任务和多个任务( ``run_single_vasp`` , ``run_multi_vasp`` ).
 
 execute single vasp task
 ============
@@ -31,7 +31,7 @@ execute multiple vasp-tasks
 
     $ pyvasp run_multi_vasp --help
     Usage: pyvasp run_multi_vasp [OPTIONS] <job_name> <total number of jobs>
-  
+
     Options:
       -s, --start_job_num INTEGER
       -p, --par_job_num INTEGER

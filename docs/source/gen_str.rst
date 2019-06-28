@@ -3,13 +3,23 @@
 ============
 
 
-扩胞
+沿着基矢方向扩胞
 ============
 
 将晶胞扩到指定的大小, ``-v`` 下面即为扩成2*2*2的超胞 ::
 
-    $ pyvasp cell -v 2 2 2 POSCAR
+    $ pyvasp extend_spec_direc  -v 2 2 2 POSCAR
 
+
+指定体积扩胞
+============
+
+将晶胞扩到指定的体积, ``-v`` 指定扩的体积上下限 ::
+
+    $ pyvasp extend_spec_vol  -v 2 4 POSCAR
+
+注意这里提供的POSCAR必须为原胞, 如果不是原胞可以使用 ``pyvasp symmetry primitive_cell POSCAR`` 得到原胞.
+如果你只想生成指定体积的胞, 只需要上下限想等即可.
 
 
 生成替换原子的结构
@@ -20,8 +30,8 @@
 
 例子::
 
-    $ pyvasp get_purity -i Vacc -o Si Si-POSCAR # generate a vacancy
-    $ pyvasp get_purity -i Ga -o In In2O3-POSCAR #genrate a Ga defect
+    $ pyvasp get_point_defect -i Vac -o Si Si-POSCAR # generate a vacancy
+    $ pyvasp get_point_defect -i Ga -o In In2O3-POSCAR #genrate a Ga defect
 
 
 
