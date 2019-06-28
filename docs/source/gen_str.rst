@@ -31,7 +31,9 @@
 例子::
 
     $ pyvasp get_point_defect -i Vac -o Si Si-POSCAR # generate a vacancy
-    $ pyvasp get_point_defect -i Ga -o In In2O3-POSCAR #genrate a Ga defect
+    $ pyvasp get_point_defect -i Ga -o In In2O3-POSCAR # genrate a Ga defect
+    $ pyvasp get_point_defect -i Fe,Cu -o In -n 2,3 In2O3-POSCAR # genrate a 2Fe3Cu defect
+
 
 
 
