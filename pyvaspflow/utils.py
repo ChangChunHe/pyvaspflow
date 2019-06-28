@@ -33,14 +33,10 @@ def refine_points(tetra,extend_S,C,min_d=1):
     return np.unique(final_res,axis=0)
 
 
-def write_poscar(cell,purity_atom='',folder='.',idx=0):
-    if purity_atom == '':
-        filename = 'POSCAR' + str(idx)
-    else:
-        comment = 'POSCAR-' + purity_atom + '-defect'
-        filename = '{:s}_id{:d}'.format(comment, idx)
+def write_poscar(cell,folder='.',idx=0):
+    filename = '{:s}{:d}'.format('POSCAR', idx)
     file = path.join(folder, filename)
-    write_vasp(cell,file)
+    write_vasp(cell,file,suffix='')
 
 
 def get_delete_atom_num(no_defect_poscar,one_defect_poscar):

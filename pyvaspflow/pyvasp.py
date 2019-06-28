@@ -5,6 +5,7 @@ import linecache as lc
 import os,subprocess,click,re
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
+from sagar.crystal.derive import cells_nonredundant
 from pyvaspflow.io.vasp_out import ExtractValue, get_ele_sta
 from pyvaspflow.defect_cal.defect_maker import DefectMaker
 from pyvaspflow.vasp.prep_vasp import prep_single_vasp as psv
@@ -131,44 +132,89 @@ def _get_line(file_tmp,rematch=None):
     return [int(ii) - 1 for ii in subprocess.check_output(['cut','-d',':','-f','1'],stdin=grep_res.stdout).decode('utf-8').split()]
 
 
-@cli.command('cell', short_help="Expanding primitive cell to specific range of volumes.")
-@click.argument('pcell_filename', metavar='<primitive_cell_file>',
+@cli.command('extend_spec_direc', short_help="Expanding  cell in specific direction")
+@click.argument('pcell_filename', metavar='<cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
                 autocompletion=get_poscar_files)
 @click.option('--volume', '-v', nargs=3, type=int, metavar='<x> <y> <z>',default=(1,1,1),
               help="Expand cell to supercell of dismension <x> <y> <z>")
-def cell(pcell_filename, volume):
+def extend_spec_direc(pcell_filename, volume):
     """
-    First parameter: pcell_filename, the  path of your initial POSCAR
+    First parameter: filename, the  path of your initial POSCAR
 
     Sencond parameter: volume, the volume you want to extend
 
     Example:
 
-    pyvasp cell -v 2 2 2 POSCAR
+    pyvasp extend_spec_direc -v 2 2 2 POSCAR
     """
     pcell = read_vasp(pcell_filename)
     supcell = pcell.extend(np.diag(volume))
     write_vasp(supcell, 'supcell')
 
 
-@cli.command('get_purity',short_help="Get purity POSCAR")
+@cli.command('extend_spec_vol', short_help="Expanding primitive cell to specific range of volumes.")
+@click.argument('pcell_filename', metavar='<primitive_cell_file>',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
+@click.option('--dimension', '-d', type=int, default=3,
+              help="Dimension of the system, 2 for slab. Defalut=3 for crystal")
+@click.option('--volume', '-v', nargs=2, type=int, metavar='<min> <max>',
+              help="Expand primitive cell to supercell of volume <min> to <max>, set <min> as -1 for creating only <max> volume expanded supercells")
+@click.option('--symprec', '-s', type=float, default=1e-5,
+              help="Symmetry precision to decide the symmetry of primitive cell. Default=1e-5")
+@click.option('--comprec', '-p', type=float, default=1e-5,
+              help="Compare precision to judging if supercell is redundant. Defalut=1e-5")
+@click.option('--verbose', '-vvv', is_flag=True, metavar='',
+              help="Will print verbose messages.")
+def extend_specific_volume(pcell_filename, dimension, volume, symprec, comprec, verbose):
+    """
+    <primitive_cell_file>  Primitive cell structure file, now only vasp POSCAR version5 supported.
+    """
+    pcell = read_vasp(pcell_filename)
+    comment = 'cell'
+    (min_v, max_v) = volume
+    if min_v == -1:
+        click.echo("Expanding primitive to volume {:d}".format(max_v))
+        _export_supercell(pcell, comment, dimension, max_v, symprec, comprec, verbose)
+    else:
+        for v in range(min_v, max_v + 1):
+            click.echo("Expanding primitive to volume {:d}".format(v))
+            _export_supercell(pcell, comment, dimension, v, symprec, comprec, verbose)
+
+
+def _export_supercell(pcell, comment, dimension, v, symprec, comprec, verbose):
+
+    cells = cells_nonredundant(
+        pcell, v, dimension, symprec=symprec, comprec=comprec)
+    for idx, c in enumerate(cells):
+        if verbose:
+            print("    " + "No.{:d}: Processing".format(idx))
+        filename = '{:s}_v{:d}_id{:d}'.format(comment, v, idx)
+        write_vasp(c, filename)
+
+
+@cli.command('get_point_defect',short_help="Get purity POSCAR")
 @click.argument('poscar', metavar='<primitive_cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
                 autocompletion=get_poscar_files)
-@click.option('--purity_in','-i', default='Vacc', type=str,help='the element you want to purity into the system')
-@click.option('--purity_out','-o', default='all', type=str,help='the element you want to remove out of the system')
-@click.option('--symprec','-s', default='1e-3', type=float,help='system precision')
-@click.option('--num','-n', default=1, type=int,help='the number of elements you want to substitute')
-def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
+@click.option('--doped_in', '-i', default='Vac', type=str, nargs=1,
+help='the element you want to dope into the system')
+@click.option('--doped_out', '-o', default='all', type=str, nargs=1,
+help='the element you want to remove out of the system')
+@click.option('--symprec', '-s', default='1e-3', type=float,
+help='system precision')
+@click.option('--num', '-n', default=1, type=str, nargs=1,
+help='the number of elements you want to substitute')
+def get_point_defect(poscar,doped_in,doped_out,num,symprec):
     """
     argument:
 
     poscar, the  path of your initial POSCAR
 
-    purity_in, the element you want to put into the system
+    doped_in, the element you want to put into the system
 
-    purity_out, the element you want to drop out of the system
+    doped_out, the element you want to remove out of the system
 
     Optional parameter:
     num: the number of element you want to put, the default is 1
@@ -176,33 +222,34 @@ def get_purity_poscar(poscar, purity_in, purity_out,num,symprec):
 
     Example:
 
-    pyvasp get_purity_poscar -i Vacc -o Si POSCAR
+    pyvasp get_point_defect -i Fe,Ti -o Si -n 2,3 POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
-    DM.get_purity_defect(purity_out=purity_out,purity_in=purity_in,symprec=symprec,num=num)
+    doped_in,num = doped_in.split(','),num.split(',')
+    DM.get_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=[int(i) for i in num])
 
 
 @cli.command('get_tetrahedral',short_help="Get get tetrahedral sites of POSCAR")
 @click.argument('poscar', metavar='<primitive_cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
                 autocompletion=get_poscar_files)
-@click.option('--purity_in','-i', default='H', type=str,show_default=True)
+@click.option('--doped_in','-i', default='H', type=str,show_default=True)
 @click.option('--isunique','-u', default=False, type=bool)
 @click.option('--min_d','-d',default=1.5,type=float,show_default=True)
-def get_tetrahedral_poscar(poscar,purity_in,isunique,min_d):
+def get_tetrahedral_poscar(poscar,doped_in,isunique,min_d):
     """
     argument:
 
     poscar, the  path of your initial POSCAR
 
-    purity_in, the element you want to put into the system
+    doped_in, the element you want to put into the system
 
     Example:
 
     pyvasp get_tetrahedral_poscar -i H  POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
-    DM.get_tetrahedral_defect(isunique=isunique,purity_in=purity_in,min_d=min_d)
+    DM.get_tetrahedral_defect(isunique=isunique,doped_in=doped_in,min_d=min_d)
 
 
 def get_symmetry_attr(ctx, args, incomplete):
