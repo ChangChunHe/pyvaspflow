@@ -153,9 +153,9 @@ I. 提交以下任务::
 
 
     # get ground state of defect configurations
-    pyvasp get_purity -i Vacc -o Si supercell/scf/CONTCAR
+    pyvasp get_point_defect -i Vacc -o Si supercell/scf/CONTCAR
 
-    cd Si-Vacc-defect
+    cd Si-Vacc-1-defect
     i=0
     for f in `ls`
     do
