@@ -204,7 +204,7 @@ help='the element you want to dope into the system')
 help='the element you want to remove out of the system')
 @click.option('--symprec', '-s', default='1e-3', type=float,
 help='system precision')
-@click.option('--num', '-n', default=1, type=str, nargs=1,
+@click.option('--num', '-n', default='1', type=str, nargs=1,
 help='the number of elements you want to substitute')
 def get_point_defect(poscar,doped_in,doped_out,num,symprec):
     """
