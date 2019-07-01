@@ -272,11 +272,11 @@ def symmetry(poscar,attr,sympre):
 
     Example:
 
-    pyvasp symmetry -a space POSCAR # get space_group
+    pyvasp symmetry  space POSCAR # get space_group
 
-    pyvasp symmetry -a equivalent POSCAR # get equivalent_atoms
+    pyvasp symmetry  equivalent POSCAR # get equivalent_atoms
 
-    pyvasp symmetry -a primitive POSCAR # get primitive cell
+    pyvasp symmetry  primitive POSCAR # get primitive cell
     """
     c = read_vasp(poscar)
     if 'space' in attr or 'group' in attr:
