@@ -26,9 +26,9 @@
 
 得到结构对称性的一些信息::
 
-    $ pyvasp symmetry -a spacegroup POSCAR # get space group
-    $ pyvasp symmetry -a equivalent POSCAR # get equivalent atoms
-    $ pyvasp symmetry -a primitive POSCAR
+    $ pyvasp symmetry  spacegroup POSCAR # get space group
+    $ pyvasp symmetry  equivalent POSCAR # get equivalent atoms
+    $ pyvasp symmetry  primitive POSCAR
 
 
 3 pyvasp diff_pos

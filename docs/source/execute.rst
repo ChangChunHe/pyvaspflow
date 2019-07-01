@@ -30,7 +30,7 @@ execute multiple vasp-tasks
 先贴一下这个命令的帮助::
 
     $ pyvasp run_multi_vasp --help
-    Usage: pyvasp run_multi_vasp [OPTIONS] <job_name> <total number of jobs>
+    Usage: pyvasp run_multi_vasp [OPTIONS] <job_name> <the last number of jobs>
 
     Options:
       -s, --start_job_num INTEGER
