@@ -126,7 +126,7 @@ pyvasp get_grd_state::
 扩胞命令::
 
 
-    pyvasp get_purity -i Vacc -o Si Si-POSCAR   # generate a vacancy
+    pyvasp get_point_defect -i Vac -o Si Si-POSCAR   # generate a vacancy
 
 （注：如果不是空位缺陷而是替换缺陷，则将Vacc换成替换原子，如Ga）
 
