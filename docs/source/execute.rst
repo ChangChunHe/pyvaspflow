@@ -18,7 +18,15 @@ execute single vasp task
     $ pyvasp run_ringle_vasp  task
 
 
-最后跟上你要计算的文件夹即可.
+最后跟上你要计算的文件夹即可. 但是注意到该命令会跟着你的任务计算同时停止掉, 所以你需要把这个程
+序放到后台执行. 对于Linux用户只需要加末尾加上一个&号即可, 对于 Windows用户需要使用 ``nohup`` 对程序进行后台托管.
+
+.. note:: 例子::
+
+    $ pyvasp run_ringle_vasp task 1>std.out 2>err.out & # for Linux user
+    $ nohup pyvasp run_ringle_vasp task 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
+
+注意你也可以不写重定向的东西, 直接以&结尾, 但是这个是不建议的.
 
 
 
@@ -47,4 +55,9 @@ execute multiple vasp-tasks
 
     $ pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20
 
-比如这个例子就是说从struc_opt5开始计算, 到struc_opt20截止, 同时运行的任务数为6个.
+比如这个例子就是说从struc_opt5开始计算, 到struc_opt20截止, 同时运行的任务数为6个. 与之前一样, 该程序最好也用后台进行::
+
+.. note:: 例子::
+
+    $ pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out & # for Linux user
+    $ nohup pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
