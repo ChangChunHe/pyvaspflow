@@ -12,7 +12,7 @@ from distutils.core import setup
 setup(name = "pyvaspflow",
     version = "0.0.1",
     description = "Vasp Calculation",
-    author = "ChangChunHe",
+    author = "hecc",
     author_email = "changchun_he@foxmail.com",
     #Name the folder where your packages live:
     #(If you have other packages (dirs) or modules (py files) then
