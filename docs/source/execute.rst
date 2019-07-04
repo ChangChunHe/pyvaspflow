@@ -31,7 +31,7 @@ execute single vasp task
 
 
 
-execute multiple vasp-tasks
+execute multiple vasp tasks
 ============
 
 
