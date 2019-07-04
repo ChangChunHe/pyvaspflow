@@ -51,9 +51,8 @@ job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运�
 ===============
 ``pyvasp`` 是支持自动补齐命令的, 例如 ``pyvasp symm`` 按下tab键是可以自动补
 齐成 ``pyvasp symmetry`` 的, 接着按下两次tab键可以
-给出候选项 ``equivalent_atoms  primitive_cell    space_group `` ,
-你可以接着键入 ``p`` 来补齐命令 ``primitive_cell`` .
-这个是需要配置的, 需要你在 ``bashrc`` 里面加入::
+给出候选项 ``equivalent_atoms  primitive_cell    space_group `` 这三个子命令,
+你可以接着键入 ``p`` 来补齐命令 ``primitive_cell`` . 但是这个是需要配置的, 需要你在 ``bashrc`` 里面加入::
 
     eval "$(_PYVASP_COMPLETE=source pyvasp)"
 
@@ -61,6 +60,9 @@ job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运�
 
     eval "$(_PYVASP_COMPLETE=source_zsh pyvasp)"
 
+
+组内的同学
+===============
 注意到组内的服务器上是以 ``module`` 的方式安装的, 所以如果只是在你的 ``.bashrc`` 里面
 加入这句话是不行的, 因为你还没有load ``pyvaspflow`` 这个包, 所以 ``eval`` 是没有效果的,
 必须得在load你的module以后执行才会有效. 所以对于组内的同学我建议你可
