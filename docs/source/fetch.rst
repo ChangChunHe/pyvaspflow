@@ -42,3 +42,20 @@
     Usage: pyvasp diff_pos [OPTIONS] <primitive_poscar> <poscar1> <poscar2>
 
     $ pyvasp diff_pos POSCAR POSCAR1 POSCAR2
+
+4 pyvasp get_grd_state
+============
+
+ 用于得到一系列结构的能量最低的结构的序号. 例如你用 ``pyvasp get_point_defect`` 生成了许
+ 多结构, 然后计算完能量就可以使用该命令得到能量最低的结构的序号::
+
+    $ pyvasp get_grd_state -h
+    Usage: pyvasp get_grd_state [OPTIONS] <your job name> <the last number of jobs>
+
+     Exmaple:
+
+     pyvasp get_grd_state -s 2 task 100
+
+    Options:
+     -s, --start_job_num INTEGER
+     -h, --help                   Show this message and exit.

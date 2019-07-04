@@ -530,7 +530,7 @@ def diff_pos(pri_pos,pos1,pos2,symprec):
 
 @cli.command('get_grd_state',short_help="get the ground state")
 @click.argument('job_name', metavar='<your job name>',nargs=1,autocompletion=get_job_name)
-@click.argument('end_job_num', metavar='<end job number>',nargs=1,autocompletion=get_run_end_job_num)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
 @click.option('--start_job_num','-s',default=0,type=int)
 def get_grd_state(job_name,end_job_num,start_job_num):
     '''
