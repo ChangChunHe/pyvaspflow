@@ -55,7 +55,7 @@ execute multiple vasp-tasks
 
     $ pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20
 
-比如这个例子就是说从struc_opt5开始计算, 到struc_opt20截止, 同时运行的任务数为6个. 与之前一样, 该程序最好也用后台进行::
+比如这个例子就是说从struc_opt5开始计算, 到struc_opt20截止, 同时运行的任务数为6个. 与之前一样, 该程序最好也用后台进行.
 
 .. note:: 例子::
 
