@@ -469,8 +469,21 @@ class Kpoints:
         latt = structure.lattice
         ngrid = kppa / len(structure.atoms)
         lengths = np.linalg.norm(latt,axis=1)
-        mult = (ngrid * lengths[0] * lengths[1] * lengths[2]) ** (1 / 3)
-        num_div = [int(round(mult / l)) for l in lengths]
+        is_2d = is_2d_structure(structure)
+        if type(is_2d) is tuple:
+            print('This structure will be treated as a two dimensional structure here',
+            'so the mesh of  one direction will be set to 1 or 2')
+            vac_idx = is_2d[1]
+            atom_idx = np.setdiff1d(range(3),vac_idx)
+            mult = (ngrid * lengths[atom_idx[0]] * lengths[atom_idx[1]]) ** (1 / 2)
+            num_div = np.zeros((3,))
+            num_div[atom_idx[0]] = int(math.floor(max(mult / lengths[atom_idx[0]], 1)))
+            num_div[atom_idx[1]] = int(math.floor(max(mult / lengths[atom_idx[1]], 1)))
+            num_div[vac_idx] = 1
+            num_div = num_div.astype(int).tolist()
+        elif not is_2d :
+            mult = (ngrid * lengths[0] * lengths[1] * lengths[2]) ** (1 / 3)
+            num_div = [int(math.floor(max(mult / l, 1))) for l in lengths]
         # ensure that numDiv[i] > 0
         num_div = [i if i > 0 else 1 for i in num_div]
         # VASP documentation recommends to use even grids for n <= 8 and odd
