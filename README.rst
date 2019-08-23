@@ -22,4 +22,6 @@ Defect-Formation-Calculation
     :alt: Open Source Love
 
 
-This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and extracting necessary data to calculate defect formation energy. If you have any problems when using this package, you can new an issue or email me at changchun_he@foxmail.com.
+This package is a integrated Defect Formation energy package, which contains generating tetrahedral interstitial sites and  octahedral interstitial sites, submitting `VASP` calculation job and extracting necessary data to calculate defect formation energy. If you have any problems when using this package, you can new an issue or email me at changchun_he@foxmail.com. You can also visit the `online version`_
+
+.. _online version: http://www.compphys.cn/physics_tools
