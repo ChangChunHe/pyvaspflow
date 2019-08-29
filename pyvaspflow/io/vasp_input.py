@@ -488,7 +488,7 @@ class Kpoints:
         num_div = [i if i > 0 else 1 for i in num_div]
         # VASP documentation recommends to use even grids for n <= 8 and odd
         # grids for n > 8.
-        num_div = [i + i % 2 if i <= 8 else i - i % 2 + 1 for i in num_div]
+        # num_div = [i + i % 2 if i <= 8 else i - i % 2 + 1 for i in num_div]
         style = Kpoints.supported_modes.Gamma
         comment = "KPOINTS with grid density = " +"{} / atom".format(kppa)
         self.comment = comment
