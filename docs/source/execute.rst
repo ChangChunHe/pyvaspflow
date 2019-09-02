@@ -61,3 +61,12 @@ execute multiple vasp tasks
 
     $ pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out & # for Linux user
     $ nohup pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
+
+
+与准备文件的命令类似, 运行任务也有类似from_file的命令: ``run_multi_vasp_from_file``
+===============
+
+使用说明::
+    $ pyvasp run_multi_vasp_from_file -h
+    $ Usage: pyvasp run_multi_vasp_from_file [OPTIONS] <job_name> <job list file>
+    $ pyvasp run_multi_vasp  task job_list_file -p 6 &

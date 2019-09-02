@@ -54,3 +54,19 @@ prep_multi_vasp
 
 这里的 ``-s`` 是指从 ``POSCAR2`` 开始生成任务文件, 最后的20是是指一直生成到 ``POSCAR20`` 为止.
 对于这些生成的任务我们会生成各个独立的文件夹, 以 ``struc_opt`` 为前缀流水号命名.
+
+
+prep_multi_vasp_from_file
+===============
+为了满足一些其它要求, 我们可以不需要 ``POSCAR`` 文件按照流水号命名, 但是需要你提供一个 ``POSCAR`` 后面的id号的文件 `job_list_file`.
+
+使用说明::
+
+    $ pyvasp prep_multi_vasp_from_file --help
+    Usage: pyvasp prep_multi_vasp_from_file [OPTIONS] <job list file>
+
+例如::
+    $ cat job_list
+    $ 2 3 5 6 7
+    $ pyvasp prep_multi_vasp_from_file  -a node_name=super_q,cpu_num=12,job_name=struc_opt job_list
+这里仅仅会生成2,3,4,6,7这几个文件的任务.
