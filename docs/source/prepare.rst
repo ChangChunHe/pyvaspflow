@@ -7,7 +7,7 @@
 
 
 
-prep_single_vasp
+``prep_single_vasp``
 ===============
 首先你可以通过使用 ``help`` 命令来获取帮助::
 
@@ -40,7 +40,7 @@ pyvasp prep_single_vasp 有可选参数 ``-a``, ``-a`` 是为了设置一些任�
 
 
 
-prep_multi_vasp
+``prep_multi_vasp``
 ===============
 运行这个命令之前你需要先准备多个 ``POSCAR`` 文件, 这里文件需要按照流水号命名, 不然程序无法识别出来.
 使用说明::
@@ -56,7 +56,7 @@ prep_multi_vasp
 对于这些生成的任务我们会生成各个独立的文件夹, 以 ``struc_opt`` 为前缀流水号命名.
 
 
-prep_multi_vasp_from_file
+``prep_multi_vasp_from_file``
 ===============
 为了满足一些其它要求, 我们可以不需要 ``POSCAR`` 文件按照流水号命名, 但是需要你提供一个 ``POSCAR`` 后面的id号的文件 `job_list_file`.
 

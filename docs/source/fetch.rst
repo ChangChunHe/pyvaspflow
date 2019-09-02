@@ -3,7 +3,7 @@
 ============
 
 
-1 pyvasp
+1 ``pyvasp``
 ============
 这个命令是的到一些基本的信息, 例如能量, 带隙, 费米能级, Ewald能, 电子数等等. 例子::
 
@@ -21,7 +21,7 @@
     $ pyvasp  electrostatic  23 # 得到 23 号原子的静电势能
 
 
-2 pyvasp symmetry
+2 ``pyvasp symmetry``
 ============
 
 得到结构对称性的一些信息::
@@ -31,7 +31,7 @@
     $ pyvasp symmetry  primitive POSCAR
 
 
-3 pyvasp diff_pos
+3 ``pyvasp diff_pos``
 ============
 
 用于比较两个POSCAR是否是一个结构, 这里需要保证两个POSCAR是同一个晶胞, 并且给出未掺杂的结构的POSCAR.
@@ -43,7 +43,7 @@
 
     $ pyvasp diff_pos POSCAR POSCAR1 POSCAR2
 
-4 pyvasp get_grd_state
+4 ``pyvasp get_grd_state``
 ============
 
  用于得到一系列结构的能量最低的结构的序号. 例如你用 ``pyvasp get_point_defect`` 生成了许

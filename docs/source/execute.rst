@@ -4,7 +4,7 @@
 
 这里我们提供了两种执行任务的命令, 分别为执行单个任务和多个任务( ``run_single_vasp`` , ``run_multi_vasp`` ).
 
-execute single vasp task
+``run_ringle_vasp``
 ============
 
 这是在你已经准备好了要计算的文件以后才可以运行的, 这个命令的作用在于它可以等待你的vasp计算完成
@@ -31,7 +31,7 @@ execute single vasp task
 
 
 
-execute multiple vasp tasks
+``run_multi_vasp``
 ============
 
 
