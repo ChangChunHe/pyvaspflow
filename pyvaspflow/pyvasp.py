@@ -382,7 +382,7 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     '''
     Example:
 
-    pyvasp prep_multi_vasp -s 2  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 20 &
+    pyvasp prep_multi_vasp -s 2  -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt 20
 
     prepare multiple vasp task from POSCAR2 to POSCAR20
 
@@ -390,8 +390,24 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
     '''
-    pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
+    pmv(start_job_num,end_job_num,job_list,kw=us.get_kw(attribute))
 
+
+@cli.command('prep_multi_vasp_from_file',short_help="Prepare necessary files for multiple vasp calculation")
+@click.argument('job_list_file', metavar='<job list file>',nargs=1)
+@click.option('--attribute','-a', default='', type=str)
+def prep_multi_vasp_from_file(attribute,job_list_file):
+    '''
+    Example:
+
+    pyvasp prep_multi_vasp_from_file -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt job_list_file
+
+    For more help you can refer to
+
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
+    '''
+    job_list = np.loadtxt(job_list_file,dtype=int)
+    pmv(job_list=job_list,kw=us.get_kw(attribute))
 
 def get_job_name(ctx, args, incomplete):
     dir_names = [i for i in os.listdir() if os.path.isdir(i)]

@@ -55,7 +55,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=20):
 
 
 
-def run_multi_vasp(job_name,end_job_num,start_job_num=0,par_job_num=4):
+def run_multi_vasp(job_name,end_job_num,start_job_num=0,job_list=None,par_job_num=4):
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     jobs = []
     end_job_num,start_job_num,par_job_num = int(end_job_num),int(start_job_num),int(par_job_num)

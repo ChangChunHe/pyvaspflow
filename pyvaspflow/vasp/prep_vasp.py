@@ -103,14 +103,15 @@ def prep_single_vasp(poscar='POSCAR',kw={}):
     node_num=node_num,cpu_num=cpu_num,job_name=job_name)
     chdir('..')
 
-def prep_multi_vasp(start_job_num,end_job_num,kw={}):
-    par_job_num,kw = clean_parse(kw,'par_job_num',4)
+def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
     node_name,kw = clean_parse(kw,'node_name','short_q')
     cpu_num,kw = clean_parse(kw,'cpu_num',24)
     node_num,kw = clean_parse(kw,'node_num',1)
     job_name,kw = clean_parse(kw,'job_name','task')
     _kw = kw.copy()
-    for ii in range(start_job_num,end_job_num+1):
+    if job_list is  None:
+        job_list = range(start_job_num,end_job_num+1)
+    for ii in job_list:
         if path.isdir(job_name+str(ii)):
             rmtree(job_name+str(ii))
         makedirs(job_name+str(ii))
