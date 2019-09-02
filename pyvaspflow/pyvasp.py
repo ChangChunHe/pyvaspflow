@@ -449,7 +449,7 @@ def get_run_end_job_num(ctx, args, incomplete):
     return [str(max(max_num))]
 
 
-@cli.command('run_multi_vasp',short_help="run single vasp calculation")
+@cli.command('run_multi_vasp',short_help="run multiple vasp calculations")
 @click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
 @click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
 @click.option('--start_job_num','-s', default=0, type=int)
@@ -468,6 +468,25 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     '''
     rmv(job_name=job_name,end_job_num=end_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
+
+
+@cli.command('run_multi_vasp_from_file',short_help="run multiple vasp calculations from file")
+@click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
+@click.argument('job_list_file', metavar='<job list file>',nargs=1)
+@click.option('--par_job_num','-p', default=4, type=int)
+def run_multi_vasp_from_file(job_name,job_list_file,par_job_num):
+    '''
+    Example:
+
+    pyvasp run_multi_vasp  task job_list_file
+
+    For more help you can refer to
+
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
+    '''
+    job_list = np.loadtxt(job_list_file,dtype=int)
+    rmv(job_name=job_name,job_list=job_list,par_job_num=par_job_num)
+
 
 
 @cli.command('test_encut',short_help="test encut in vasp calculation")
