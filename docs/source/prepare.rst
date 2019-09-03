@@ -63,10 +63,13 @@ pyvasp prep_single_vasp 有可选参数 ``-a``, ``-a`` 是为了设置一些任�
 使用说明::
 
     $ pyvasp prep_multi_vasp_from_file --help
+
     Usage: pyvasp prep_multi_vasp_from_file [OPTIONS] <job list file>
 
 例如::
+
     $ cat job_list
     $ 2 3 5 6 7
     $ pyvasp prep_multi_vasp_from_file  -a node_name=super_q,cpu_num=12,job_name=struc_opt job_list
+
 这里仅仅会生成2,3,4,6,7这几个文件的任务.

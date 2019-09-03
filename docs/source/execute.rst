@@ -67,6 +67,7 @@
 ``run_multi_vasp_from_file``
 ===============
 与准备文件的命令类似, 运行任务也有类似from_file的命令, 使用说明::
+
     $ pyvasp run_multi_vasp_from_file -h
     $ Usage: pyvasp run_multi_vasp_from_file [OPTIONS] <job_name> <job list file>
     $ pyvasp run_multi_vasp  task job_list_file -p 6 &
