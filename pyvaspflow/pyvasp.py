@@ -390,7 +390,7 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
     '''
-    pmv(start_job_num,end_job_num,job_list,kw=us.get_kw(attribute))
+    pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
 
 
 @cli.command('prep_multi_vasp_from_file',short_help="Prepare necessary files for multiple vasp calculation")

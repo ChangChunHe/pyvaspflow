@@ -75,7 +75,7 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     else:
-        start_job_num,end_job_num = int(end_job_num),int(start_job_num),int(par_job_num)
+        start_job_num,end_job_num = int(start_job_num),int(end_job_num)
         jobid_pool = []
         idx = start_job_num
         for ii in range(min(par_job_num,end_job_num-start_job_num)):
