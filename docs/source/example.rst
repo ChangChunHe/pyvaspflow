@@ -40,8 +40,7 @@
 
 .. note:: 例子::
 
-    # 将上述代码保存成相应的shell文件, 例如`band.sh`, `dos.sh`
-    $ bash band.sh >std.out 2>err.out & # for Linux user
+    $ bash band.sh 1>std.out 2>err.out & # for Linux user
     $ nohup bash dos.sh 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
 
 
