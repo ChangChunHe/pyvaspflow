@@ -38,6 +38,12 @@
 .. _dos: https://github.com/ChangChunHe/pyvaspflow/blob/master/pyvaspflow/examples/common_calculations/dos.sh
 
 
+.. note:: 例子::
+
+    $ bash band.sh 1>std.out 2>err.out & # for Linux user
+    $ nohup bash dos.sh 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
+
+
 计算基态相图
 ============
 这一小节实际上是说例如$A_xB_{1-x}$合金, 我们可以给出指定胞的各种不重复结构, 然后计算能量, 最后可以给出一个横轴的浓度$x$的基态相图.
