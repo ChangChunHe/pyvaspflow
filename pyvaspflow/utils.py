@@ -487,23 +487,23 @@ def get_idx_in_pri_pos(pri_pos,pos):
 def _get_min_serial(perms,serial):
     return np.unique(np.sort(perms[:,serial],axis=1),axis=0)[0]
 
-def get_perms(cell,symprec=1e-3):
-    latt = cell.lattice
-    pos = cell.positions
-    pos = np.dot(pos,latt)
-    n = pos.shape[0]
-    pcell = cell.get_primitive_cell()
-    lat_pcell = pcell.lattice
-    mat = np.matmul(latt, np.linalg.inv(lat_pcell))
-    if is_int_np_array(mat):
-        mat = np.around(mat).astype('intc')
-    else:
-        print("cell:\n", lat_cell)
-        print("primitive cell:\n", lat_pcell)
-        raise ValueError(
-        "cell lattice and its primitive cell lattice not convertable")
-    hfpg = PG(pcell, mat)
-    return  hfpg.get_symmetry_perms(symprec)
+# def get_perms(cell,symprec=1e-3):
+#     latt = cell.lattice
+#     pos = cell.positions
+#     pos = np.dot(pos,latt)
+#     n = pos.shape[0]
+#     pcell = cell.get_primitive_cell()
+#     lat_pcell = pcell.lattice
+#     mat = np.matmul(latt, np.linalg.inv(lat_pcell))
+#     if is_int_np_array(mat):
+#         mat = np.around(mat).astype('intc')
+#     else:
+#         print("cell:\n", lat_cell)
+#         print("primitive cell:\n", lat_pcell)
+#         raise ValueError(
+#         "cell lattice and its primitive cell lattice not convertable")
+#     hfpg = PG(pcell, mat)
+#     return  hfpg.get_symmetry_perms(symprec)
 
 def is_2d_structure(cell):
     pos = cell.positions
@@ -520,8 +520,7 @@ def get_grd_state(job_name,start_job_num,end_job_num):
         energy.append(EV.get_energy())
     return np.argmin(energy)
 
-def get_perms(poscar,str_type='crystal',symprec=1e-3):
-    cell = read_vasp(poscar)
+def get_perms(cell,str_type='crystal',symprec=1e-3):
     latt = cell.lattice
     pos = cell.positions
     pos = np.dot(pos,latt)
