@@ -58,7 +58,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=20):
 def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,par_job_num=4):
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     if job_list is not None:
-        start_job_num,end_job_num = 0,len(job_list)-1
+        start_job_num,end_job_num,par_job_num = 0,len(job_list)-1,int(par_job_num)
         jobid_pool = []
         idx = 0
         for ii in range(min(par_job_num,end_job_num)):
@@ -75,7 +75,7 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     else:
-        start_job_num,end_job_num = int(start_job_num),int(end_job_num)
+        start_job_num,end_job_num,par_job_num = int(start_job_num),int(end_job_num),int(par_job_num)
         jobid_pool = []
         idx = start_job_num
         for ii in range(min(par_job_num,end_job_num-start_job_num)):
