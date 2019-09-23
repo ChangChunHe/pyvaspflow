@@ -41,7 +41,7 @@ class DefectMaker:
         'and the lattice has been changed to be:\n', self.lattice)
 
 
-    def get_tetrahedral_defect(self, isunique=False, doped_in='H',min_d=1,folder='tetrahedral-defect'):
+    def get_tetrahedral_defect(self, isunique=False, doped_in='H',min_d=1.5,folder='tetrahedral-defect'):
         all_basis = generate_all_basis(1,1,1)
         direct_lattice = np.array([[1,0,0],[0,1,0],[0,0,1]])
         extend_S = np.zeros((0,3))
