@@ -12,6 +12,7 @@ from pyvaspflow.vasp.prep_vasp import prep_single_vasp as psv
 from pyvaspflow.vasp.run_vasp import run_single_vasp as rsv
 from pyvaspflow.vasp.prep_vasp import prep_multi_vasp as pmv
 from pyvaspflow.vasp.run_vasp import run_multi_vasp as rmv
+from pyvaspflow.vasp.run_vasp import run_multi_vasp_without_job as rmvwj
 from pyvaspflow.vasp.prep_vasp import write_incar as wi
 from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
 from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
@@ -469,6 +470,30 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     rmv(job_name=job_name,end_job_num=end_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
 
+@cli.command('run_multi_vasp_without_job',short_help="run multiple vasp calculations without job files")
+@click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
+@click.option('--node_num','-nnum',default=1,nargs=1,type=int)
+@click.option('--node_name','-nname',default="short_q",nargs=1,type=str)
+@click.option('--cpu_num','-cnum',default=24,nargs=1,type=int)
+@click.option('--start_job_num','-s', default=0, type=int)
+@click.option('--par_job_num','-p', default=4, type=int)
+def run_multi_vasp_without_job(job_name,end_job_num,node_name,cpu_num,node_num,start_job_num,par_job_num):
+    '''
+    Example:
+
+    pyvasp run_multi_vasp_without_job  task 5 --node_name  test_q --cpu_num 24
+
+    run multiple vasp task from task0 to task5 through test_q node whith 24 cpu
+
+    For more help you can refer to
+
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
+    '''
+    rmvwj(job_name=job_name,end_job_num=end_job_num,node_name=node_name,cpu_num=cpu_num,
+    node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
+
+
 
 @cli.command('run_multi_vasp_from_file',short_help="run multiple vasp calculations from file")
 @click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
@@ -488,6 +513,29 @@ def run_multi_vasp_from_file(job_name,job_list_file,par_job_num):
     rmv(job_name=job_name,job_list=job_list,par_job_num=par_job_num)
 
 
+@cli.command('run_multi_vasp_without_job_from_file',short_help="run multiple vasp calculations")
+@click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
+@click.argument('job_list_file', metavar='<job list file>',nargs=1)
+@click.option('--node_num','-nnum',default=1,nargs=1,type=int)
+@click.option('--node_name','-nname',default="short_q",nargs=1,type=str)
+@click.option('--cpu_num','-cnum',default=24,nargs=1,type=int)
+@click.option('--start_job_num','-s', default=0, type=int)
+@click.option('--par_job_num','-p', default=4, type=int)
+def run_multi_vasp_without_job_from_file(job_name,job_list_file,node_name,cpu_num,node_num,start_job_num,par_job_num):
+    '''
+    Example:
+
+    pyvasp run_multi_vasp_without_job_from_file  task 5 --node_name  test_q --cpu_num 24
+
+    run multiple vasp task from task0 to task5 through test_q node whith 24 cpu
+
+    For more help you can refer to
+
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
+    '''
+    job_list = np.loadtxt(job_list_file,dtype=int)
+    rmvwj(job_name=job_name,job_list=job_list,node_name=node_name,cpu_num=cpu_num,
+    node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
 
 @cli.command('test_encut',short_help="test encut in vasp calculation")
 @click.argument('poscar', type=str, autocompletion=get_poscar_files)
