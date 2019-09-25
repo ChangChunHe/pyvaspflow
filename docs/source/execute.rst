@@ -63,6 +63,25 @@
     $ nohup pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
 
 
+``run_multi_vasp_without_job``
+============
+先贴一下这个命令的帮助::
+
+    $ pyvasp run_multi_vasp --help
+    Usage: pyvasp run_multi_vasp_without_job [OPTIONS] <job_name> <the last number of jobs>
+
+    Example:
+
+    pyvasp run_multi_vasp_without_job  task 5 --node_name  test_q --cpu_num 24
+
+    run multiple vasp task from task0 to task5 through test_q node whith 24 cpu
+
+这个命令可以用于, 例如你需要运行的任务的 ``INCAR`` 或者 ``KPOINTS`` 等是不一样的,
+不能使用 ``prep_single_vasp`` 或者 ``prep_multi_vasp`` 来生成, 所以提供了一个运行 `vasp`
+任务的接口, 这里需要指定的是节点名 ``node_nam`` 和 cpu数量 ``cpu_num``, 节点数不建议修改,
+就按照默认的1, 这样就可以使用 ``par_job_num``这个参数同时提交多个任务了.
+
+
 
 ``run_multi_vasp_from_file``
 ===============
@@ -71,3 +90,12 @@
     $ pyvasp run_multi_vasp_from_file -h
     $ Usage: pyvasp run_multi_vasp_from_file [OPTIONS] <job_name> <job list file>
     $ pyvasp run_multi_vasp  task job_list_file -p 6 &
+
+
+``run_multi_vasp_without_job_from_file``
+===============
+类似地, 运行任务也有类似without_job 类型的命令, 使用说明::
+
+    $ pyvasp run_multi_vasp_without_job_from_file -h
+    $ Usage: pyvasp run_multi_vasp_without_job_from_file [OPTIONS] <job_name> <job list file>
+    $ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24

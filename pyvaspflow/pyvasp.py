@@ -488,7 +488,7 @@ def run_multi_vasp_without_job(job_name,end_job_num,node_name,cpu_num,node_num,s
 
     For more help you can refer to
 
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#run-multi-vasp-without-job
     '''
     rmvwj(job_name=job_name,end_job_num=end_job_num,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
@@ -507,7 +507,7 @@ def run_multi_vasp_from_file(job_name,job_list_file,par_job_num):
 
     For more help you can refer to
 
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#run-multi-vasp-from-file
     '''
     job_list = np.loadtxt(job_list_file,dtype=int)
     rmv(job_name=job_name,job_list=job_list,par_job_num=par_job_num)
@@ -525,13 +525,13 @@ def run_multi_vasp_without_job_from_file(job_name,job_list_file,node_name,cpu_nu
     '''
     Example:
 
-    pyvasp run_multi_vasp_without_job_from_file  task 5 --node_name  test_q --cpu_num 24
+    pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
 
-    run multiple vasp task from task0 to task5 through test_q node whith 24 cpu
+    run multiple vasp task from job_list_file through test_q node whith 24 cpu
 
     For more help you can refer to
 
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
+    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#run-multi-vasp-without-job-from-file
     '''
     job_list = np.loadtxt(job_list_file,dtype=int)
     rmvwj(job_name=job_name,job_list=job_list,node_name=node_name,cpu_num=cpu_num,
