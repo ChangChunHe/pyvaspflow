@@ -76,10 +76,14 @@
 
     run multiple vasp task from task0 to task5 through test_q node whith 24 cpu
 
+    pyvasp run_multi_vasp_without_job  task 5 --node_name  test_q,super_q --cpu_num 24,12
+
+
 这个命令可以用于, 例如你需要运行的任务的 ``INCAR`` 或者 ``KPOINTS`` 等是不一样的,
 不能使用 ``prep_single_vasp`` 或者 ``prep_multi_vasp`` 来生成, 所以提供了一个运行 `vasp`
 任务的接口, 这里需要指定的是节点名 ``node_nam`` 和 cpu数量 ``cpu_num``, 节点数不建议修改,
-就按照默认的1, 这样就可以使用 ``par_job_num``这个参数同时提交多个任务了.
+就按照默认的1, 这样就可以使用 ``par_job_num``这个参数同时提交多个任务了. 你也可以指定多个
+节点名, 相对应的也需要指定多个 ``cpu_num`` , 就可以在这些就节点上优先提交空闲的, 写在前面的节点. 
 
 
 
@@ -98,4 +102,5 @@
 
     $ pyvasp run_multi_vasp_without_job_from_file -h
     $ Usage: pyvasp run_multi_vasp_without_job_from_file [OPTIONS] <job_name> <job list file>
+    $ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
     $ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
