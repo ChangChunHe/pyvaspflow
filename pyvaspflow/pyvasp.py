@@ -474,8 +474,8 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
 @click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
 @click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
 @click.option('--node_num','-nnum',default=1,nargs=1,type=int)
-@click.option('--node_name','-nname',default="short_q",nargs=1,type=str)
-@click.option('--cpu_num','-cnum',default=24,nargs=1,type=int)
+@click.option('--node_name','-nname',default="short_q",type=str)
+@click.option('--cpu_num','-cnum',default=24,type=str)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp_without_job(job_name,end_job_num,node_name,cpu_num,node_num,start_job_num,par_job_num):
@@ -490,6 +490,9 @@ def run_multi_vasp_without_job(job_name,end_job_num,node_name,cpu_num,node_num,s
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#run-multi-vasp-without-job
     '''
+    node_name,cpu_num = node_name.split(','),cpu_num.split(',')
+    if len(cpu_num) != len(node_name):
+        raise ValueError("The length of node_name is not consistent with the length of cpu_num")
     rmvwj(job_name=job_name,end_job_num=end_job_num,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
 

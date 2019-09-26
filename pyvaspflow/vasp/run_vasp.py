@@ -24,11 +24,32 @@ def submit_job(job_name):
     return std[0].decode('utf-8').split()[-1]
 
 def submit_job_without_job(job_name,node_name,cpu_num,node_num=1):
-    write_job_file(job_name,node_name,cpu_num,node_num)
+    has_write_job = False
+    for idx in range(len(node_name)):
+        if node_is_idle(node_name[idx]):
+            write_job_file(job_name,node_name[idx],cpu_num[idx],node_num)
+            has_write_job = True
+            break
+    if not has_write_job:
+        write_job_file(job_name,node_names[0],cpu_num[0],node_num)
     res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
     std = res.stdout.readlines()
     res.stdout.close()
+    sleep(5)
     return std[0].decode('utf-8').split()[-1]
+
+def node_is_idle(node_name):
+    p = subprocess.Popen('sinfo',stdout=subprocess.PIPE)
+    sinf_res = p.stdout.read()
+    sinf_res = sinf_res.decode('utf-8').split('\n')
+    p.stdout.close()
+    for line in sinf_res:
+        if 'idle' in line and node_name in line:
+            print(node_name+" is idle")
+            return True
+    print(node_name+" is not idle")
+    return False
+
 
 def write_job_file(job_name,node_name,cpu_num,node_num):
     json_f = read_json()
