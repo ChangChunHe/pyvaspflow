@@ -68,8 +68,6 @@ job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运�
 必须得在load你的module以后执行才会有效. 所以对于组内的同学我建议你可
 以在 ``.bashrc`` 里面加入::
 
-    module load pyvaspflow
-    eval "$(_PYVASP_COMPLETE=source pyvasp)"
+    alias mlpy='module load pyvaspflow;eval "$(_PYVASP_COMPLETE=source pyvasp)"'
 
-但是这回导致你每次登录的时候都会自动加载 ``pyvaspflow`` 这个moudle, 所以你必须得unload这个module才可以使用
-系统的 ``python`` . 当然我觉得对于大多数同学应该是没有关系的 = = .
+然后使用命令 ``mlpy`` 即可加载模块 ``pyvaspflow`` 并且激活自动补齐命令.
