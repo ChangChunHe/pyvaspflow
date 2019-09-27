@@ -414,6 +414,8 @@ def get_job_name(ctx, args, incomplete):
     dir_names = [i for i in os.listdir() if os.path.isdir(i)]
     prefix_list = []
     num_list = []
+    if len(dir_names) == 0:
+        return ["Not found any directory"]
     for dir_name in dir_names:
         res = re.match('([^\d]+?)(\d+)',dir_name)
         if res:
