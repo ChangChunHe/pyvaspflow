@@ -60,6 +60,8 @@ job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运�
 
     eval "$(_PYVASP_COMPLETE=source_zsh pyvasp)"
 
+组内的同学
+===============
 注意到组内的服务器上是以 ``module`` 的方式安装的, 所以如果只是在你的 ``.bashrc`` 里面
 加入这句话是不行的, 因为你还没有load ``pyvaspflow`` 这个包, 所以 ``eval`` 是没有效果的,
 必须得在load你的module以后执行才会有效. 所以对于组内的同学我建议你可
