@@ -523,7 +523,7 @@ def run_multi_vasp_from_file(job_name,job_list_file,par_job_num):
 @click.argument('job_list_file', metavar='<job list file>',nargs=1)
 @click.option('--node_num','-nnum',default=1,nargs=1,type=int)
 @click.option('--node_name','-nname',default="short_q",nargs=1,type=str)
-@click.option('--cpu_num','-cnum',default=24,nargs=1,type=int)
+@click.option('--cpu_num','-cnum',default=24,nargs=1,type=str)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp_without_job_from_file(job_name,job_list_file,node_name,cpu_num,node_num,start_job_num,par_job_num):
@@ -539,6 +539,9 @@ def run_multi_vasp_without_job_from_file(job_name,job_list_file,node_name,cpu_nu
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#run-multi-vasp-without-job-from-file
     '''
     job_list = np.loadtxt(job_list_file,dtype=int)
+    node_name,cpu_num = node_name.split(','),cpu_num.split(',')
+    if len(cpu_num) != len(node_name):
+        raise ValueError("The length of node_name is not consistent with the length of cpu_num")
     rmvwj(job_name=job_name,job_list=job_list,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
 
