@@ -2,7 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess,click,re
+import os,subprocess,click,re,signal
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from sagar.crystal.derive import cells_nonredundant
@@ -647,6 +647,21 @@ def get_def_form_energy(data_dir,defect_dirs):
 @click.option('--wd','-w',default='.')
 def save_pdos(wd):
     read_doscar(wd)
+
+@cli.command('kill',short_help="kill the pyvasp and cancel jobs have been submitted")
+@click.argument('pid', metavar='pid_of_pyvasp',nargs=1)
+@click.option('--cancel_or_not','-c',default=True)
+def kill(pid,cancel_or_not):
+    res = os.kill(int(pid),signal.SIGKILL)
+    print(res,pid)
+    job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
+    with open(job_id_file,'r') as f:
+        job_idx = f.readlines()
+    if cancel_or_not:
+        for idx in job_idx:
+            os.system('scancel '+str(idx))
+    os.remove(job_id_file)
+
 
 if __name__ == "__main__":
     cli()
