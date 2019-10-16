@@ -650,7 +650,7 @@ def save_pdos(wd):
 
 @cli.command('kill',short_help="kill the pyvasp and cancel jobs have been submitted")
 @click.argument('pid', metavar='pid_of_pyvasp',nargs=1)
-@click.option('--cancel_or_not','-c',default=True)
+@click.option('--cancel_or_not','-c',default=True,type=bool)
 def kill(pid,cancel_or_not):
     res = os.kill(int(pid),signal.SIGKILL)
     print(res,pid)
