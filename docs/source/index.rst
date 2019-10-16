@@ -20,6 +20,7 @@ pyvaspflow source code address: https://github.com/ChangChunHe/pyvaspflow
    potcar
    job
    execute
+   kill
    test_para
    fetch
    example
