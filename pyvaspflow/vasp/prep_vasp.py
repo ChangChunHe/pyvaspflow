@@ -77,7 +77,7 @@ def write_kpoints(poscar='POSCAR',kw={}):
             _kpts.write_file('KPOINTS')
         elif 'band' in style.lower() or 'line' in style.lower():
             num_kpts,kw = clean_parse(kw,'num_kpts',16)
-            _kpts.automatic_linemode(structure=stru,num_kpts=num_kpts)
+            _kpts.automatic_linemode(structure=stru,num_kpts=int(num_kpts))
             _kpts.write_file('KPOINTS')
     return kw
 
