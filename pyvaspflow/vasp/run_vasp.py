@@ -153,19 +153,30 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
 
 def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q",cpu_num=24,node_num=1,start_job_num=0,job_list=None,par_job_num=4):
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
+    pid = os.getpid()
+    job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
+    with open(job_id_file,'w') as f:
+        pass
+
     if job_list is not None:
         start_job_num,end_job_num,par_job_num = 0,len(job_list)-1,int(par_job_num)
         jobid_pool = []
         idx = 0
         for ii in range(min(par_job_num,end_job_num)):
-            jobid_pool.append(submit_job_without_job(job_name+str(job_list[ii]),node_name,cpu_num,node_num=1))
+            _job_id = submit_job_without_job(job_name+str(job_list[ii]),node_name,cpu_num,node_num=1)
+            jobid_pool.append(_job_id)
+            with open(job_id_file,'a') as f:
+                f.writelines(_job_id+"\n")
             idx += 1
         if idx == end_job_num+1:
             return
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
             if inqueue_num < par_job_num and idx < end_job_num+1:
-                jobid_pool.append(submit_job_without_job(job_name + str(job_list[idx]),node_name,cpu_num,node_num=1))
+                _job_id = submit_job_without_job(job_name + str(job_list[idx]),node_name,cpu_num,node_num=1)
+                jobid_pool.append(_job_id)
+                with open(job_id_file,'a') as f:
+                    f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
@@ -175,15 +186,22 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
         jobid_pool = []
         idx = start_job_num
         for ii in range(min(par_job_num,end_job_num-start_job_num)):
-            jobid_pool.append(submit_job_without_job(job_name+str(ii+start_job_num),node_name,cpu_num,node_num=1))
+            _job_id = submit_job_without_job(job_name+str(ii+start_job_num),node_name,cpu_num,node_num=1)
+            jobid_pool.append(_job_id)
+            with open(job_id_file,'a') as f:
+                f.writelines(_job_id+"\n")
             idx += 1
         if idx == end_job_num+1:
             return
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
             if inqueue_num < par_job_num and idx < end_job_num+1:
-                jobid_pool.append(submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1))
+                _job_id = submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1)
+                jobid_pool.append(_job_id)
+                with open(job_id_file,'a') as f:
+                    f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
+    os.remove(job_id_file)
