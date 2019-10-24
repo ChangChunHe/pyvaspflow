@@ -33,8 +33,8 @@ def refine_points(tetra,extend_S,C,min_d=1):
     return np.unique(final_res,axis=0)
 
 
-def write_poscar(cell,folder='.',idx=0):
-    filename = '{:s}{:d}'.format('POSCAR', idx)
+def write_poscar(cell,folder='.',idx=0,comment=""):
+    filename = '{:s}{:d}'.format('POSCAR'+comment, idx)
     file = path.join(folder, filename)
     write_vasp(cell,file,suffix='')
 
