@@ -230,6 +230,42 @@ def get_point_defect(poscar,doped_in,doped_out,num,symprec):
     DM.get_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=[int(i) for i in num])
 
 
+@cli.command('get_mole_point_defect',short_help="Get purity POSCAR of molecule")
+@click.argument('poscar', metavar='<primitive_cell_file>',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
+@click.option('--doped_in', '-i', default='Vac', type=str, nargs=1,
+help='the element you want to dope into the system')
+@click.option('--doped_out', '-o', default='all', type=str, nargs=1,
+help='the element you want to remove out of the system')
+@click.option('--symprec', '-s', default='1e-3', type=float,
+help='system precision')
+@click.option('--num', '-n', default='1', type=str, nargs=1,
+help='the number of elements you want to substitute')
+def get_mole_point_defect(poscar,doped_in,doped_out,num,symprec):
+    """
+    argument:
+
+    poscar, the  path of your initial POSCAR
+
+    doped_in, the element you want to put into the system
+
+    doped_out, the element you want to remove out of the system
+
+    Optional parameter:
+    num: the number of element you want to put, the default is 1
+    sympre: system precision
+
+    Example:
+
+    pyvasp get_mole_point_defect -i Fe,Ti -o Si -n 2,3 POSCAR
+    """
+    DM = DefectMaker(no_defect=poscar)
+    doped_in,num = doped_in.split(','),num.split(',')
+    DM.get_mole_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=[int(i) for i in num])
+
+
+
 @cli.command('get_tetrahedral',short_help="Get get tetrahedral sites of POSCAR")
 @click.argument('poscar', metavar='<primitive_cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),

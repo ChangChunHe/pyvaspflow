@@ -10,11 +10,13 @@ import numpy as np
 from sagar.crystal.derive import ConfigurationGenerator
 from sagar.io.vasp import read_vasp,_read_string
 from sagar.crystal.structure import symbol2number as s2n
+from sagar.molecule.derive import ConfigurationGenerator as mole_CG
+from sagar.molecule.structure import Molecule
 from pyvaspflow.utils import generate_all_basis, refine_points,write_poscar
 from itertools import combinations,chain
 from sagar.crystal.structure import Cell
-import os
 from shutil import rmtree
+import os
 
 
 class DefectMaker:
@@ -151,16 +153,62 @@ class DefectMaker:
             rmtree('./'+folder)
             os.mkdir('./'+folder)
         idx = 0
-        for c, _ in confs:
+        deg = []
+        for c, _deg in confs:
             write_poscar(c,folder,idx)
+            deg.append(_deg)
             idx += 1
+        np.savetxt(folder+"/deg.txt",deg,fmt="%d")
 
+    def get_mole_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1]):
+        pos,lat,atoms = self.positions,self.lattice,self.atoms
+        mole = Molecule(np.dot(pos,lat),atoms)
+        cg = mole_CG(mole, symprec)
+        sites = _get_sites(list(mole.atoms), doped_out=doped_out, doped_in=doped_in)
+        if num == None:
+            confs = cg.get_configurations(sites, e_num=None)
+            comment = ["-".join(doped_in)+"-all_concentration"]
+        else:
+            purity_atom_num = sum([1 if len(site)>1 else 0 for site in sites])
+            confs = cg.get_configurations(sites, e_num=[purity_atom_num-sum(num)]+num)
+            comment = list(chain(*zip(doped_in, [str(i) for i in num])))
+        folder = '-'.join(doped_out) +'-'+'-'.join(comment) + '-defect'
+        if not os.path.exists('./'+folder):
+            os.mkdir('./'+folder)
+        else:
+            rmtree('./'+folder)
+            os.mkdir('./'+folder)
+        deg = []
+        idx = 0
+        for c, _deg in confs:
+            c.lattice = lat
+            c._positions = np.dot(c.positions,np.linalg.inv(lat))
+            write_poscar(c,folder,idx)
+            deg.append(_deg)
+            idx += 1
+        np.savetxt(os.path.join(folder,"deg.txt"),deg,fmt='%d')
+
+# def _get_sites(atoms,doped_out,doped_in):
+#     doped_in = [s2n(i) for i in doped_in]
+#     if doped_out == 'all':
+#         return  [tuple([atom]+doped_in)  for atom in atoms]
+#     else:
+#         doped_out = s2n(doped_out)
+#         _ins = tuple([doped_out]+doped_in)
+#         return [_ins if atom == doped_out else (atom,) for atom in atoms]
 
 def _get_sites(atoms,doped_out,doped_in):
     doped_in = [s2n(i) for i in doped_in]
-    if doped_out == 'all':
+    if doped_out == ['all']:
         return  [tuple([atom]+doped_in)  for atom in atoms]
+    elif len(doped_out) > 1:
+        doped_out = [s2n(i) for i in doped_out]
+        return [tuple([atom]+doped_in) if atom in doped_out else (atom,) for atom in atoms ]
     else:
-        doped_out = s2n(doped_out)
-        _ins = tuple([doped_out]+doped_in)
+        doped_out = [s2n(i) for i in doped_out]
+        _ins = tuple(doped_out+doped_in)
         return [_ins if atom == doped_out else (atom,) for atom in atoms]
+
+if __name__ == '__main__':
+    dm = DefectMaker('/home/hecc/Downloads/POSCAR')
+    dm.get_mole_point_defect(symprec=0.1,doped_out='C',doped_in=['Vac'],num=[2])
