@@ -135,30 +135,29 @@ class DefectMaker:
                 idx += 1
 
 
-    def get_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1]):
-        cg = ConfigurationGenerator(self.no_defect_cell, symprec)
-        sites = _get_sites(list(self.atoms), doped_out=doped_out, doped_in=doped_in)
-        if doped_out == 'all':
-            if len(np.unique(self.atoms)) > 1 and len(doped_in) > 1:
-                raise ValueError("Multiple species elements  doped in and multiple elements doped out is ambiguous")
-            confs = cg.cons_specific_cell(sites, e_num=[len(self.atoms)-sum(num)]+num, symprec=symprec)
+    def get_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1],ip=""):
+        cell = self.no_defect_cell
+        cg = ConfigurationGenerator(cell, symprec)
+        sites = _get_sites(list(cell.atoms), doped_out=doped_out, doped_in=doped_in)
+        if num == None:
+            confs = cg.cons_specific_cell(sites, e_num=None, symprec=symprec)
+            comment = ["-".join(doped_in)+"-all_concentration"]
         else:
-            purity_atom_num = np.where(self.atoms==s2n(doped_out))[0].size
+            purity_atom_num = sum([1 if len(site)>1 else 0 for site in sites])
             confs = cg.cons_specific_cell(sites, e_num=[purity_atom_num-sum(num)]+num, symprec=symprec)
-        comment = list(chain(*zip(doped_in, [str(i) for i in num])))
-        folder = doped_out +'-'+'-'.join(comment) + '-defect'
-        if not os.path.exists('./'+folder):
-            os.mkdir('./'+folder)
-        else:
-            rmtree('./'+folder)
-            os.mkdir('./'+folder)
-        idx = 0
+            comment = list(chain(*zip(doped_in, [str(i) for i in num])))
+        comment = '-'.join(doped_out) +'-'+'-'.join(comment) + '-defect'
+        folder = comment
+        if not os.path.isdir(folder):
+            os.makedirs(folder)
         deg = []
+        idx = 0
         for c, _deg in confs:
             write_poscar(c,folder,idx)
             deg.append(_deg)
             idx += 1
-        np.savetxt(folder+"/deg.txt",deg,fmt="%d")
+        np.savetxt(os.path.join(folder,"deg.txt"),deg,fmt='%d')
+
 
     def get_mole_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1]):
         pos,lat,atoms = self.positions,self.lattice,self.atoms

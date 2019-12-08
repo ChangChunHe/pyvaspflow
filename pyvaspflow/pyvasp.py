@@ -226,7 +226,7 @@ def get_point_defect(poscar,doped_in,doped_out,num,symprec):
     pyvasp get_point_defect -i Fe,Ti -o Si -n 2,3 POSCAR
     """
     DM = DefectMaker(no_defect=poscar)
-    doped_in,num = doped_in.split(','),num.split(',')
+    doped_out,doped_in,num = doped_out.split(','),doped_in.split(','),num.split(',')
     DM.get_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=[int(i) for i in num])
 
 
