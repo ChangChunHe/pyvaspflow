@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from distutils.core import setup
+from setuptools import setup
 
 #This is a list of files to install, and where
 #(relative to the 'root' dir, where setup.py is)
