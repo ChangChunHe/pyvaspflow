@@ -18,6 +18,7 @@ from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
 from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
 from pyvaspflow.vasp import test_para
 from pyvaspflow.io.vasp_out import read_doscar
+from pyvaspflow.vasp.prep_vasp import write_multi_job_files
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -428,6 +429,18 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
     '''
     pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
+
+@cli.command('prep_multi_job_files',short_help="Prepare necessary files for multiple vasp calculation")
+@click.argument('job_name', metavar='job name',nargs=1)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1)
+@click.argument('n_job', metavar='<the last number of parallel jobs>',nargs=1)
+@click.option('--start_job_num','-s', default=0, type=int)
+@click.option('--node_name','-nname', default="paratera", type=str)
+@click.option('--node_num','-nnum', default=1, type=int)
+@click.option('--cpu_num','-cnum', default=24, type=int)
+def prep_multi_job_files(start_job_num,end_job_num,n_job,job_name,node_name,cpu_num,node_num):
+    end_job_num, start_job_num, n_job = int(float(end_job_num)),int(float(start_job_num)),int(float(n_job))
+    write_multi_job_files(node_name,cpu_num,node_num,job_name,start_job_num,end_job_num,n_job)
 
 
 @cli.command('prep_multi_vasp_from_file',short_help="Prepare necessary files for multiple vasp calculation")
