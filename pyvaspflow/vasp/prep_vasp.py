@@ -18,6 +18,32 @@ def write_job_file(node_name,cpu_num,node_num,job_name):
         f.writelines(json_f['job']['prepend']+'\n')
         f.writelines(json_f['job']['exec']+'\n')
 
+def write_multi_job_files(node_name,cpu_num,node_num,job_name,start,end,n_job):
+    batch = (end - start +1 )//(n_job+1)
+    _start = start
+    _end = _start + batch - 1
+    for idx in range(n_job-1):
+        with open('job_'+str(idx)+'.sh','w') as f:
+            f.writelines('#!/bin/bash \n')
+            f.writelines('#SBATCH -J '+job_name+'\n')
+            f.writelines('#SBATCH -p '+node_name+' -N '+ str(int(node_num)) +' -n '+str(int(cpu_num))+'\n\n')
+            f.writelines("for idx in {"+str(_start)+".."+str(_end)+"}"+"\ndo\n")
+            f.writelines('cd '+job_name+'${idx}\n')
+            f.writelines('yhrun -N '+str(node_num)+' -n '+str(cpu_num)+'  vasp.5.4-std\n')
+            f.writelines('cd ..\ndone\n')
+        _start = _end + 1
+        _end = _start + batch - 1
+    _start = _end + 1
+    _end = end
+    with open('job_'+str(n_job)+'.sh','w') as f:
+        f.writelines('#!/bin/bash \n')
+        f.writelines('#SBATCH -J '+job_name+'\n')
+        f.writelines('#SBATCH -p '+node_name+' -N '+ str(int(node_num)) +' -n '+str(int(cpu_num))+'\n\n')
+        f.writelines("for idx in {"+str(_start)+".."+str(_end)+"}"+"\ndo\n")
+        f.writelines('cd '+job_name+'${idx}\n')
+        f.writelines('yhrun -N '+str(node_num)+' -n '+str(cpu_num)+'  vasp.5.4-std\n')
+        f.writelines('cd ..\ndone\n')
+
 def write_incar(incar_file=None,kw={}):
     if path.isfile('POTCAR'):
         with open('POTCAR') as f:
@@ -124,3 +150,6 @@ def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
         node_num=node_num,cpu_num=cpu_num,job_name=job_name+str(idx))
         kw = _kw.copy()
         chdir('..')
+
+if __name__ == '__main__':
+    write_multi_job_files(node_name="short_q",cpu_num=48,node_num=2,job_name="task",start=2,end=34,n_job=4)
