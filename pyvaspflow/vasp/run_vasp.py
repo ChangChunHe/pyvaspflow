@@ -77,7 +77,7 @@ def _submit_job(job_name,cpu_num):
     exe = js['job']['exec']
     subprocess.check_output(prep+' && '+'mpirun -n '+str(cpu_num)+' '+exe.split()[-1],shell=True,cwd=job_name)
 
-def run_single_vasp(job_name,is_login_node=False,cpu_num=20):
+def run_single_vasp(job_name,is_login_node=False,cpu_num=24):
     if is_login_node:
         _submit_job(job_name,cpu_num=cpu_num)
     else:
@@ -91,6 +91,14 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=20):
                 break
             sleep(5)
     os.remove(job_id_file)
+
+
+def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1):
+    pid = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
+    while True:
+        if not is_inqueue(pid):
+            break
+        sleep(5)
 
 
 
@@ -205,3 +213,51 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     os.remove(job_id_file)
+
+
+def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0,job_list=None,par_job_num=4):
+    pid_inqueue_num = lambda id_pool:[is_in_pid_queue(i) for i in id_pool].count(True)
+    if job_list:
+        pass
+    else:
+        start_job_num,end_job_num,par_job_num = int(start_job_num),int(end_job_num),int(par_job_num)
+        pid_pool = []
+        idx = start_job_num
+        for ii in range(min(par_job_num,end_job_num-start_job_num)):
+            if os.path.isdir(work_name+str(ii)):
+                shutil.rmtree(work_name+str(ii))
+            #import pdb;pdb.set_trace()
+            os.makedirs(work_name+str(ii))
+            shutil.copyfile("POSCAR"+str(ii),work_name+str(ii)+"/POSCAR")
+            shutil.copyfile(shell_file,work_name+str(ii)+"/"+shell_file)
+            res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(ii))
+            pid_pool.append(res.pid)
+            idx += 1
+            sleep(5)
+        if idx == end_job_num+1:
+            return
+        while True:
+            inqueue_num = pid_inqueue_num(pid_pool)
+            if inqueue_num < par_job_num and idx < end_job_num+1:
+                if os.path.isdir(work_name+str(idx)):
+                    shutil.rmtree(work_name+str(idx))
+                os.makedirs(work_name+str(idx))
+                shutil.copyfile("POSCAR"+str(ii),work_name+str(idx)+"/POSCAR")
+                shutil.copyfile(shell_file,work_name+str(idx)+"/"+shell_file)
+                #import pdb;pdb.set_trace()
+                res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(idx))
+                pid_pool.append(res.pid)
+                idx += 1
+                sleep(5)
+            if idx == end_job_num+1 and pid_inqueue_num(pid_pool) == 0:
+                break
+
+
+def is_in_pid_queue(pid):
+    p = subprocess.Popen(['ps', '-ef'],stdout=subprocess.PIPE)
+    que_res = p.stdout.readlines()
+    p.stdout.close()
+    pid_res = [i  for i in que_res if str(pid) in i.decode("utf-8")]
+    if len(pid_res) == 2:
+        return True
+    return False
