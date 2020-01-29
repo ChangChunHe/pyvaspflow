@@ -242,7 +242,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                 if os.path.isdir(work_name+str(idx)):
                     shutil.rmtree(work_name+str(idx))
                 os.makedirs(work_name+str(idx))
-                shutil.copyfile("POSCAR"+str(ii),work_name+str(idx)+"/POSCAR")
+                shutil.copyfile("POSCAR"+str(idx),work_name+str(idx)+"/POSCAR")
                 shutil.copyfile(shell_file,work_name+str(idx)+"/"+shell_file)
                 #import pdb;pdb.set_trace()
                 res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(idx))
