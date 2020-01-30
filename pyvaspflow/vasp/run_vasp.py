@@ -23,7 +23,7 @@ def submit_job(job_name):
     res.stdout.close()
     return std[0].decode('utf-8').split()[-1]
 
-def submit_job_without_job(job_name,node_name,cpu_num,node_num=1):
+def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=0):
     has_write_job = False
     for idx in range(len(node_name)):
         if node_is_idle(node_name[idx]):
@@ -31,12 +31,15 @@ def submit_job_without_job(job_name,node_name,cpu_num,node_num=1):
             has_write_job = True
             break
     if not has_write_job:
-        write_job_file(job_name,node_name[0],cpu_num[0],node_num)
+        write_job_file(job_name,node_name[submit_job_idx],cpu_num[submit_job_idx],node_num)
+        submit_job_idx += 1
+        if submit_job_idx == len(node_name):
+            submit_job_idx = 0
     res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
     std = res.stdout.readlines()
     res.stdout.close()
     sleep(5)
-    return std[0].decode('utf-8').split()[-1]
+    return std[0].decode('utf-8').split()[-1],submit_job_idx
 
 def node_is_idle(node_name):
     p = subprocess.Popen('sinfo',stdout=subprocess.PIPE)
@@ -94,7 +97,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24):
 
 
 def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1):
-    pid = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
+    pid,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
     while True:
         if not is_inqueue(pid):
             break
@@ -165,13 +168,13 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
     job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
     with open(job_id_file,'w') as f:
         pass
-
+    submit_job_idx = 0
     if job_list is not None:
         start_job_num,end_job_num,par_job_num = 0,len(job_list)-1,int(par_job_num)
         jobid_pool = []
         idx = 0
         for ii in range(min(par_job_num,end_job_num)):
-            _job_id = submit_job_without_job(job_name+str(job_list[ii]),node_name,cpu_num,node_num=1)
+            _job_id,submit_job_idx = submit_job_without_job(job_name+str(job_list[ii]),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
             jobid_pool.append(_job_id)
             with open(job_id_file,'a') as f:
                 f.writelines(_job_id+"\n")
@@ -181,7 +184,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
             if inqueue_num < par_job_num and idx < end_job_num+1:
-                _job_id = submit_job_without_job(job_name + str(job_list[idx]),node_name,cpu_num,node_num=1)
+                _job_id,submit_job_idx = submit_job_without_job(job_name + str(job_list[idx]),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
                 jobid_pool.append(_job_id)
                 with open(job_id_file,'a') as f:
                     f.writelines(_job_id+"\n")
@@ -194,7 +197,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
         jobid_pool = []
         idx = start_job_num
         for ii in range(min(par_job_num,end_job_num-start_job_num)):
-            _job_id = submit_job_without_job(job_name+str(ii+start_job_num),node_name,cpu_num,node_num=1)
+            _job_id,submit_job_idx = submit_job_without_job(job_name+str(ii+start_job_num),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
             jobid_pool.append(_job_id)
             with open(job_id_file,'a') as f:
                 f.writelines(_job_id+"\n")
@@ -204,7 +207,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
             if inqueue_num < par_job_num and idx < end_job_num+1:
-                _job_id = submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1)
+                _job_id,submit_job_idx = submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
                 jobid_pool.append(_job_id)
                 with open(job_id_file,'a') as f:
                     f.writelines(_job_id+"\n")
