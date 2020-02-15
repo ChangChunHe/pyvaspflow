@@ -7,14 +7,6 @@ from pyvaspflow.utils import read_json
 from time import sleep,ctime
 import os,subprocess,shutil,logging
 
-logging.basicConfig(level=logging.DEBUG,#控制台打印的日志级别
-                    filename='.run.log',
-                    filemode='a',##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
-                    #a是追加模式，默认如果不写的话，就是追加模式
-                    format=
-                    '%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'
-                    #日志格式
-                    )
 
 def is_inqueue(job_id):
     p = subprocess.Popen('squeue',stdout=subprocess.PIPE)
@@ -29,7 +21,9 @@ def submit_job(job_name):
     res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
     std = res.stdout.readlines()
     res.stdout.close()
-    return std[0].decode('utf-8').split()[-1]
+    pid = std[0].decode('utf-8').split()[-1]
+    logging.info(job_name+" calculation has been submitted, the queue id is "+pid)
+    return pid
 
 def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=0):
     has_write_job = False
@@ -37,17 +31,21 @@ def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=
         if node_is_idle(node_name[idx]):
             write_job_file(job_name,node_name[idx],cpu_num[idx],node_num)
             has_write_job = True
+            node_submitted = node_name[idx]
             break
     if not has_write_job:
         write_job_file(job_name,node_name[submit_job_idx],cpu_num[submit_job_idx],node_num)
+        node_submitted = node_name[submit_job_idx]
         submit_job_idx += 1
         if submit_job_idx == len(node_name):
             submit_job_idx = 0
     res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
     std = res.stdout.readlines()
     res.stdout.close()
+    pid = std[0].decode('utf-8').split()[-1]
+    logging.info(job_name+" calculation has been submitted, the queue id is "+pid)
     sleep(5)
-    return std[0].decode('utf-8').split()[-1],submit_job_idx
+    return pid,submit_job_idx
 
 def node_is_idle(node_name):
     p = subprocess.Popen('sinfo',stdout=subprocess.PIPE)
@@ -65,9 +63,20 @@ def is_job_running(pid):
     sinf_res = sinf_res.decode('utf-8').split('\n')
     p.stdout.close()
     for line in sinf_res:
-        if 'R' in line and node_name in line:
+        if ' R ' in  line and pid in line:
             return True
     return False
+
+def is_job_pd(pid):
+    p = subprocess.Popen('squeue',stdout=subprocess.PIPE)
+    sinf_res = p.stdout.read()
+    sinf_res = sinf_res.decode('utf-8').split('\n')
+    p.stdout.close()
+    for line in sinf_res:
+        if ' PD ' in  line and pid in line:
+            return True
+    return False
+
 
 def is_in_pid_queue(pid):
     p = subprocess.Popen(['ps', '-ef'],stdout=subprocess.PIPE)
@@ -108,10 +117,11 @@ def _submit_job(job_name,cpu_num):
 
 def run_single_vasp(job_name,is_login_node=False,cpu_num=24):
     if is_login_node:
-        logging.WARNING("Runing at logging node")
+        logging.warning(job_name+" calculation Runing at logging node")
         _submit_job(job_name,cpu_num=cpu_num)
-        logging.INFO("Calculation finished")
+        logging.info(job_name+" calculation finished")
     else:
+        logging.info(job_name+" calculation has submitted at calculation node")
         job_id = submit_job(job_name)
         pid = os.getpid()
         job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
@@ -119,23 +129,33 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24):
             f.writelines(job_id+"\n")
         while True:
             if not is_inqueue(job_id):
+                logging.info(job_name+" calculation finished")
                 break
             sleep(5)
         os.remove(job_id_file)
 
-def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1):
+def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd=""):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=os.path.join(cwd,'.run.log'),
+                        filemode='a')
     pid,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
+    sleep(5)
     while True:
         for idx,nname in enumerate(node_name):
-            if node_is_idle(nname) and not is_job_running(pid):
-                os.system("scancel "+str(pid))
+            if node_is_idle(nname) and is_job_pd(pid):
+                os.system("scancel "+pid)
+                logging.info(job_name+" has been scancelled, the queue id is "+pid)
                 write_job_file(job_name,nname,cpu_num[idx],node_num)
                 res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
                 std = res.stdout.readlines()
                 res.stdout.close()
                 pid = std[0].decode('utf-8').split()[-1]
+                logging,info(job_name+" has been submitted at "+nname+" node, the queue id is "+pid)
             sleep(5)
         if not is_inqueue(pid):
+            logging.info(job_name+" calculation finished")
             break
         sleep(5)
 
@@ -160,13 +180,14 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
             return
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
+            logging.info(str(inqueue_num)+" in queue")
             if inqueue_num < par_job_num and idx < end_job_num+1:
                 _job_id = submit_job(job_name + str(job_list[idx]))
                 jobid_pool.append(_job_id)
                 with open(job_id_file,'a') as f:
                     f.writelines(_job_id+"\n")
                 idx += 1
-                sleep(5)
+            sleep(60)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     else:
@@ -183,13 +204,14 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
             return
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
+            logging.info(str(inqueue_num)+" in queue")
             if inqueue_num < par_job_num and idx < end_job_num+1:
                 _job_id = submit_job(job_name + str(idx))
                 jobid_pool.append(_job_id)
                 with open(job_id_file,'a') as f:
                     f.writelines(_job_id+"\n")
                 idx += 1
-                sleep(5)
+            sleep(60)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     os.remove(job_id_file)
@@ -216,6 +238,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
             return
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
+            logging.info(str(inqueue_num)+" in queue")
             if inqueue_num < par_job_num and idx < end_job_num+1:
                 _job_id,submit_job_idx = submit_job_without_job(job_name + str(job_list[idx]),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
                 jobid_pool.append(_job_id)
@@ -239,6 +262,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
             return
         while True:
             inqueue_num = job_inqueue_num(jobid_pool)
+            logging.info(str(inqueue_num)+" in queue")
             if inqueue_num < par_job_num and idx < end_job_num+1:
                 _job_id,submit_job_idx = submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
                 jobid_pool.append(_job_id)
@@ -273,6 +297,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
             return
         while True:
             inqueue_num = pid_inqueue_num(pid_pool)
+            logging.info(str(inqueue_num)+" in queue")
             if inqueue_num < par_job_num and idx < end_job_num+1:
                 if os.path.isdir(work_name+str(idx)):
                     shutil.rmtree(work_name+str(idx))

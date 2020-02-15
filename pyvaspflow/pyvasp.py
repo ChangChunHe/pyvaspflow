@@ -2,7 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess,click,re,signal
+import os,subprocess,click,re,signal,logging
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from sagar.crystal.derive import cells_nonredundant
@@ -406,9 +406,10 @@ def run_single_vasp(job_name,is_login_node,cpu_num):
 @cli.command('run_single_vasp_without_job',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
 @click.option('--node_name','-nname',default="short_q",type=str)
-@click.option('--cpu_num','-cnum',default=1,nargs=1,type=str)
+@click.option('--cpu_num','-cnum',default='1',nargs=1,type=str)
 @click.option('--node_num','-nnum',default=1,nargs=1,type=int)
-def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num):
+@click.option('--cwd','-d',default="",nargs=1,type=str)
+def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num,cwd):
     '''
     Example:
 
@@ -418,10 +419,11 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
     '''
+#    import pdb;pdb.set_trace()
     node_name,cpu_num = node_name.split(','),cpu_num.split(',')
     if len(cpu_num) != len(node_name):
         raise ValueError("The length of node_name is not consistent with the length of cpu_num")
-    rsvwj(job_name,node_name,cpu_num,node_num=1)
+    rsvwj(job_name,node_name,cpu_num,node_num=1,cwd=cwd)
 
 
 
@@ -552,6 +554,12 @@ def run_multi_vasp(work_name,shell_file,end_job_num,start_job_num,par_job_num):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
     '''
+    pwd = os.getcwd()
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=os.path.join(pwd,'.run.log'),
+                        filemode='a')
     rmvws(work_name,shell_file,end_job_num=end_job_num,start_job_num=start_job_num,job_list=None,par_job_num=par_job_num)
 
 
