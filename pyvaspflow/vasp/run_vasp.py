@@ -152,7 +152,7 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd=""):
                 std = res.stdout.readlines()
                 res.stdout.close()
                 pid = std[0].decode('utf-8').split()[-1]
-                logging,info(job_name+" has been submitted at "+nname+" node, the queue id is "+pid)
+                logging.info(job_name+" has been submitted at "+nname+" node, the queue id is "+pid)
             sleep(5)
         if not is_inqueue(pid):
             logging.info(job_name+" calculation finished")
