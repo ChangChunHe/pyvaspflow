@@ -58,8 +58,7 @@
 
 .. note:: 例子::
 
-    $ pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out & # for Linux user
-    $ nohup pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
+    $ nohup pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1>std.out 2>err.out& #  1后面重定向标准输出, 2后面重定向错误输出.
 
 
 ``run_multi_vasp_without_job``
@@ -163,7 +162,7 @@
 
 再配合使用命令::
 
-    $ nohup pyvasp run_multi_vasp_from_shell spin.sh 4182 job  -p 5 &
+    $ nohup pyvasp run_multi_vasp_from_shell spin.sh 4182 job  -p 5 1>std 2>err &
 
 那么就可以同时提交5个 `spin.sh` 的任务, 而且每个任务都可以按照节点空闲情况进行分配任务.
 
