@@ -5,7 +5,7 @@
 这里我们提供了两种执行任务的命令, 分别为执行单个任务和多个任务( ``run_single_vasp`` , ``run_multi_vasp`` ).
 
 ``run_ringle_vasp``
-============
+======================
 
 这是在你已经准备好了要计算的文件以后才可以运行的, 这个命令的作用在于它可以等待你的vasp计算完成
 之后才会停止运行. 比如你需要在计算完成之后提取某些数据, 如果你直接 ``sbatch job.sh`` , 那么
@@ -31,7 +31,7 @@
 
 
 ``run_multi_vasp``
-============
+===================
 
 
 先贴一下这个命令的帮助::
@@ -62,7 +62,7 @@
 
 
 ``run_multi_vasp_without_job``
-============
+===============================
 先贴一下这个命令的帮助::
 
     $ pyvasp run_multi_vasp --help
@@ -86,7 +86,7 @@
 
 
 ``run_multi_vasp_from_file``
-===============
+==============================
 与准备文件的命令类似, 运行任务也有类似from_file的命令, 使用说明::
 
     $ pyvasp run_multi_vasp_from_file -h
@@ -95,7 +95,7 @@
 
 
 ``run_multi_vasp_without_job_from_file``
-===============
+============================================
 类似地, 运行任务也有类似without_job 类型的命令, 使用说明::
 
     $ pyvasp run_multi_vasp_without_job_from_file -h
@@ -107,7 +107,7 @@
 
 
 ``run_multi_vasp_from_shell``
-===============
+==============================
 因爲上面的任務都是單步的, 也就是你只能計算一次, 如果你希望計算能帶, 那麼你需要計算三次:1. 结构
 优化, 2. 结构自恰, 3.计算线性K点的能带, 这样就不能使用上述 ``prep_multi_vasp`` 和 ``run_multi_vasp`` 等等来
 系统计算多个任务了.你只能先计算完所有的结构优化, 然后把所有结构的 `CONTCAR` 拷贝出来再计算自恰等等. 这个是不太
@@ -144,7 +144,7 @@
 
 
 ``run_single_vasp_without_job``
-===============
+================================
 类似与 ``run_multi_vasp_without_job`` 这个命令， 你可以指定用哪些节点，一旦有空闲的节点就会把任务提交上去， 举个例子::
 
     $ pyvasp run_single_vasp_without_job stru_relax -nname short_q,long_q,test_q -cnum 24,24,24
