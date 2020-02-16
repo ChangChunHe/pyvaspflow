@@ -10,8 +10,9 @@ from distutils.core import setup
 
 
 setup(name = "pyvaspflow",
-    version = "0.0.2",
+    version = "0.0.3",
     description = "Vasp Calculation",
+    long_description="A Python package for VASP task preparation and submission maganement.",
     author = "hecc",
     author_email = "changchun_he@foxmail.com",
     #Name the folder where your packages live:
