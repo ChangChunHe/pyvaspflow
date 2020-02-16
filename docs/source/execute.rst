@@ -23,8 +23,7 @@
 
 .. note:: 例子::
 
-    $ pyvasp run_ringle_vasp task 1>std.out 2>err.out & # for Linux user
-    $ nohup pyvasp run_ringle_vasp task 1>std.out 2>err.out& # for Windows user, 1后面重定向标准输出, 2后面重定向错误输出.
+    $ nohup pyvasp run_ringle_vasp task 1>std.out 2>err.out& #  1后面重定向标准输出, 2后面重定向错误输出.
 
 注意你也可以不写重定向的东西, 直接以&结尾, 但是这个是不建议的.
 
@@ -79,11 +78,11 @@
     pyvasp run_multi_vasp_without_job  task 5 --node_name  test_q,super_q --cpu_num 24,12
 
 
-这个命令可以用于, 例如你需要运行的任务的 ``INCAR`` 或者 ``KPOINTS`` 等是不一样的,
-不能使用 ``prep_single_vasp`` 或者 ``prep_multi_vasp`` 来生成, 所以提供了一个运行 `vasp`
-任务的接口, 这里需要指定的是节点名 ``node_nam`` 和 cpu数量 ``cpu_num``, 节点数不建议修改,
+这个命令可以用于, 例如你期望你的任务佔用多個節點, 那麼就不能使用`run_multi_vasp`這個命令了,
+因爲他是直接提交任務文件夾裏面`job.sh`, 這裏可以自行設置節點和cpu數目. 这里需要指定的是节
+点名 ``node_nam`` 和 cpu数量 ``cpu_num``, 节点数不建议修改,
 就按照默认的1, 这样就可以使用 ``par_job_num``这个参数同时提交多个任务了. 你也可以指定多个
-节点名, 相对应的也需要指定多个 ``cpu_num`` , 就可以在这些就节点上优先提交空闲的, 写在前面的节点. 
+节点名, 相对应的也需要指定多个 ``cpu_num`` , 就可以在这些就节点上优先提交空闲的, 写在前面的节点.
 
 
 
@@ -104,3 +103,71 @@
     $ Usage: pyvasp run_multi_vasp_without_job_from_file [OPTIONS] <job_name> <job list file>
     $ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
     $ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
+
+
+
+
+``run_multi_vasp_from_shell``
+===============
+因爲上面的任務都是單步的, 也就是你只能計算一次, 如果你希望計算能帶, 那麼你需要計算三次:1. 结构
+优化, 2. 结构自恰, 3.计算线性K点的能带, 这样就不能使用上述 ``prep_multi_vasp`` 和 ``run_multi_vasp`` 等等来
+系统计算多个任务了.你只能先计算完所有的结构优化, 然后把所有结构的 `CONTCAR` 拷贝出来再计算自恰等等. 这个是不太
+恰当的, 所以就有了这个 ``run_multi_vasp_from_shell`` 的命令, 使用说明::
+
+    $ pyvasp run_multi_vasp_from_shell -h
+    $ Usage: pyvasp run_multi_vasp_from_shell [OPTIONS] <shell scripts file> <the last number of jobs>
+
+这里需要提供一个 `shell` 文件，例如我们计算能带的时候，可以使用如下的 `band.sh` 文件::
+
+    #!/bin/bash
+    # make sure you have install pyvasp in your current environment
+    # make sure current directory has POSCAR
+
+    module load pyvaspflow
+    pyvasp prep_single_vasp POSCAR -a ISIF=3,job_name=stru_relax
+    pyvasp run_single_vasp stru_relax
+    pyvasp prep_single_vasp  stru_relax/CONTCAR -a job_name=scf,NSW=0,LCHARG=True
+    pyvasp run_single_vasp scf
+    pyvasp prep_single_vasp  scf/CONTCAR -a style=band,NSW=0,job_name=band,ICHARG=11
+    cp scf/CHG* band/
+    pyvasp run_single_vasp band
+
+假设你的文件夹下面现在有10个POSCAR, 按照流水号命名，POSCAR0-POSCAR9， 还有如上的一个 `band.sh` 文件, 那
+么你就可以使用命令::
+
+    $ pyvasp run_multi_vasp_from_shell band.sh 9 -w job -p 5
+
+这个命令会自己新建文件夹，按照job前缀的流水号命名, 然后将POSCAR$idx copy到该文件夹里面
+为POSCAR, 然后运行这个 `band.sh` . 参数 ``-p`` 与上述的含义是一样的, 只是保持同时有5个 `band.sh` 文件在运行.
+这里可以注意到，在 `band.sh` 里面是只能写 `run_single_vasp` 这样的命令, 那么就不能占据多个节点计算了, 所以
+就有了这个 `run_single_vasp_without_job` 这个命令.
+
+
+
+``run_single_vasp_without_job``
+===============
+类似与 ``run_multi_vasp_without_job`` 这个命令， 你可以指定用哪些节点，一旦有空闲的节点就会把任务提交上去， 举个例子::
+
+    $ pyvasp run_single_vasp_without_job stru_relax -nname short_q,long_q,test_q -cnum 24,24,24
+
+它会先把任务交到 `short_q` 上， 然后监测到如果任务一直在挂起的状态而 `long_q` 或者 `test_q` 这两个
+节点有空闲，那它会把交到 `short_q` 的任务取消掉，重新将任务提交到 `long_q` 或者 `test_q` 上, 这个命令
+刚好可以跟 ``run_multi_vasp_from_shell`` 配合使用. 例如可以写一个如下的 `spin.sh` 的shell脚本::
+
+    module load pyvaspflow
+    pyvasp prep_single_vasp POSCAR -a NSW=100,kpts=1,1,1,job_name=nospin
+    pyvasp run_single_vasp_without_job nospin -nname inter_q,test_q,short_q,long_q,super_q -cnum 24,24,24,24,12
+
+    pyvasp prep_single_vasp nospin/CONTCAR -a NSW=1,kpts=1,1,1,job_name=spin,ISPIN=2,NUPDOWN=2
+    pyvasp run_single_vasp_without_job spin -nname inter_q,test_q,short_q,long_q,super_q -cnum 24,24,24,24,12
+
+再配合使用命令::
+
+    $ nohup pyvasp run_multi_vasp_from_shell spin.sh 4182 job  -p 5 &
+
+那么就可以同时提交5个 `spin.sh` 的任务, 而且每个任务都可以按照节点空闲情况进行分配任务.
+
+
+logging
+===============
+日志系统
