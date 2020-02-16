@@ -1,0 +1,175 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>快速安装 &#8212; pyvaspflowdoc 0.1.0 文档</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="生成结构" href="gen_str.html" />
+    <link rel="prev" title="Welcome to pyvaspflow’s documentation!" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="gen_str.html" title="生成结构"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pyvaspflow’s documentation!"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">快速安装</a><ul>
+<li><a class="reference internal" href="#potcar-path">potcar_path</a></li>
+<li><a class="reference internal" href="#job">job</a></li>
+<li><a class="reference internal" href="#id2">自动补齐命令</a></li>
+<li><a class="reference internal" href="#id3">组内的同学</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一个主题</h4>
+  <p class="topless"><a href="index.html"
+                        title="上一章">Welcome to pyvaspflow’s documentation!</a></p>
+  <h4>下一个主题</h4>
+  <p class="topless"><a href="gen_str.html"
+                        title="下一章">生成结构</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>快速安装<a class="headerlink" href="#installation" title="永久链接至标题">¶</a></h1>
+<p>你可以通过源码进行安装, 这里我们建议安装在服务器上.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span> <span class="c1"># -e for developer</span>
+</pre></div>
+</div>
+<p>下面是配置文件, 用于指定赝势的位置和`job.sh`文件的书写.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+       <span class="nt">&quot;potcar_path&quot;</span><span class="p">:</span>
+                     <span class="p">{</span><span class="nt">&quot;paw_PBE&quot;</span><span class="p">:</span><span class="s2">&quot;/opt/ohpc/pub/apps/vasp/pps/paw_PBE&quot;</span><span class="p">,</span>
+                      <span class="nt">&quot;paw_LDA&quot;</span><span class="p">:</span><span class="s2">&quot;/opt/ohpc/pub/apps/vasp/pps/paw_LDA&quot;</span><span class="p">,</span>
+                      <span class="nt">&quot;paw_PW91&quot;</span><span class="p">:</span><span class="s2">&quot;/opt/ohpc/pub/apps/vasp/pps/paw_PW91&quot;</span><span class="p">,</span>
+                      <span class="nt">&quot;USPP_LDA&quot;</span><span class="p">:</span><span class="s2">&quot;/opt/ohpc/pub/apps/vasp/pps/USPP_LDA&quot;</span><span class="p">,</span>
+                      <span class="nt">&quot;USPP_PW91&quot;</span><span class="p">:</span><span class="s2">&quot;/opt/ohpc/pub/apps/vasp/pps/USPP_PW91&quot;</span>
+                       <span class="p">},</span>
+       <span class="nt">&quot;job&quot;</span><span class="p">:</span>
+             <span class="p">{</span><span class="nt">&quot;prepend&quot;</span><span class="p">:</span> <span class="s2">&quot;module load vasp/5.4.4-impi-mkl&quot;</span><span class="p">,</span>
+              <span class="nt">&quot;exec&quot;</span><span class="p">:</span> <span class="s2">&quot;mpirun -n ${SLURM_NPROCS} vasp_std&quot;</span>
+             <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="potcar-path">
+<h2>potcar_path<a class="headerlink" href="#potcar-path" title="永久链接至标题">¶</a></h2>
+<p>配置文件需要指定赝势的文件位置以及对应的泛函的位置, 注意到这里的”paw_PBE,paw_LDA”等也即为在命令行中生成赝势所需要指定的”functional”.</p>
+<p><code class="code docutils literal notranslate"><span class="pre">pyvasp</span> <span class="pre">prep_single_vasp</span> <span class="pre">POSCAR</span> <span class="pre">-a</span> <span class="pre">functional=paw_PBE</span></code></p>
+<p>这里指定的”paw_PBE”也即为说明程序会自动向“/opt/ohpc/pub/apps/vasp/pps/paw_PBE”中寻找对应的赝势文件.</p>
+</div>
+<div class="section" id="job">
+<h2>job<a class="headerlink" href="#job" title="永久链接至标题">¶</a></h2>
+<p>job所对应的部分是生成 <code class="docutils literal notranslate"><span class="pre">job.sh</span></code> 文件, 这里prep所对应的是运行程序前需要先加载的模块, exec对应的是执行的代码.
+如果你需要运行gamma版本, 你可以将 <code class="docutils literal notranslate"><span class="pre">vasp_std</span></code> 改成 <code class="docutils literal notranslate"><span class="pre">vasp_gam</span></code> .</p>
+<p>该文件请放置在$HOME/.config/pyvaspflow/conf.json, 当然你可以可以放在当前文件夹, 我们会优先读取当前文件夹是否有配置文件, 如果没有才会到$HOME/.config/pyvaspflow/conf.json下面找. 所以你可以在$HOME/.config/pyvaspflow/conf.json下面设置一个常用的配置文件, 对与特殊的需要可以拷贝一份放在当前文件夹作为特殊用处.</p>
+<p>例如你一般会使用 <code class="docutils literal notranslate"><span class="pre">vasp_std</span></code> , 然后只是偶尔需要计算分子的能量, 此时需要使用gamma版本的vasp, 那么你就可以拷贝一份配置文件在当前文件夹, 并把 <code class="docutils literal notranslate"><span class="pre">vasp_std</span></code> 改成 <code class="docutils literal notranslate"><span class="pre">vasp_gam</span></code> 即可.</p>
+</div>
+<div class="section" id="id2">
+<h2>自动补齐命令<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pyvasp</span></code> 是支持自动补齐命令的, 例如 <code class="docutils literal notranslate"><span class="pre">pyvasp</span> <span class="pre">symm</span></code> 按下tab键是可以自动补
+齐成 <code class="docutils literal notranslate"><span class="pre">pyvasp</span> <span class="pre">symmetry</span></code> 的, 接着按下两次tab键可以
+给出候选项 <code class="docutils literal notranslate"><span class="pre">equivalent_atoms</span> <span class="pre">primitive_cell</span> <span class="pre">space_group</span></code> 这三个子命令,
+你可以接着键入 <code class="docutils literal notranslate"><span class="pre">p</span></code> 来补齐命令 <code class="docutils literal notranslate"><span class="pre">primitive_cell</span></code> . 但是这个是需要配置的, 需要你在 <code class="docutils literal notranslate"><span class="pre">bashrc</span></code> 里面加入:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span> <span class="s2">&quot;$(_PYVASP_COMPLETE=source pyvasp)&quot;</span>
+</pre></div>
+</div>
+<p>如果你使用 <code class="docutils literal notranslate"><span class="pre">zsh</span></code> , 那么需要在你的 <code class="docutils literal notranslate"><span class="pre">zshrc</span></code> 就加入:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">eval</span> <span class="s2">&quot;$(_PYVASP_COMPLETE=source_zsh pyvasp)&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>组内的同学<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>注意到组内的服务器上是以 <code class="docutils literal notranslate"><span class="pre">module</span></code> 的方式安装的, 所以如果只是在你的 <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> 里面
+加入这句话是不行的, 因为你还没有load <code class="docutils literal notranslate"><span class="pre">pyvaspflow</span></code> 这个包, 所以 <code class="docutils literal notranslate"><span class="pre">eval</span></code> 是没有效果的,
+必须得在load你的module以后执行才会有效. 所以对于组内的同学我建议你可
+以在 <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> 里面加入:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="n">mlpy</span><span class="o">=</span><span class="s1">&#39;module load pyvaspflow;eval &quot;$(_PYVASP_COMPLETE=source pyvasp)&quot;&#39;</span>
+</pre></div>
+</div>
+<p>然后使用命令 <code class="docutils literal notranslate"><span class="pre">mlpy</span></code> 即可加载模块 <code class="docutils literal notranslate"><span class="pre">pyvaspflow</span></code> 并且激活自动补齐命令.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="gen_str.html" title="生成结构"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to pyvaspflow’s documentation!"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2019, ChangChun He.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1 创建。
+    </div>
+  </body>
+</html>

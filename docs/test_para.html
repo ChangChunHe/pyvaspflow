@@ -1,0 +1,133 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>测试参数 &#8212; pyvaspflowdoc 0.1.0 文档</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="处理输出的vasp数据" href="fetch.html" />
+    <link rel="prev" title="杀掉任务" href="kill.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="fetch.html" title="处理输出的vasp数据"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="kill.html" title="杀掉任务"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">测试参数</a><ul>
+<li><a class="reference internal" href="#id2">测试截断能</a></li>
+<li><a class="reference internal" href="#k">测试k点</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一个主题</h4>
+  <p class="topless"><a href="kill.html"
+                        title="上一章">杀掉任务</a></p>
+  <h4>下一个主题</h4>
+  <p class="topless"><a href="fetch.html"
+                        title="下一章">处理输出的vasp数据</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/test_para.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>测试参数<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<p>这里我们提供了一些测试参数的命令.</p>
+<div class="section" id="id2">
+<h2>测试截断能<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>这里是测试截断能的命令:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp test_encut  POSCAR -s 0.8 -e 1.3 -t 30
+</pre></div>
+</div>
+<p>这里 <code class="docutils literal notranslate"><span class="pre">-s</span></code> 是  0.8*max_encut, encut 是你的赝势中的最大的 <code class="docutils literal notranslate"><span class="pre">ENMAX</span></code> ,
+类似的 <code class="docutils literal notranslate"><span class="pre">-e</span></code> 是 1.3*max_encut, <code class="docutils literal notranslate"><span class="pre">-t</span></code> 就是间隔. 这个命令也是支持 <code class="docutils literal notranslate"><span class="pre">-a</span></code> 这个参数的, 你可以制定一些其他参数.</p>
+</div>
+<div class="section" id="k">
+<h2>测试k点<a class="headerlink" href="#k" title="永久链接至标题">¶</a></h2>
+<p>这里是测试k-mesh的命令:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp test_kpts  POSCAR -s 1000 -e 3000 -t 200
+</pre></div>
+</div>
+<p>这里与上面是类似的, <code class="docutils literal notranslate"><span class="pre">-s</span></code> 是起始的kppa, <code class="docutils literal notranslate"><span class="pre">-e</span></code> 是最终的kppa, <code class="docutils literal notranslate"><span class="pre">-t</span></code> 指定了间隔, 同样的也支持 <code class="docutils literal notranslate"><span class="pre">-a</span></code> 参数.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="fetch.html" title="处理输出的vasp数据"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="kill.html" title="杀掉任务"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2019, ChangChun He.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1 创建。
+    </div>
+  </body>
+</html>

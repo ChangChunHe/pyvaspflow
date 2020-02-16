@@ -1,0 +1,115 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>POTCRA 文件 &#8212; pyvaspflowdoc 0.1.0 文档</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="job 文件" href="job.html" />
+    <link rel="prev" title="KPOINTS 文件" href="kpoints.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="job.html" title="job 文件"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="kpoints.html" title="KPOINTS 文件"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>上一个主题</h4>
+  <p class="topless"><a href="kpoints.html"
+                        title="上一章">KPOINTS 文件</a></p>
+  <h4>下一个主题</h4>
+  <p class="topless"><a href="job.html"
+                        title="下一章">job 文件</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/potcar.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="potcra">
+<h1>POTCRA 文件<a class="headerlink" href="#potcra" title="永久链接至标题">¶</a></h1>
+<p>生成POTCAR 参数的设置也是在 <code class="docutils literal notranslate"><span class="pre">-a</span></code> 中, 需要指定使用的泛函类型和使用哪一种类型的赝势.
+即 <code class="docutils literal notranslate"><span class="pre">functional</span></code> 和 <code class="docutils literal notranslate"><span class="pre">sym_potcar_map</span></code> 这两个参数. 举个例子:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># this will generate Zr_sv of paw_LDA POTCAR
+# for those not specified in `sym_potcar_map` will using the default
+# the default is the element itself
+
+$ pyvasp prep_single_vasp POSCAR -a functional=paw_LDA,sym_potcar_map=Zr_sv
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="job.html" title="job 文件"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="kpoints.html" title="KPOINTS 文件"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2019, ChangChun He.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1 创建。
+    </div>
+  </body>
+</html>

@@ -1,0 +1,274 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>运行任务 &#8212; pyvaspflowdoc 0.1.0 文档</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="杀掉任务" href="kill.html" />
+    <link rel="prev" title="job 文件" href="job.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="kill.html" title="杀掉任务"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="job.html" title="job 文件"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">运行任务</a><ul>
+<li><a class="reference internal" href="#run-ringle-vasp"><code class="docutils literal notranslate"><span class="pre">run_ringle_vasp</span></code></a></li>
+<li><a class="reference internal" href="#run-multi-vasp"><code class="docutils literal notranslate"><span class="pre">run_multi_vasp</span></code></a></li>
+<li><a class="reference internal" href="#run-multi-vasp-without-job"><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_without_job</span></code></a></li>
+<li><a class="reference internal" href="#run-multi-vasp-from-file"><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_from_file</span></code></a></li>
+<li><a class="reference internal" href="#run-multi-vasp-without-job-from-file"><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_without_job_from_file</span></code></a></li>
+<li><a class="reference internal" href="#run-multi-vasp-from-shell"><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_from_shell</span></code></a></li>
+<li><a class="reference internal" href="#run-single-vasp-without-job"><code class="docutils literal notranslate"><span class="pre">run_single_vasp_without_job</span></code></a></li>
+<li><a class="reference internal" href="#logging">logging</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一个主题</h4>
+  <p class="topless"><a href="job.html"
+                        title="上一章">job 文件</a></p>
+  <h4>下一个主题</h4>
+  <p class="topless"><a href="kill.html"
+                        title="下一章">杀掉任务</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/execute.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>运行任务<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<p>这里我们提供了两种执行任务的命令, 分别为执行单个任务和多个任务( <code class="docutils literal notranslate"><span class="pre">run_single_vasp</span></code> , <code class="docutils literal notranslate"><span class="pre">run_multi_vasp</span></code> ).</p>
+<div class="section" id="run-ringle-vasp">
+<h2><code class="docutils literal notranslate"><span class="pre">run_ringle_vasp</span></code><a class="headerlink" href="#run-ringle-vasp" title="永久链接至标题">¶</a></h2>
+<p>这是在你已经准备好了要计算的文件以后才可以运行的, 这个命令的作用在于它可以等待你的vasp计算完成
+之后才会停止运行. 比如你需要在计算完成之后提取某些数据, 如果你直接 <code class="docutils literal notranslate"><span class="pre">sbatch</span> <span class="pre">job.sh</span></code> , 那么
+这句命令直接就运行结束了, 但是vasp却没有计算完成, 所以你就没法提取数据了, 这个命令的好处在于他会查询你提交的任务号是否
+还在队列中, 如果不在了则说明你已经计算完毕了, 才会继续进行下面的操作, 比如你要进行的提取数据的操作.</p>
+<p>例子:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_ringle_vasp  task
+</pre></div>
+</div>
+<p>最后跟上你要计算的文件夹即可. 但是注意到该命令会跟着你的任务计算同时停止掉, 所以你需要把这个程
+序放到后台执行. 对于Linux用户只需要加末尾加上一个&amp;号即可, 对于 Windows用户需要使用 <code class="docutils literal notranslate"><span class="pre">nohup</span></code> 对程序进行后台托管.</p>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>例子:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ nohup pyvasp run_ringle_vasp task 1&gt;std.out 2&gt;err.out&amp; #  1后面重定向标准输出, 2后面重定向错误输出.
+</pre></div>
+</div>
+</div>
+<p>注意你也可以不写重定向的东西, 直接以&amp;结尾, 但是这个是不建议的.</p>
+</div>
+<div class="section" id="run-multi-vasp">
+<h2><code class="docutils literal notranslate"><span class="pre">run_multi_vasp</span></code><a class="headerlink" href="#run-multi-vasp" title="永久链接至标题">¶</a></h2>
+<p>先贴一下这个命令的帮助:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp --help
+Usage: pyvasp run_multi_vasp [OPTIONS] &lt;job_name&gt; &lt;the last number of jobs&gt;
+
+Options:
+  -s, --start_job_num INTEGER
+  -p, --par_job_num INTEGER
+  --help    Show this message and exit.
+</pre></div>
+</div>
+<p>第一个参数是 <code class="docutils literal notranslate"><span class="pre">job_name</span></code>, 这个就是你之前生成的文件夹的前缀, 比如之前你生成
+了 task0,task1,task2,…,task20, 那么这里的job_name就应该填入 <code class="docutils literal notranslate"><span class="pre">task</span></code> ,
+这里的 <code class="docutils literal notranslate"><span class="pre">-s</span></code> 是开始的任务号, 比如你可以指定从 <code class="docutils literal notranslate"><span class="pre">task4</span></code> 开始计算, <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">4</span></code> 即可, 该参数默认为0. <code class="docutils literal notranslate"><span class="pre">-p</span></code> 是队列里同时有的最大任务数目.
+默认是4, 具体的意思就是比如你有10个任务, 最开始一次性提交4个任务, 接着如果第一个计算完毕了, 而且二三四都没有计算完毕, 那么第五个任务就会被
+提交上去, 会一直保持任务队列中有4个任务直到所有任务结束为止. 比如:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20
+</pre></div>
+</div>
+<p>比如这个例子就是说从struc_opt5开始计算, 到struc_opt20截止, 同时运行的任务数为6个. 与之前一样, 该程序最好也用后台进行.</p>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>例子:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ nohup pyvasp run_multi_vasp -p 6 -s 5 struc_opt 20 1&gt;std.out 2&gt;err.out&amp; #  1后面重定向标准输出, 2后面重定向错误输出.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="run-multi-vasp-without-job">
+<h2><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_without_job</span></code><a class="headerlink" href="#run-multi-vasp-without-job" title="永久链接至标题">¶</a></h2>
+<p>先贴一下这个命令的帮助:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp --help
+Usage: pyvasp run_multi_vasp_without_job [OPTIONS] &lt;job_name&gt; &lt;the last number of jobs&gt;
+
+Example:
+
+pyvasp run_multi_vasp_without_job  task 5 --node_name  test_q --cpu_num 24
+
+run multiple vasp task from task0 to task5 through test_q node whith 24 cpu
+
+pyvasp run_multi_vasp_without_job  task 5 --node_name  test_q,super_q --cpu_num 24,12
+</pre></div>
+</div>
+<p>这个命令可以用于, 例如你期望你的任务佔用多個節點, 那麼就不能使用`run_multi_vasp`這個命令了,
+因爲他是直接提交任務文件夾裏面`job.sh`, 這裏可以自行設置節點和cpu數目. 这里需要指定的是节
+点名 <code class="docutils literal notranslate"><span class="pre">node_nam</span></code> 和 cpu数量 <code class="docutils literal notranslate"><span class="pre">cpu_num</span></code>, 节点数不建议修改,
+就按照默认的1, 这样就可以使用 <code class="docutils literal notranslate"><span class="pre">par_job_num``这个参数同时提交多个任务了.</span> <span class="pre">你也可以指定多个</span>
+<span class="pre">节点名,</span> <span class="pre">相对应的也需要指定多个</span> <span class="pre">``cpu_num</span></code> , 就可以在这些就节点上优先提交空闲的, 写在前面的节点.</p>
+</div>
+<div class="section" id="run-multi-vasp-from-file">
+<h2><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_from_file</span></code><a class="headerlink" href="#run-multi-vasp-from-file" title="永久链接至标题">¶</a></h2>
+<p>与准备文件的命令类似, 运行任务也有类似from_file的命令, 使用说明:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp_from_file -h
+$ Usage: pyvasp run_multi_vasp_from_file [OPTIONS] &lt;job_name&gt; &lt;job list file&gt;
+$ pyvasp run_multi_vasp  task job_list_file -p 6 &amp;
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-multi-vasp-without-job-from-file">
+<h2><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_without_job_from_file</span></code><a class="headerlink" href="#run-multi-vasp-without-job-from-file" title="永久链接至标题">¶</a></h2>
+<p>类似地, 运行任务也有类似without_job 类型的命令, 使用说明:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp_without_job_from_file -h
+$ Usage: pyvasp run_multi_vasp_without_job_from_file [OPTIONS] &lt;job_name&gt; &lt;job list file&gt;
+$ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
+$ pyvasp run_multi_vasp_without_job_from_file  task job_list_file --node_name  test_q --cpu_num 24
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-multi-vasp-from-shell">
+<h2><code class="docutils literal notranslate"><span class="pre">run_multi_vasp_from_shell</span></code><a class="headerlink" href="#run-multi-vasp-from-shell" title="永久链接至标题">¶</a></h2>
+<p>因爲上面的任務都是單步的, 也就是你只能計算一次, 如果你希望計算能帶, 那麼你需要計算三次:1. 结构
+优化, 2. 结构自恰, 3.计算线性K点的能带, 这样就不能使用上述 <code class="docutils literal notranslate"><span class="pre">prep_multi_vasp</span></code> 和 <code class="docutils literal notranslate"><span class="pre">run_multi_vasp</span></code> 等等来
+系统计算多个任务了.你只能先计算完所有的结构优化, 然后把所有结构的 <cite>CONTCAR</cite> 拷贝出来再计算自恰等等. 这个是不太
+恰当的, 所以就有了这个 <code class="docutils literal notranslate"><span class="pre">run_multi_vasp_from_shell</span></code> 的命令, 使用说明:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp_from_shell -h
+$ Usage: pyvasp run_multi_vasp_from_shell [OPTIONS] &lt;shell scripts file&gt; &lt;the last number of jobs&gt;
+</pre></div>
+</div>
+<p>这里需要提供一个 <cite>shell</cite> 文件，例如我们计算能带的时候，可以使用如下的 <cite>band.sh</cite> 文件:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1"># make sure you have install pyvasp in your current environment</span>
+<span class="c1"># make sure current directory has POSCAR</span>
+
+<span class="n">module</span> <span class="n">load</span> <span class="n">pyvaspflow</span>
+<span class="n">pyvasp</span> <span class="n">prep_single_vasp</span> <span class="n">POSCAR</span> <span class="o">-</span><span class="n">a</span> <span class="n">ISIF</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">job_name</span><span class="o">=</span><span class="n">stru_relax</span>
+<span class="n">pyvasp</span> <span class="n">run_single_vasp</span> <span class="n">stru_relax</span>
+<span class="n">pyvasp</span> <span class="n">prep_single_vasp</span>  <span class="n">stru_relax</span><span class="o">/</span><span class="n">CONTCAR</span> <span class="o">-</span><span class="n">a</span> <span class="n">job_name</span><span class="o">=</span><span class="n">scf</span><span class="p">,</span><span class="n">NSW</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">LCHARG</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">pyvasp</span> <span class="n">run_single_vasp</span> <span class="n">scf</span>
+<span class="n">pyvasp</span> <span class="n">prep_single_vasp</span>  <span class="n">scf</span><span class="o">/</span><span class="n">CONTCAR</span> <span class="o">-</span><span class="n">a</span> <span class="n">style</span><span class="o">=</span><span class="n">band</span><span class="p">,</span><span class="n">NSW</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">job_name</span><span class="o">=</span><span class="n">band</span><span class="p">,</span><span class="n">ICHARG</span><span class="o">=</span><span class="mi">11</span>
+<span class="n">cp</span> <span class="n">scf</span><span class="o">/</span><span class="n">CHG</span><span class="o">*</span> <span class="n">band</span><span class="o">/</span>
+<span class="n">pyvasp</span> <span class="n">run_single_vasp</span> <span class="n">band</span>
+</pre></div>
+</div>
+<p>假设你的文件夹下面现在有10个POSCAR, 按照流水号命名，POSCAR0-POSCAR9， 还有如上的一个 <cite>band.sh</cite> 文件, 那
+么你就可以使用命令:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_multi_vasp_from_shell band.sh 9 -w job -p 5
+</pre></div>
+</div>
+<p>这个命令会自己新建文件夹，按照job前缀的流水号命名, 然后将POSCAR$idx copy到该文件夹里面
+为POSCAR, 然后运行这个 <cite>band.sh</cite> . 参数 <code class="docutils literal notranslate"><span class="pre">-p</span></code> 与上述的含义是一样的, 只是保持同时有5个 <cite>band.sh</cite> 文件在运行.
+这里可以注意到，在 <cite>band.sh</cite> 里面是只能写 <cite>run_single_vasp</cite> 这样的命令, 那么就不能占据多个节点计算了, 所以
+就有了这个 <cite>run_single_vasp_without_job</cite> 这个命令.</p>
+</div>
+<div class="section" id="run-single-vasp-without-job">
+<h2><code class="docutils literal notranslate"><span class="pre">run_single_vasp_without_job</span></code><a class="headerlink" href="#run-single-vasp-without-job" title="永久链接至标题">¶</a></h2>
+<p>类似与 <code class="docutils literal notranslate"><span class="pre">run_multi_vasp_without_job</span></code> 这个命令， 你可以指定用哪些节点，一旦有空闲的节点就会把任务提交上去， 举个例子:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp run_single_vasp_without_job stru_relax -nname short_q,long_q,test_q -cnum 24,24,24
+</pre></div>
+</div>
+<p>它会先把任务交到 <cite>short_q</cite> 上， 然后监测到如果任务一直在挂起的状态而 <cite>long_q</cite> 或者 <cite>test_q</cite> 这两个
+节点有空闲，那它会把交到 <cite>short_q</cite> 的任务取消掉，重新将任务提交到 <cite>long_q</cite> 或者 <cite>test_q</cite> 上, 这个命令
+刚好可以跟 <code class="docutils literal notranslate"><span class="pre">run_multi_vasp_from_shell</span></code> 配合使用. 例如可以写一个如下的 <cite>spin.sh</cite> 的shell脚本:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">pyvaspflow</span>
+<span class="n">pyvasp</span> <span class="n">prep_single_vasp</span> <span class="n">POSCAR</span> <span class="o">-</span><span class="n">a</span> <span class="n">NSW</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">kpts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">job_name</span><span class="o">=</span><span class="n">nospin</span>
+<span class="n">pyvasp</span> <span class="n">run_single_vasp_without_job</span> <span class="n">nospin</span> <span class="o">-</span><span class="n">nname</span> <span class="n">inter_q</span><span class="p">,</span><span class="n">test_q</span><span class="p">,</span><span class="n">short_q</span><span class="p">,</span><span class="n">long_q</span><span class="p">,</span><span class="n">super_q</span> <span class="o">-</span><span class="n">cnum</span> <span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">12</span>
+
+<span class="n">pyvasp</span> <span class="n">prep_single_vasp</span> <span class="n">nospin</span><span class="o">/</span><span class="n">CONTCAR</span> <span class="o">-</span><span class="n">a</span> <span class="n">NSW</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">kpts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">job_name</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span><span class="n">ISPIN</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">NUPDOWN</span><span class="o">=</span><span class="mi">2</span>
+<span class="n">pyvasp</span> <span class="n">run_single_vasp_without_job</span> <span class="n">spin</span> <span class="o">-</span><span class="n">nname</span> <span class="n">inter_q</span><span class="p">,</span><span class="n">test_q</span><span class="p">,</span><span class="n">short_q</span><span class="p">,</span><span class="n">long_q</span><span class="p">,</span><span class="n">super_q</span> <span class="o">-</span><span class="n">cnum</span> <span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">12</span>
+</pre></div>
+</div>
+<p>再配合使用命令:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ nohup pyvasp run_multi_vasp_from_shell spin.sh 4182 job  -p 5 1&gt;std 2&gt;err &amp;
+</pre></div>
+</div>
+<p>那么就可以同时提交5个 <cite>spin.sh</cite> 的任务, 而且每个任务都可以按照节点空闲情况进行分配任务.</p>
+</div>
+<div class="section" id="logging">
+<h2>logging<a class="headerlink" href="#logging" title="永久链接至标题">¶</a></h2>
+<p>日志系统</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="kill.html" title="杀掉任务"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="job.html" title="job 文件"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2019, ChangChun He.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1 创建。
+    </div>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh_CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>杀掉任务 &#8212; pyvaspflowdoc 0.1.0 文档</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/translations.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="测试参数" href="test_para.html" />
+    <link rel="prev" title="运行任务" href="execute.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="test_para.html" title="测试参数"
+             accesskey="N">下一页</a> |</li>
+        <li class="right" >
+          <a href="execute.html" title="运行任务"
+             accesskey="P">上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">目录</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">杀掉任务</a><ul>
+<li><a class="reference internal" href="#kill"><code class="docutils literal notranslate"><span class="pre">kill</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>上一个主题</h4>
+  <p class="topless"><a href="execute.html"
+                        title="上一章">运行任务</a></p>
+  <h4>下一个主题</h4>
+  <p class="topless"><a href="test_para.html"
+                        title="下一章">测试参数</a></p>
+  <div role="note" aria-label="source link">
+    <h3>本页</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/kill.rst.txt"
+            rel="nofollow">显示源代码</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="转向" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>杀掉任务<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<p>这里我们提供了杀掉任务的命令 <code class="docutils literal notranslate"><span class="pre">kill</span></code> , 用于杀掉交任务的 <code class="docutils literal notranslate"><span class="pre">pyvasp</span></code> , 它可以用于杀掉 <code class="docutils literal notranslate"><span class="pre">pyvasp</span></code> 这个进程而且取消掉由它提交 的 任务.</p>
+<div class="section" id="kill">
+<h2><code class="docutils literal notranslate"><span class="pre">kill</span></code><a class="headerlink" href="#kill" title="永久链接至标题">¶</a></h2>
+<p>首先你需要 使用 <code class="docutils literal notranslate"><span class="pre">ps</span> <span class="pre">-ef|grep</span> <span class="pre">pyvasp</span></code> 得到你的任务进程号. 使用该命令你可以得到类似下面的结果:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[hecc@cmp ~]$ ps -ef|grep pyvasp
+hecc      66237  56185 19 04:34 ?        01:03:44 /opt/ohpc/pub/apps/python-virtualenv/pyvaspflow/bin/python3.6 /opt/ohpc/pub/apps/python-virtualenv/pyvaspflow/bin/pyvasp run_multi_vasp_without_job task 125 -nname short_q,super_q -cnum 24,12 -p 8
+xwq      107772  95242 22 08:49 pts/12   00:16:16 /opt/ohpc/pub/apps/python-virtualenv/pyvaspflow/bin/python3.6 /opt/ohpc/pub/apps/python-virtualenv/pyvaspflow/bin/pyvasp run_multi_vasp_without_job -nnum 1 -nname short_q -cnum 24 -s 1 -p 2 dir-dir-POSCAR4-2H- 3
+hecc     108275 121327  0 10:02 pts/14   00:00:00 grep --color=auto pyvasp
+xwq      132222  95242 21 08:50 pts/12   00:15:36 /opt/ohpc/pub/apps/python-virtualenv/pyvaspflow/bin/python3.6 /opt/ohpc/pub/apps/python-virtualenv/pyvaspflow/bin/pyvasp run_multi_vasp_without_job -nnum 1 -nname short_q -cnum 24 -s 0 -p 2 dir-dir-POSCAR- 3
+</pre></div>
+</div>
+<p>这里你可以查看最后一列的命令来确定你要 <code class="docutils literal notranslate"><span class="pre">kill</span></code> 掉哪个进程, 其进程号就是第二列的数字, 例如你要杀掉第一行的进程, 那么你使用:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp kill 66237
+</pre></div>
+</div>
+<p>就可以了. 这里还提供了一个 <code class="docutils literal notranslate"><span class="pre">-c</span></code> 的参数用于选择是否取消已经在队列里面的任务, 默认是 <code class="docutils literal notranslate"><span class="pre">True</span></code>, 你可以选择``False`` 来不选择取消队列中的任务:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyvasp kill 66237 -c False
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>导航</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="总目录"
+             >索引</a></li>
+        <li class="right" >
+          <a href="test_para.html" title="测试参数"
+             >下一页</a> |</li>
+        <li class="right" >
+          <a href="execute.html" title="运行任务"
+             >上一页</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pyvaspflowdoc 0.1.0 文档</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; 版权所有 2019, ChangChun He.
+      由 <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1 创建。
+    </div>
+  </body>
+</html>
