@@ -539,7 +539,7 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
 @cli.command('run_multi_vasp_from_shell',short_help="run multiple vasp calculations from shell scripts")
 @click.argument('shell_file', metavar='<shell scripts file>',nargs=1)
 @click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
-@click.option('--work_name','-w', default=job, type=str)
+@click.option('--work_name','-w', default='job', type=str)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
 def run_multi_vasp(work_name,shell_file,end_job_num,start_job_num,par_job_num):
