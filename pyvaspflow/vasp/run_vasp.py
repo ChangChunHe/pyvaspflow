@@ -78,14 +78,12 @@ def is_job_pd(pid):
     return False
 
 
-def is_in_pid_queue(pid):
+def get_number_of_running_shell_files(shell_file,main_pid):
     p = subprocess.Popen(['ps', '-ef'],stdout=subprocess.PIPE)
     que_res = p.stdout.readlines()
     p.stdout.close()
-    pid_res = [i  for i in que_res if str(pid) in i.decode("utf-8")]
-    if len(pid_res) == 2:
-        return True
-    return False
+    pid_res = [i  for i in que_res if 'bash '+shell_file in i.decode("utf-8") and str(main_pid) in i.decode("utf-8") ]
+    return len(pid_res)
 
 def write_job_file(job_name,node_name,cpu_num,node_num):
     json_f = read_json()
@@ -276,7 +274,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
 
 
 def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0,job_list=None,par_job_num=4):
-    pid_inqueue_num = lambda id_pool:[is_in_pid_queue(i) for i in id_pool].count(True)
+    main_pid = os.getpid()
     if job_list:
         pass
     else:
@@ -296,7 +294,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
         if idx == end_job_num+1:
             return
         while True:
-            inqueue_num = pid_inqueue_num(pid_pool)
+            inqueue_num = get_number_of_running_shell_files(shell_file,main_pid)
             logging.info(str(inqueue_num)+" in queue")
             if inqueue_num < par_job_num and idx < end_job_num+1:
                 if os.path.isdir(work_name+str(idx)):
@@ -308,6 +306,6 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                 pid_pool.append(res.pid)
                 idx += 1
                 sleep(5)
-            if idx == end_job_num+1 and pid_inqueue_num(pid_pool) == 0:
+            if idx == end_job_num+1 and get_number_of_running_shell_files(shell_file,main_pid) == 0:
                 break
             sleep(60)
