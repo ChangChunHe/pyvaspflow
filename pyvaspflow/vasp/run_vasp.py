@@ -3,7 +3,7 @@
 
 
 from pyvaspflow.vasp import prep_vasp
-from pyvaspflow.utils import read_json
+from pyvaspflow.utils import read_json,add_log_shell_file
 from time import sleep,ctime
 import os,subprocess,shutil,logging
 
@@ -113,7 +113,12 @@ def _submit_job(job_name,cpu_num):
     exe = js['job']['exec']
     subprocess.check_output(prep+' && '+'mpirun -n '+str(cpu_num)+' '+exe.split()[-1],shell=True,cwd=job_name)
 
-def run_single_vasp(job_name,is_login_node=False,cpu_num=24):
+def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd=""):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=os.path.join(cwd,'.run.log'),
+                        filemode='a')
     if is_login_node:
         logging.warning(job_name+" calculation Runing at logging node")
         _submit_job(job_name,cpu_num=cpu_num)
@@ -157,12 +162,15 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd=""):
             break
         sleep(5)
 
-def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,par_job_num=4):
+def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,par_job_num=4,cwd=""):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=os.path.join(cwd,'.run.log'),
+                        filemode='a')
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     pid = os.getpid()
     job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
-    with open(job_id_file,'w') as f:
-        pass
 
     if job_list is not None:
         start_job_num,end_job_num,par_job_num = 0,len(job_list)-1,int(par_job_num)
@@ -215,7 +223,12 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
     os.remove(job_id_file)
 
 
-def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q",cpu_num=24,node_num=1,start_job_num=0,job_list=None,par_job_num=4):
+def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q",cpu_num=24,node_num=1,start_job_num=0,job_list=None,par_job_num=4,cwd=""):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=os.path.join(cwd,'.run.log'),
+                        filemode='a')
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     pid = os.getpid()
     job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
@@ -275,6 +288,12 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
 
 def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0,job_list=None,par_job_num=4):
     main_pid = os.getpid()
+    cwd = os.getcwd()
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=os.path.join(cwd,'.run.log'),
+                        filemode='a')
     if job_list:
         pass
     else:
@@ -286,7 +305,9 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                 shutil.rmtree(work_name+str(idx))
             os.makedirs(work_name+str(idx))
             shutil.copyfile("POSCAR"+str(idx),work_name+str(idx)+"/POSCAR")
-            shutil.copyfile(shell_file,work_name+str(idx)+"/"+shell_file)
+            new_lines = add_log_shell_file(shell_file,cwd)
+            with open(work_name+str(idx)+"/"+shell_file,"w") as f:
+                f.writelines(new_lines)
             res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(idx))
             pid_pool.append(res.pid)
             idx += 1
@@ -301,11 +322,13 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                     shutil.rmtree(work_name+str(idx))
                 os.makedirs(work_name+str(idx))
                 shutil.copyfile("POSCAR"+str(idx),work_name+str(idx)+"/POSCAR")
-                shutil.copyfile(shell_file,work_name+str(idx)+"/"+shell_file)
+                new_lines = add_log_shell_file(shell_file,cwd)
+                with open(work_name+str(idx)+"/"+shell_file,"w") as f:
+                    f.writelines(new_lines)
                 res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(idx))
                 pid_pool.append(res.pid)
                 idx += 1
                 sleep(5)
             if idx == end_job_num+1 and get_number_of_running_shell_files(shell_file,main_pid) == 0:
                 break
-            sleep(60)
+            sleep(20)

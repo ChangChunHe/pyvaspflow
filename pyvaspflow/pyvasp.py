@@ -390,7 +390,8 @@ def prep_single_vasp(poscar,attribute):
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
 @click.option('--is_login_node','-i',default=False,type=bool)
 @click.option('--cpu_num','-n',default=24,type=int)
-def run_single_vasp(job_name,is_login_node,cpu_num):
+@click.option('--cwd','-d',default="",nargs=1,type=str)
+def run_single_vasp(job_name,is_login_node,cpu_num,cwd):
     '''
     Example:
 
@@ -400,7 +401,7 @@ def run_single_vasp(job_name,is_login_node,cpu_num):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
     '''
-    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num)
+    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num,cwd=cwd)
 
 
 @cli.command('run_single_vasp_without_job',short_help="run single vasp calculation")
@@ -542,7 +543,7 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
 @click.option('--work_name','-w', default='job', type=str)
 @click.option('--start_job_num','-s', default=0, type=int)
 @click.option('--par_job_num','-p', default=4, type=int)
-def run_multi_vasp(work_name,shell_file,end_job_num,start_job_num,par_job_num):
+def run_multi_vasp_from_shell(work_name,shell_file,end_job_num,start_job_num,par_job_num):
     '''
     Example:
 
@@ -552,12 +553,6 @@ def run_multi_vasp(work_name,shell_file,end_job_num,start_job_num,par_job_num):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
     '''
-    pwd = os.getcwd()
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(pwd,'.run.log'),
-                        filemode='a')
     rmvws(work_name,shell_file,end_job_num=end_job_num,start_job_num=start_job_num,job_list=None,par_job_num=par_job_num)
 
 
