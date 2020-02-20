@@ -23,6 +23,7 @@ def submit_job(job_name):
     res.stdout.close()
     pid = std[0].decode('utf-8').split()[-1]
     logging.info(job_name+" calculation has been submitted, the queue id is "+pid)
+    logging.info("The word dir is"+os.path.join(os.getcwd(),job_name))
     return pid
 
 def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=0):
@@ -44,6 +45,7 @@ def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=
     res.stdout.close()
     pid = std[0].decode('utf-8').split()[-1]
     logging.info(job_name+" calculation has been submitted, the queue id is "+pid)
+    logging.info("The word dir is"+os.path.join(os.getcwd(),job_name))
     sleep(5)
     return pid,submit_job_idx
 
