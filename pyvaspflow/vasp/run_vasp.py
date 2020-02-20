@@ -23,7 +23,7 @@ def submit_job(job_name):
     res.stdout.close()
     pid = std[0].decode('utf-8').split()[-1]
     logging.info(job_name+" calculation has been submitted, the queue id is "+pid)
-    logging.info("The word dir is"+os.path.join(os.getcwd(),job_name))
+    logging.info("The word dir is "+os.path.join(os.getcwd(),job_name))
     return pid
 
 def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=0):
@@ -45,7 +45,7 @@ def submit_job_without_job(job_name,node_name,cpu_num,node_num=1,submit_job_idx=
     res.stdout.close()
     pid = std[0].decode('utf-8').split()[-1]
     logging.info(job_name+" calculation has been submitted, the queue id is "+pid)
-    logging.info("The word dir is"+os.path.join(os.getcwd(),job_name))
+    logging.info("The word dir is "+os.path.join(os.getcwd(),job_name))
     sleep(5)
     return pid,submit_job_idx
 
@@ -259,6 +259,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                     f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
+            sleep(20)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     else:
@@ -283,6 +284,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                     f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
+            sleep(20)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     os.remove(job_id_file)
