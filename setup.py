@@ -20,7 +20,7 @@ setup(name = "pyvaspflow",
     #put them into the package directory - they will be found
     #recursively.)
     packages = ['pyvaspflow','pyvaspflow.io','pyvaspflow.vasp','pyvaspflow.defect_cal'],
-    install_requires=['numpy','sagar','seekpath'],
+    install_requires=['numpy','sagar','seekpath','psutil'],
     url="https://github.com/ChangChunHe/pyvaspflow",
     entry_points={
         'console_scripts': [

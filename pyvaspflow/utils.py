@@ -542,14 +542,14 @@ def get_perms(cell,str_type='crystal',symprec=1e-3):
         perms_table = mol.get_symmetry_permutation(symprec)
     return perms_table
 
-def add_log_shell_file(shell_file,log_dir):
+def add_log_shell_file(shell_file,log_dir,main_pid):
     with open(shell_file,"r") as f:
         lines = f.readlines()
     new_lines = []
     for line in lines:
         if 'pyvasp run_' in line:
             line = line.rstrip()
-            line += " -d "+log_dir
+            line += " -d "+log_dir + " -m " + str(main_pid)
             new_lines.append(line)
         else:
             new_lines.append(line)

@@ -115,7 +115,7 @@ def _submit_job(job_name,cpu_num):
     exe = js['job']['exec']
     subprocess.check_output(prep+' && '+'mpirun -n '+str(cpu_num)+' '+exe.split()[-1],shell=True,cwd=job_name)
 
-def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd=""):
+def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None):
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
@@ -130,36 +130,45 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd=""):
         job_id = submit_job(job_name)
         pid = os.getpid()
         job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
-        with open(job_id_file,'w') as f:
+        with open(job_id_file,'a') as f:
             f.writelines(job_id+"\n")
         while True:
             if not is_inqueue(job_id):
                 logging.info(job_name+" in dir of "+cwd+" calculation finished")
                 break
             sleep(5)
-        os.remove(job_id_file)
+        # os.remove(job_id_file)
 
-def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd=""):
+def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd="",main_pid=None):
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
                         filename=os.path.join(cwd,'run.log'),
                         filemode='a')
-    pid,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
+    job_id,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
+    if not main_pid:
+        main_pid = os.getpid()
+        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+    else:
+        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+    with open(job_id_file,'a') as f:
+        f.writelines(job_id+"\n")
     sleep(5)
     while True:
         for idx,nname in enumerate(node_name):
-            if node_is_idle(nname) and is_job_pd(pid):
-                os.system("scancel "+pid)
-                logging.info(job_name+" has been scancelled, the queue id is "+pid)
+            if node_is_idle(nname) and is_job_pd(job_id):
+                os.system("scancel "+job_id)
+                logging.info(job_name+" has been scancelled, the queue id is "+job_id)
                 write_job_file(job_name,nname,cpu_num[idx],node_num)
                 res = subprocess.Popen(['sbatch', './job.sh'],stdout=subprocess.PIPE,cwd=job_name)
                 std = res.stdout.readlines()
                 res.stdout.close()
-                pid = std[0].decode('utf-8').split()[-1]
-                logging.info(job_name+" has been submitted at "+nname+" node, the queue id is "+pid)
+                job_id = std[0].decode('utf-8').split()[-1]
+                logging.info(job_name+" has been submitted at "+nname+" node, the queue id is "+job_id)
+                with open(job_id_file,'a') as f:
+                    f.writelines(job_id+"\n")
             sleep(5)
-        if not is_inqueue(pid):
+        if not is_inqueue(job_id):
             logging.info(job_name+" calculation finished")
             break
         sleep(5)
@@ -222,7 +231,7 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
             sleep(60)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
-    os.remove(job_id_file)
+    # os.remove(job_id_file)
 
 
 def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q",cpu_num=24,node_num=1,start_job_num=0,job_list=None,par_job_num=4,cwd=""):
@@ -232,8 +241,8 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                         filename=os.path.join(cwd,'run.log'),
                         filemode='a')
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
-    pid = os.getpid()
-    job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
+    main_pid = os.getpid()
+    job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
     with open(job_id_file,'w') as f:
         pass
     submit_job_idx = 0
@@ -291,13 +300,15 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
 
 
 def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0,job_list=None,par_job_num=4):
-    main_pid = os.getpid()
     cwd = os.getcwd()
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
                         filename=os.path.join(cwd,'run.log'),
                         filemode='a')
+    main_pid = os.getpid()
+    job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+
     if job_list:
         pass
     else:
@@ -309,7 +320,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                 shutil.rmtree(work_name+str(idx))
             os.makedirs(work_name+str(idx))
             shutil.copyfile("POSCAR"+str(idx),work_name+str(idx)+"/POSCAR")
-            new_lines = add_log_shell_file(shell_file,cwd)
+            new_lines = add_log_shell_file(shell_file,cwd,main_pid)
             with open(work_name+str(idx)+"/"+shell_file,"w") as f:
                 f.writelines(new_lines)
             res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(idx))
@@ -326,7 +337,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                     shutil.rmtree(work_name+str(idx))
                 os.makedirs(work_name+str(idx))
                 shutil.copyfile("POSCAR"+str(idx),work_name+str(idx)+"/POSCAR")
-                new_lines = add_log_shell_file(shell_file,cwd)
+                new_lines = add_log_shell_file(shell_file,cwd,main_pid)
                 with open(work_name+str(idx)+"/"+shell_file,"w") as f:
                     f.writelines(new_lines)
                 res = subprocess.Popen(['bash',shell_file],cwd=work_name+str(idx))

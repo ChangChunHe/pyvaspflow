@@ -2,7 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess,click,re,signal
+import os,subprocess,click,re,psutil
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from sagar.crystal.derive import cells_nonredundant
@@ -410,7 +410,8 @@ def run_single_vasp(job_name,is_login_node,cpu_num,cwd):
 @click.option('--cpu_num','-cnum',default='1',nargs=1,type=str)
 @click.option('--node_num','-nnum',default=1,nargs=1,type=int)
 @click.option('--cwd','-d',default="",nargs=1,type=str)
-def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num,cwd):
+@click.option('--main_pid','-m',default=None,nargs=1,type=str)
+def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num,cwd,main_pid):
     '''
     Example:
 
@@ -424,7 +425,7 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num,cwd):
     node_name,cpu_num = node_name.split(','),cpu_num.split(',')
     if len(cpu_num) != len(node_name):
         raise ValueError("The length of node_name is not consistent with the length of cpu_num")
-    rsvwj(job_name,node_name,cpu_num,node_num=1,cwd=cwd)
+    rsvwj(job_name,node_name,cpu_num,node_num=1,cwd=cwd,main_pid=main_pid)
 
 
 
@@ -535,6 +536,8 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     '''
     rmv(job_name=job_name,end_job_num=end_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
+    pid = os.getpid()
+    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 
 @cli.command('run_multi_vasp_from_shell',short_help="run multiple vasp calculations from shell scripts")
@@ -554,6 +557,8 @@ def run_multi_vasp_from_shell(work_name,shell_file,end_job_num,start_job_num,par
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
     '''
     rmvws(work_name,shell_file,end_job_num=end_job_num,start_job_num=start_job_num,job_list=None,par_job_num=par_job_num)
+    pid = os.getpid()
+    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 
 @cli.command('run_multi_vasp_without_job',short_help="run multiple vasp calculations without job files")
@@ -581,6 +586,8 @@ def run_multi_vasp_without_job(job_name,end_job_num,node_name,cpu_num,node_num,s
         raise ValueError("The length of node_name is not consistent with the length of cpu_num")
     rmvwj(job_name=job_name,end_job_num=end_job_num,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
+    pid = os.getpid()
+    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 
 
@@ -600,6 +607,8 @@ def run_multi_vasp_from_file(job_name,job_list_file,par_job_num):
     '''
     job_list = np.loadtxt(job_list_file,dtype=int)
     rmv(job_name=job_name,job_list=job_list,par_job_num=par_job_num)
+    pid = os.getpid()
+    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 
 @cli.command('run_multi_vasp_without_job_from_file',short_help="run multiple vasp calculations")
@@ -628,6 +637,8 @@ def run_multi_vasp_without_job_from_file(job_name,job_list_file,node_name,cpu_nu
         raise ValueError("The length of node_name is not consistent with the length of cpu_num")
     rmvwj(job_name=job_name,job_list=job_list,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
+    pid = os.getpid()
+    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 @cli.command('test_encut',short_help="test encut in vasp calculation")
 @click.argument('poscar', type=str, autocompletion=get_poscar_files)
@@ -736,8 +747,11 @@ def save_pdos(wd):
 @click.argument('pid', metavar='pid_of_pyvasp',nargs=1)
 @click.option('--cancel_or_not','-c',default=True,type=bool)
 def kill(pid,cancel_or_not):
-    res = os.kill(int(pid),signal.SIGKILL)
-    print(res,pid)
+    parent = psutil.Process(int(pid))
+    for child in parent.children(recursive=True):  # or parent.children() for recursive=False
+        child.kill()
+    parent.kill()
+    click.echo(pid)
     job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
     with open(job_id_file,'r') as f:
         job_idx = f.readlines()
