@@ -124,7 +124,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd=""):
     if is_login_node:
         logging.warning(job_name+" calculation Runing at logging node")
         _submit_job(job_name,cpu_num=cpu_num)
-        logging.info(job_name+" calculation finished")
+        logging.info(job_name+" in dir of "+cwd+" calculation finished")
     else:
         logging.info(job_name+" calculation has submitted at calculation node")
         job_id = submit_job(job_name)
@@ -134,7 +134,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd=""):
             f.writelines(job_id+"\n")
         while True:
             if not is_inqueue(job_id):
-                logging.info(job_name+" calculation finished")
+                logging.info(job_name+" in dir of "+cwd+" calculation finished")
                 break
             sleep(5)
         os.remove(job_id_file)
