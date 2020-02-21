@@ -2,7 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess,click,re,signal,logging
+import os,subprocess,click,re,signal
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from sagar.crystal.derive import cells_nonredundant

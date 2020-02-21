@@ -119,7 +119,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd=""):
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd,'.run.log'),
+                        filename=os.path.join(cwd,'run.log'),
                         filemode='a')
     if is_login_node:
         logging.warning(job_name+" calculation Runing at logging node")
@@ -143,7 +143,7 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd=""):
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd,'.run.log'),
+                        filename=os.path.join(cwd,'run.log'),
                         filemode='a')
     pid,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
     sleep(5)
@@ -168,7 +168,7 @@ def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,p
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd,'.run.log'),
+                        filename=os.path.join(cwd,'run.log'),
                         filemode='a')
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     pid = os.getpid()
@@ -229,7 +229,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd,'.run.log'),
+                        filename=os.path.join(cwd,'run.log'),
                         filemode='a')
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     pid = os.getpid()
@@ -296,7 +296,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd,'.run.log'),
+                        filename=os.path.join(cwd,'run.log'),
                         filemode='a')
     if job_list:
         pass
