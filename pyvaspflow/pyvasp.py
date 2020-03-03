@@ -109,15 +109,18 @@ def cpu(wd):
 
 def get_gap(EV):
     gap_res = EV.get_gap()
-    if len(gap_res) == 3:
-        click.echo('vbm: ' + str(gap_res[0])+
-        '\ncbm: '+str(gap_res[1])+'\ngap: '+str(gap_res[2]))
-    elif len(gap_res) == 2:
-        click.echo('This is a spin system')
-        click.echo('vbm_up: ' + str(gap_res[0][0])+
-        '\ncbm_up: '+str(gap_res[0][1])+'\ngap_up: '+str(gap_res[0][2]))
-        click.echo('vbm_down: ' + str(gap_res[1][0])+
-        '\ncbm_down: '+str(gap_res[1][1])+'\ngap_down: '+str(gap_res[1][2]))
+    if isinstance(gap_res,int):
+        click.echo('gap: '+str(0))
+    else:
+        if len(gap_res) == 3:
+            click.echo('vbm: ' + str(gap_res[0])+
+            '\ncbm: '+str(gap_res[1])+'\ngap: '+str(gap_res[2]))
+        elif len(gap_res) == 2:
+            click.echo('This is a spin system')
+            click.echo('vbm_up: ' + str(gap_res[0][0])+
+            '\ncbm_up: '+str(gap_res[0][1])+'\ngap_up: '+str(gap_res[0][2]))
+            click.echo('vbm_down: ' + str(gap_res[1][0])+
+            '\ncbm_down: '+str(gap_res[1][1])+'\ngap_down: '+str(gap_res[1][2]))
 
 def get_ele_sta(no_defect_outcar,number):
     number = int(number)

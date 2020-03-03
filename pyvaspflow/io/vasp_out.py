@@ -82,7 +82,7 @@ class ExtractValue():
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
-                return
+                return 0
             return (vbm, cbm, gap)
         else:
             all_eigval_up = all_eigval[:,0::2]
@@ -97,7 +97,7 @@ class ExtractValue():
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
-                return
+                return 0
             elec_num_down =  np.mean(all_eigval_down[:,1::2],axis=1)
             idx1 = np.where(elec_num_down > 0.8)
             idx2 = np.where(elec_num_down < 0.2)
@@ -108,7 +108,7 @@ class ExtractValue():
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
-                return
+                return 0
             return (vbm_up, cbm_up, gap_up), (vbm_down, cbm_down, gap_down)
 
 
