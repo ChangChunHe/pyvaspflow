@@ -134,7 +134,7 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
             f.writelines(job_id+"\n")
         while True:
             if not is_inqueue(job_id):
-                logging.info(job_name+" in dir of "+cwd+" calculation finished")
+                logging.info(job_name+" in dir of "+os.getcwd()+" calculation finished")
                 break
             sleep(5)
         # os.remove(job_id_file)
@@ -169,7 +169,7 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd="",mai
                     f.writelines(job_id+"\n")
             sleep(5)
         if not is_inqueue(job_id):
-            logging.info(job_name+" calculation finished")
+            logging.info(job_name+" in dir of "+os.getcwd()+" calculation finished")
             break
         sleep(5)
 
@@ -268,7 +268,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                     f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
-            sleep(20)
+            sleep(60)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     else:
@@ -293,7 +293,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                     f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
-            sleep(20)
+            sleep(60)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     os.remove(job_id_file)
@@ -346,4 +346,4 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
                 sleep(5)
             if idx == end_job_num+1 and get_number_of_running_shell_files(shell_file,main_pid) == 0:
                 break
-            sleep(20)
+            sleep(60)
