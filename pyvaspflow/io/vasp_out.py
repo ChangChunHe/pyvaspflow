@@ -78,7 +78,7 @@ class ExtractValue():
             if idx1[0][-1] - idx2[0][0] == -1:
                 vbm = np.max(all_eigval[idx1[0][-1],::2])
                 cbm = np.min(all_eigval[idx2[0][0],::2])
-                gap = cbm - vbm
+                gap = cbm - vbm if cbm > vbm else 0
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
@@ -93,7 +93,7 @@ class ExtractValue():
             if idx1[0][-1] - idx2[0][0] == -1:
                 vbm_up = np.max(all_eigval_up[idx1[0][-1],::2])
                 cbm_up = np.min(all_eigval_up[idx2[0][0],::2])
-                gap_up = cbm_up - vbm_up
+                gap_up = cbm_up - vbm_up if cbm_up > vbm_up else 0
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
@@ -104,7 +104,7 @@ class ExtractValue():
             if idx1[0][-1] - idx2[0][0] == -1:
                 vbm_down = np.max(all_eigval_down[idx1[0][-1],::2])
                 cbm_down = np.min(all_eigval_down[idx2[0][0],::2])
-                gap_down = cbm_down - vbm_down
+                gap_down = cbm_down - vbm_down if cbm_down > vbm_down else 0
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
