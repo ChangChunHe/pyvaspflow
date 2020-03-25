@@ -113,7 +113,7 @@ def clean_parse(kw,key,def_val):
     return val,kw
 
 def prep_single_vasp(poscar='POSCAR',kw={}):
-    node_name,kw = clean_parse(kw,'node_name','short_q')
+    node_name,kw = clean_parse(kw,'node_name','paratera')
     cpu_num,kw = clean_parse(kw,'cpu_num',24)
     node_num,kw = clean_parse(kw,'node_num',1)
     job_name,kw = clean_parse(kw,'job_name','task')
@@ -130,7 +130,7 @@ def prep_single_vasp(poscar='POSCAR',kw={}):
     chdir('..')
 
 def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
-    node_name,kw = clean_parse(kw,'node_name','short_q')
+    node_name,kw = clean_parse(kw,'node_name','paratera')
     cpu_num,kw = clean_parse(kw,'cpu_num',24)
     node_num,kw = clean_parse(kw,'node_num',1)
     job_name,kw = clean_parse(kw,'job_name','task')
