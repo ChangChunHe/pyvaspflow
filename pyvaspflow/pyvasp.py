@@ -438,9 +438,12 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
 @click.option('--node_name','-nname', default="paratera", type=str)
 @click.option('--node_num','-nnum', default=1, type=int)
 @click.option('--cpu_num','-cnum', default=24, type=int)
-def prep_multi_job_files(start_job_num,end_job_num,n_job,job_name,node_name,cpu_num,node_num):
+@click.option('--job_file','-j', default=None, type=str)
+def prep_multi_job_files(start_job_num,end_job_num,n_job,job_name,node_name,cpu_num,node_num,job_file):
     end_job_num, start_job_num, n_job = int(float(end_job_num)),int(float(start_job_num)),int(float(n_job))
-    write_multi_job_files(node_name,cpu_num,node_num,job_name,start_job_num,end_job_num,n_job)
+    with open(job_file) as f:
+        execute_line = f.read()
+    write_multi_job_files(node_name,cpu_num,node_num,job_name,start_job_num,end_job_num,n_job,execute_line=execute_line)
 
 
 @cli.command('prep_multi_vasp_from_file',short_help="Prepare necessary files for multiple vasp calculation")
