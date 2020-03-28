@@ -20,8 +20,7 @@ def write_job_file(node_name,cpu_num,node_num,job_name):
 
 def write_multi_job_files(node_name,cpu_num,node_num,job_name,start,end,n_job,execute_line=None):
     json_f = read_json()
-    n_job += 1
-    batch = (end - start +1 )//(n_job)
+    batch = (end - start +1 )//(n_job)+1
     _start = start
     _end = _start + batch - 1
     for idx in range(n_job-1):
@@ -39,7 +38,6 @@ def write_multi_job_files(node_name,cpu_num,node_num,job_name,start,end,n_job,ex
             f.writelines('cd ..\ndone\n')
         _start = _end + 1
         _end = _start + batch - 1
-    _start = _end + 1
     _end = end
     with open('job_'+str(n_job-1)+'.sh','w') as f:
         f.writelines('#!/bin/bash \n')
@@ -162,4 +160,4 @@ def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
         chdir('..')
 
 if __name__ == '__main__':
-    write_multi_job_files(node_name="short_q",cpu_num=48,node_num=2,job_name="task",start=0,end=91,n_job=15)
+    write_multi_job_files(node_name="short_q",cpu_num=48,node_num=2,job_name="task",start=7,end=91,n_job=15)
