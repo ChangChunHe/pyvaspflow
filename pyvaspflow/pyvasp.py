@@ -441,8 +441,12 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
 @click.option('--job_file','-j', default=None, type=str)
 def prep_multi_job_files(start_job_num,end_job_num,n_job,job_name,node_name,cpu_num,node_num,job_file):
     end_job_num, start_job_num, n_job = int(float(end_job_num)),int(float(start_job_num)),int(float(n_job))
-    with open(job_file) as f:
-        execute_line = f.read()
+    import pdb; pdb.set_trace()
+    if  job_file:
+        with open(job_file) as f:
+            execute_line = f.read()
+    else:
+        execute_line = None
     write_multi_job_files(node_name,cpu_num,node_num,job_name,start_job_num,end_job_num,n_job,execute_line=execute_line)
 
 
