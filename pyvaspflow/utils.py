@@ -9,7 +9,7 @@ from pyvaspflow.io.vasp_out import ExtractValue
 from sagar.element.base import periodic_table_dict as ptd
 from itertools import combinations
 from os import path
-import json,logging
+import json
 
 
 def refine_points(tetra,extend_S,C,min_d=1):
@@ -554,21 +554,3 @@ def add_log_shell_file(shell_file,log_dir,main_pid):
         else:
             new_lines.append(line)
     return new_lines
-
-def setup_logger(name, log_file, level=logging.INFO, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S'):
-    """To setup as many loggers as you want"""
-
-    formatter = logging.Formatter(format,datefmt=datefmt)
-
-    handler = logging.FileHandler(log_file)
-    handler.setFormatter(formatter)
-
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
-
-    return logger
-
-if __name__ == '__main__':
-    log = setup_logger("log","/home/hecc/Desktop/log.txt",format="",datefmt="")
-    log.info("test")
