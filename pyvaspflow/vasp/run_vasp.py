@@ -127,6 +127,11 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
                         datefmt='%a, %d %b %Y %H:%M:%S',
                         filename=os.path.join(cwd,'run.log'),
                         filemode='a')
+    if not main_pid:
+        main_pid = os.getpid()
+        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+    else:
+        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
     if is_login_node:
         logging.warning(job_name+" calculation Runing at logging node")
         _submit_job(job_name,cpu_num=cpu_num)

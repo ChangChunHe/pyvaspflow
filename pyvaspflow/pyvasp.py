@@ -394,6 +394,7 @@ def prep_single_vasp(poscar,attribute):
 @click.option('--is_login_node','-i',default=False,type=bool)
 @click.option('--cpu_num','-n',default=24,type=int)
 @click.option('--cwd','-d',default="",nargs=1,type=str)
+@click.option('--main_pid','-m',default=None,nargs=1,type=str)
 def run_single_vasp(job_name,is_login_node,cpu_num,cwd):
     '''
     Example:
@@ -404,7 +405,7 @@ def run_single_vasp(job_name,is_login_node,cpu_num,cwd):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
     '''
-    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num,cwd=cwd)
+    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num,cwd=cwd,main_pid=main_pid)
 
 
 @cli.command('run_single_vasp_without_job',short_help="run single vasp calculation")
