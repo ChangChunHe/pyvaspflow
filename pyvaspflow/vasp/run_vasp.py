@@ -122,16 +122,16 @@ def _submit_job(job_name,cpu_num):
     subprocess.check_output(prep+' && '+'mpirun -n '+str(cpu_num)+' '+exe.split()[-1],shell=True,cwd=job_name)
 
 def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None):
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd+'run-'+str(os.getpid())+'.log'),
-                        filemode='a')
     if not main_pid:
         main_pid = os.getpid()
         job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
     else:
         job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+    logging.basicConfig(level=logging.INFO,
+        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+        datefmt='%a, %d %b %Y %H:%M:%S',
+        filename=os.path.join(cwd,'run-'+str(main_pid)+'.log'),
+        filemode='a')
     if is_login_node:
         logging.warning(job_name+" calculation Runing at logging node")
         _submit_job(job_name,cpu_num=cpu_num)
@@ -158,17 +158,17 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
         # os.remove(job_id_file)
 
 def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd="",main_pid=None):
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd+'run-'+str(os.getpid())+'.log'),
-                        filemode='a')
-    job_id,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
     if not main_pid:
         main_pid = os.getpid()
         job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
     else:
         job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+    logging.basicConfig(level=logging.INFO,
+        format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+        datefmt='%a, %d %b %Y %H:%M:%S',
+        filename=os.path.join(cwd,'run-'+str(main_pid)+'.log'),
+        filemode='a')
+    job_id,submit_job_idx = submit_job_without_job(job_name,node_name,cpu_num,node_num=1)
     with open(job_id_file,'a') as f:
         f.writelines(job_id+"\n")
     sleep(5)
@@ -263,7 +263,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd+'run-'+str(os.getpid())+'.log'),
+                        filename=os.path.join(cwd,'run-'+str(os.getpid())+'.log'),
                         filemode='a')
     job_inqueue_num = lambda id_pool:[is_inqueue(i) for i in id_pool].count(True)
     main_pid = os.getpid()
@@ -329,7 +329,7 @@ def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=os.path.join(cwd+'run-'+str(os.getpid())+'.log'),
+                        filename=os.path.join(cwd,'run-'+str(os.getpid())+'.log'),
                         filemode='a')
     main_pid = os.getpid()
     job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
