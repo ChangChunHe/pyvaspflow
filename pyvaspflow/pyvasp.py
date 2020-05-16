@@ -395,7 +395,7 @@ def prep_single_vasp(poscar,attribute):
 @click.option('--cpu_num','-n',default=24,type=int)
 @click.option('--cwd','-d',default="",nargs=1,type=str)
 @click.option('--main_pid','-m',default=None,nargs=1,type=str)
-def run_single_vasp(job_name,is_login_node,cpu_num,cwd):
+def run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid):
     '''
     Example:
 
