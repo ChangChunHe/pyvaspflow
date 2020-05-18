@@ -148,12 +148,12 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
                 logging.info(job_name+" in dir of "+os.getcwd()+" calculation finished")
                 break
             sleep(5)
-    if not has_job_finished(os.path.join(cwd,job_name)):
+    if not has_job_finished(os.path.join(os.getcwd(),job_name)):
         logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation will be submitted")
-        if os.path.getsize(os.path.join(cwd,job_name,'CONTCAR')) < 1:
+        if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
             logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
             return
-        shutil.copyfile(os.path.join(cwd,job_name,'CONTCAR'),os.path.join(cwd,job_name,'POSCAR'))
+        shutil.copyfile(os.path.join(os.getcwd(),job_name,'CONTCAR'),os.path.join(os.getcwd(),job_name,'POSCAR'))
         run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid)
         # os.remove(job_id_file)
 
@@ -190,12 +190,12 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd="",mai
             logging.info(job_name+" in dir of "+os.getcwd()+" calculation finished")
             break
         sleep(5)
-    if not has_job_finished(os.path.join(cwd,job_name)):
-        logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation will be submitted")
-        if os.path.getsize(os.path.join(cwd,job_name,'CONTCAR')) < 1:
-            logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
+    if not has_job_finished(os.path.join(os.getcwd(),job_name)):
+        logging.info(job_name+" in dir of "+os.getcwd()+" calculation does not finish, another calculation will be submitted")
+        if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
+            logging.info(job_name+" in dir of "+os.getcwd()+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
             return
-        shutil.copyfile(os.path.join(cwd,job_name,'CONTCAR'),os.path.join(cwd,job_name,'POSCAR'))
+        shutil.copyfile(os.path.join(os.getcwd(),job_name,'CONTCAR'),os.path.join(os.getcwd(),job_name,'POSCAR'))
         run_single_vasp_without_job(job_name,node_name,cpu_num,node_num,cwd,main_pid)
 
 def run_multi_vasp(job_name='task',end_job_num=1,start_job_num=0,job_list=None,par_job_num=4,cwd=""):
