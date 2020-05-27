@@ -80,6 +80,8 @@ def is_job_pd(pid):
     return False
 
 def has_job_finished(folder):
+    if (not os.path.isfile(os.path.join(folder,"EIGENVAL"))) or (not os.path.isfile(os.path.join(folder,"EIGENVAL"))):
+        return False
     size = os.path.getsize(os.path.join(folder,"EIGENVAL"))+os.path.getsize(os.path.join(folder,"DOSCAR"))
     if size < 1000:
         return False
@@ -153,7 +155,9 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
         if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
             logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
             return
-        shutil.copyfile(os.path.join(os.getcwd(),job_name,'CONTCAR'),os.path.join(os.getcwd(),job_name,'POSCAR'))
+        poscar_size = os.path.getsize(os.path.join(os.getcwd(),job_name,'POSCAR'))
+        if os.path.isfile(os.path.join(os.getcwd(),job_name,'CONTCAR')) and os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR'))>=poscar_size:
+            shutil.copyfile(os.path.join(os.getcwd(),job_name,'CONTCAR'),os.path.join(os.getcwd(),job_name,'POSCAR'))
         run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid)
         # os.remove(job_id_file)
 
