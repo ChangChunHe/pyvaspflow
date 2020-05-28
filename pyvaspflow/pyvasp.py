@@ -52,9 +52,11 @@ def get_dir_name(ctx, args, incomplete):
 @cli.command('gap',short_help="Get band gap and vbm cbm")
 @click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
 type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
-def gap(wd):
+@click.option('--vo', '-v', type=float,default=0.7,help="vbm occupancy")
+@click.option('--co', '-c', type=float,default=0.3,help="cbm occupancy")
+def gap(wd,vo,co):
     EV = ExtractValue(wd)
-    get_gap(EV)
+    get_gap(EV,float(vo),float(co))
 
 @cli.command('fermi',short_help="Get fermi energy level")
 @click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
@@ -107,8 +109,8 @@ def cpu(wd):
     click.echo(EV.get_cpu_time())
 
 
-def get_gap(EV):
-    gap_res = EV.get_gap()
+def get_gap(EV,vo,co):
+    gap_res = EV.get_gap(vo,co)
     if isinstance(gap_res,int):
         click.echo('gap: '+str(0))
     else:
