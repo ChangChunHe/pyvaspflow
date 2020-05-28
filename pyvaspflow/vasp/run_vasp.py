@@ -152,9 +152,9 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
             sleep(5)
     if not has_job_finished(os.path.join(os.getcwd(),job_name)):
         logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation will be submitted")
-        # if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
-        #     logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
-        #     return
+        if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
+            logging.info(job_name+" in dir of "+cwd+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
+            return
         poscar_size = os.path.getsize(os.path.join(os.getcwd(),job_name,'POSCAR'))
         if os.path.isfile(os.path.join(os.getcwd(),job_name,'CONTCAR')) and os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR'))>=poscar_size:
             shutil.copyfile(os.path.join(os.getcwd(),job_name,'CONTCAR'),os.path.join(os.getcwd(),job_name,'POSCAR'))
@@ -196,9 +196,9 @@ def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num=1,cwd="",mai
         sleep(5)
     if not has_job_finished(os.path.join(os.getcwd(),job_name)):
         logging.info(job_name+" in dir of "+os.getcwd()+" calculation does not finish, another calculation will be submitted")
-        # if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
-        #     logging.info(job_name+" in dir of "+os.getcwd()+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
-        #     return
+        if os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR')) < 1:
+            logging.info(job_name+" in dir of "+os.getcwd()+" calculation does not finish, another calculation can not be submitted for one ion step does not finished")
+            return
         poscar_size = os.path.getsize(os.path.join(os.getcwd(),job_name,'POSCAR'))
         if os.path.isfile(os.path.join(os.getcwd(),job_name,'CONTCAR')) and os.path.getsize(os.path.join(os.getcwd(),job_name,'CONTCAR'))>=poscar_size:
             shutil.copyfile(os.path.join(os.getcwd(),job_name,'CONTCAR'),os.path.join(os.getcwd(),job_name,'POSCAR'))
