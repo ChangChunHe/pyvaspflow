@@ -78,8 +78,8 @@ class DefectMaker:
                     tmp = d[comb_list][:,comb_list]
                     tmp = np.triu(tmp)
                     tmp = sorted(tmp[tmp>0])
-                    if (np.std(tmp[0:4]) < 0.2 or np.std(tmp[1:5]) < 0.2 or
-                    np.std(tmp[2:]) < 0.2) and np.std(tmp) < 0.5:
+                    if (np.std(tmp[0:4]) < 0.1 or np.std(tmp[1:5]) < 0.1 or
+                    np.std(tmp[2:]) < 0.1) and np.std(tmp) < 0.5:
                         third_tetra.append(comb_list)
         all_tetra = []
         if len(first_tetra) != 0:
