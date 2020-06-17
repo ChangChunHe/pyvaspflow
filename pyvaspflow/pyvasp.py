@@ -335,7 +335,7 @@ def symmetry(poscar,attr,sympre):
         for key, val in atom_species.items():
             print(key,val)
     elif 'primi' in attr:
-        if c.is_primitive():
+        if c.is_primitive(sympre):
             click.echo('This poscar is a primitive cell, or you can decrease symprec to try to get a primitive cell')
             return
         pc = c.get_primitive_cell(sympre)
