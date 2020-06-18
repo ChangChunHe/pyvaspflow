@@ -51,7 +51,7 @@ class ExtractValue():
         cpu_line = [line for line in lines if 'CPU' in line]
         return  float(cpu_line[0].split()[-1])
 
-    def get_gap(self,vbm_occupancy=0.7,cbm_occupancy=0.3):
+    def get_gap(self):
         file_eig = os.path.join(self.data_folder,'EIGENVAL')
         line6 = np.genfromtxt(file_eig,skip_header=5,max_rows=1)
         kpt_num, eig_num = int(line6[1]), int(line6[2])
@@ -73,42 +73,42 @@ class ExtractValue():
                  max_rows=eig_num,usecols=(1,2,3,4))
         if not isspin:
             elec_num =  np.mean(all_eigval[:,1::2],axis=1)
-            idx1 = np.where(elec_num > vbm_occupancy)
-            idx2 = np.where(elec_num < cbm_occupancy)
+            idx1 = np.where(elec_num > 0.8)
+            idx2 = np.where(elec_num < 0.2)
             if idx1[0][-1] - idx2[0][0] == -1:
                 vbm = np.max(all_eigval[idx1[0][-1],::2])
                 cbm = np.min(all_eigval[idx2[0][0],::2])
-                gap = cbm - vbm if cbm > vbm else 0
+                gap = cbm - vbm
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
-                return 0
+                return
             return (vbm, cbm, gap)
         else:
             all_eigval_up = all_eigval[:,0::2]
             all_eigval_down = all_eigval[:,1::2]
             elec_num_up = np.mean(all_eigval_up[:,1::2],axis=1)
-            idx1 = np.where(elec_num_up > vbm_occupancy)
-            idx2 = np.where(elec_num_up < cbm_occupancy)
+            idx1 = np.where(elec_num_up > 0.8)
+            idx2 = np.where(elec_num_up < 0.2)
             if idx1[0][-1] - idx2[0][0] == -1:
                 vbm_up = np.max(all_eigval_up[idx1[0][-1],::2])
                 cbm_up = np.min(all_eigval_up[idx2[0][0],::2])
-                gap_up = cbm_up - vbm_up if cbm_up > vbm_up else 0
+                gap_up = cbm_up - vbm_up
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
-                return 0
+                return
             elec_num_down =  np.mean(all_eigval_down[:,1::2],axis=1)
-            idx1 = np.where(elec_num_down > vbm_occupancy)
-            idx2 = np.where(elec_num_down < cbm_occupancy)
+            idx1 = np.where(elec_num_down > 0.8)
+            idx2 = np.where(elec_num_down < 0.2)
             if idx1[0][-1] - idx2[0][0] == -1:
                 vbm_down = np.max(all_eigval_down[idx1[0][-1],::2])
                 cbm_down = np.min(all_eigval_down[idx2[0][0],::2])
-                gap_down = cbm_down - vbm_down if cbm_down > vbm_down else 0
+                gap_down = cbm_down - vbm_down
             else:
                 print('The gap of this system can not be obtained from this progrmme',
                 'I suggest you carefully check the EIGENVAL by yourself')
-                return 0
+                return
             return (vbm_up, cbm_up, gap_up), (vbm_down, cbm_down, gap_down)
 
 
@@ -133,7 +133,7 @@ def read_incar(incar):
     with open(incar,'r') as f:
         lines = f.readlines()
     for line in lines:
-        if line.strip() == '':
+        if line.strip() is '':
             continue
         line = re.sub(r"\s+","",line,flags=re.UNICODE).split('=')
         res[line[0]] = line[1]

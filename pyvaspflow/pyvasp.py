@@ -2,7 +2,7 @@
 
 import numpy as np
 import linecache as lc
-import os,subprocess,click,re,psutil
+import os,subprocess,click,re,signal
 import pyvaspflow.utils as us
 from sagar.io.vasp import read_vasp, write_vasp
 from sagar.crystal.derive import cells_nonredundant
@@ -12,14 +12,13 @@ from pyvaspflow.vasp.prep_vasp import prep_single_vasp as psv
 from pyvaspflow.vasp.run_vasp import run_single_vasp as rsv
 from pyvaspflow.vasp.prep_vasp import prep_multi_vasp as pmv
 from pyvaspflow.vasp.run_vasp import run_multi_vasp as rmv
-from pyvaspflow.vasp.run_vasp import run_multi_vasp_with_shell as rmvws
 from pyvaspflow.vasp.run_vasp import run_multi_vasp_without_job as rmvwj
-from pyvaspflow.vasp.run_vasp import run_single_vasp_without_job as rsvwj
 from pyvaspflow.vasp.prep_vasp import write_incar as wi
 from pyvaspflow.vasp.prep_vasp import write_kpoints as wk
 from pyvaspflow.defect_cal.defect_formation_energy import get_defect_formation_energy
 from pyvaspflow.vasp import test_para
 from pyvaspflow.io.vasp_out import read_doscar
+from pyvaspflow.vasp.prep_vasp import write_multi_job_files
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -52,11 +51,9 @@ def get_dir_name(ctx, args, incomplete):
 @cli.command('gap',short_help="Get band gap and vbm cbm")
 @click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
 type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
-@click.option('--vo', '-v', type=float,default=0.7,help="vbm occupancy")
-@click.option('--co', '-c', type=float,default=0.3,help="cbm occupancy")
-def gap(wd,vo,co):
+def gap(wd):
     EV = ExtractValue(wd)
-    get_gap(EV,float(vo),float(co))
+    get_gap(EV)
 
 @cli.command('fermi',short_help="Get fermi energy level")
 @click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
@@ -109,20 +106,17 @@ def cpu(wd):
     click.echo(EV.get_cpu_time())
 
 
-def get_gap(EV,vo,co):
-    gap_res = EV.get_gap(vo,co)
-    if isinstance(gap_res,int):
-        click.echo('gap: '+str(0))
-    else:
-        if len(gap_res) == 3:
-            click.echo('vbm: ' + str(gap_res[0])+
-            '\ncbm: '+str(gap_res[1])+'\ngap: '+str(gap_res[2]))
-        elif len(gap_res) == 2:
-            click.echo('This is a spin system')
-            click.echo('vbm_up: ' + str(gap_res[0][0])+
-            '\ncbm_up: '+str(gap_res[0][1])+'\ngap_up: '+str(gap_res[0][2]))
-            click.echo('vbm_down: ' + str(gap_res[1][0])+
-            '\ncbm_down: '+str(gap_res[1][1])+'\ngap_down: '+str(gap_res[1][2]))
+def get_gap(EV):
+    gap_res = EV.get_gap()
+    if len(gap_res) == 3:
+        click.echo('vbm: ' + str(gap_res[0])+
+        '\ncbm: '+str(gap_res[1])+'\ngap: '+str(gap_res[2]))
+    elif len(gap_res) == 2:
+        click.echo('This is a spin system')
+        click.echo('vbm_up: ' + str(gap_res[0][0])+
+        '\ncbm_up: '+str(gap_res[0][1])+'\ngap_up: '+str(gap_res[0][2]))
+        click.echo('vbm_down: ' + str(gap_res[1][0])+
+        '\ncbm_down: '+str(gap_res[1][1])+'\ngap_down: '+str(gap_res[1][2]))
 
 def get_ele_sta(no_defect_outcar,number):
     number = int(number)
@@ -335,7 +329,7 @@ def symmetry(poscar,attr,sympre):
         for key, val in atom_species.items():
             print(key,val)
     elif 'primi' in attr:
-        if c.is_primitive(sympre):
+        if c.is_primitive():
             click.echo('This poscar is a primitive cell, or you can decrease symprec to try to get a primitive cell')
             return
         pc = c.get_primitive_cell(sympre)
@@ -395,9 +389,7 @@ def prep_single_vasp(poscar,attribute):
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
 @click.option('--is_login_node','-i',default=False,type=bool)
 @click.option('--cpu_num','-n',default=24,type=int)
-@click.option('--cwd','-d',default="",nargs=1,type=str)
-@click.option('--main_pid','-m',default=None,nargs=1,type=str)
-def run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid):
+def run_single_vasp(job_name,is_login_node,cpu_num):
     '''
     Example:
 
@@ -407,33 +399,7 @@ def run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
     '''
-    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num,cwd=cwd,main_pid=main_pid)
-
-
-@cli.command('run_single_vasp_without_job',short_help="run single vasp calculation")
-@click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
-@click.option('--node_name','-nname',default="short_q",type=str)
-@click.option('--cpu_num','-cnum',default='1',nargs=1,type=str)
-@click.option('--node_num','-nnum',default=1,nargs=1,type=int)
-@click.option('--cwd','-d',default="",nargs=1,type=str)
-@click.option('--main_pid','-m',default=None,nargs=1,type=str)
-def run_single_vasp_without_job(job_name,node_name,cpu_num,node_num,cwd,main_pid):
-    '''
-    Example:
-
-    pyvasp run_ringle_vasp  task &
-
-    For more help you can refer to
-
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
-    '''
-#    import pdb;pdb.set_trace()
-    node_name,cpu_num = node_name.split(','),cpu_num.split(',')
-    if len(cpu_num) != len(node_name):
-        raise ValueError("The length of node_name is not consistent with the length of cpu_num")
-    rsvwj(job_name,node_name,cpu_num,node_num=1,cwd=cwd,main_pid=main_pid)
-
-
+    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num)
 
 def get_prep_end_job_num(ctx, args, incomplete):
     dir_names = [i for i in os.listdir() if os.path.isfile(i)]
@@ -463,6 +429,25 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
     '''
     pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
+
+@cli.command('prep_multi_job_files',short_help="Prepare necessary files for multiple vasp calculation")
+@click.argument('job_name', metavar='job name',nargs=1)
+@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1)
+@click.argument('n_job', metavar='<the last number of parallel jobs>',nargs=1)
+@click.option('--start_job_num','-s', default=0, type=int)
+@click.option('--node_name','-nname', default="short", type=str)
+@click.option('--node_num','-nnum', default=1, type=int)
+@click.option('--cpu_num','-cnum', default=40, type=int)
+@click.option('--job_file','-j', default=None, type=str)
+def prep_multi_job_files(start_job_num,end_job_num,n_job,job_name,node_name,cpu_num,node_num,job_file):
+    end_job_num, start_job_num, n_job = int(float(end_job_num)),int(float(start_job_num)),int(float(n_job))
+    #import pdb; pdb.set_trace()
+    if  job_file:
+        with open(job_file) as f:
+            execute_line = f.read()
+    else:
+        execute_line = None
+    write_multi_job_files(node_name,cpu_num,node_num,job_name,start_job_num,end_job_num,n_job,execute_line=execute_line)
 
 
 @cli.command('prep_multi_vasp_from_file',short_help="Prepare necessary files for multiple vasp calculation")
@@ -542,30 +527,6 @@ def run_multi_vasp(job_name,end_job_num,start_job_num,par_job_num):
     '''
     rmv(job_name=job_name,end_job_num=end_job_num,
         start_job_num=start_job_num,par_job_num=par_job_num)
-    pid = os.getpid()
-    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
-
-
-@cli.command('run_multi_vasp_from_shell',short_help="run multiple vasp calculations from shell scripts")
-@click.argument('shell_file', metavar='<shell scripts file>',nargs=1)
-@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
-@click.option('--work_name','-w', default='job', type=str)
-@click.option('--start_job_num','-s', default=0, type=int)
-@click.option('--par_job_num','-p', default=4, type=int)
-def run_multi_vasp_from_shell(work_name,shell_file,end_job_num,start_job_num,par_job_num):
-    '''
-    Example:
-
-    nohup pyvasp run_multi_vasp_from_shell band.sh 9 -w job -p 5 1>std 2>err &
-
-    For more help you can refer to
-
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-multiple-vasp-tasks
-    '''
-    rmvws(work_name,shell_file,end_job_num=end_job_num,start_job_num=start_job_num,job_list=None,par_job_num=par_job_num)
-    pid = os.getpid()
-    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
-
 
 @cli.command('run_multi_vasp_without_job',short_help="run multiple vasp calculations without job files")
 @click.argument('job_name', metavar='<job_name>',nargs=1,autocompletion=get_job_name)
@@ -592,8 +553,6 @@ def run_multi_vasp_without_job(job_name,end_job_num,node_name,cpu_num,node_num,s
         raise ValueError("The length of node_name is not consistent with the length of cpu_num")
     rmvwj(job_name=job_name,end_job_num=end_job_num,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
-    pid = os.getpid()
-    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 
 
@@ -613,8 +572,6 @@ def run_multi_vasp_from_file(job_name,job_list_file,par_job_num):
     '''
     job_list = np.loadtxt(job_list_file,dtype=int)
     rmv(job_name=job_name,job_list=job_list,par_job_num=par_job_num)
-    pid = os.getpid()
-    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 
 @cli.command('run_multi_vasp_without_job_from_file',short_help="run multiple vasp calculations")
@@ -643,8 +600,6 @@ def run_multi_vasp_without_job_from_file(job_name,job_list_file,node_name,cpu_nu
         raise ValueError("The length of node_name is not consistent with the length of cpu_num")
     rmvwj(job_name=job_name,job_list=job_list,node_name=node_name,cpu_num=cpu_num,
     node_num=node_num,start_job_num=start_job_num,par_job_num=par_job_num)
-    pid = os.getpid()
-    os.remove(os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid)))
 
 @cli.command('test_encut',short_help="test encut in vasp calculation")
 @click.argument('poscar', type=str, autocompletion=get_poscar_files)
@@ -753,11 +708,8 @@ def save_pdos(wd):
 @click.argument('pid', metavar='pid_of_pyvasp',nargs=1)
 @click.option('--cancel_or_not','-c',default=True,type=bool)
 def kill(pid,cancel_or_not):
-    parent = psutil.Process(int(pid))
-    for child in parent.children(recursive=True):  # or parent.children() for recursive=False
-        child.kill()
-    parent.kill()
-    click.echo(pid)
+    res = os.kill(int(pid),signal.SIGKILL)
+    print(res,pid)
     job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
     with open(job_id_file,'r') as f:
         job_idx = f.readlines()

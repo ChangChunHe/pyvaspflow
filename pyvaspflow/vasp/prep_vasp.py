@@ -11,12 +11,52 @@ from pyvaspflow.io.vasp_input import Incar,Kpoints,Potcar
 
 def write_job_file(node_name,cpu_num,node_num,job_name):
     json_f = read_json()
-    with open('job.sh','w') as f:
+    with open('job.lsf','w') as f:
         f.writelines('#!/bin/bash \n')
-        f.writelines('#SBATCH -J '+job_name+'\n')
-        f.writelines('#SBATCH -p '+node_name+' -N '+ str(int(node_num)) +' -n '+str(int(cpu_num))+'\n\n')
+        f.writelines('#BSUB -J '+job_name+'\n')
+        f.writelines('#BSUB -q '+node_name +' -n '+str(int(cpu_num))+'\n\n')
+        f.writelines('#BSUB -e %J.err\n#BSUB -o %J.out\n')
+        f.writelines('#BSUB -R "span[ptile=40]"\n') 
+        f.writelines('hostfile=`echo $LSB_DJOB_HOSTFILE`\n')
+        f.writelines('NP=`cat $hostfile|wc -l`\n')
         f.writelines(json_f['job']['prepend']+'\n')
         f.writelines(json_f['job']['exec']+'\n')
+        f.writelines(json_f['job']['append']+'\n')
+
+def write_multi_job_files(node_name,cpu_num,node_num,job_name,start,end,n_job,execute_line=None):
+    json_f = read_json()
+    each = (end - start+1) // n_job
+    if each * n_job == end - start+1:
+        each -= 1
+    each_num = [each]*(n_job - 1)
+    last_num = end-start + 1 - sum(each_num)
+    if last_num > each:
+        for i in range(last_num-each):
+            each_num[i] += 1
+        each_num.append(each)
+    else:
+        each_num.append(last_num)
+    
+    for idx in range(n_job):
+        with open('job_'+str(idx)+'.lsf','w') as f:
+            f.writelines('#!/bin/bash \n')
+            f.writelines('#BSUB -J '+job_name+str(idx)+'\n')
+            f.writelines('#BSUB -q '+node_name +' -n '+str(int(cpu_num))+'\n\n')
+            f.writelines('#BSUB -e %J.err\n#BSUB -o %J.out\n')
+            f.writelines('#BSUB -R "span[ptile=40]"\n')
+            f.writelines('hostfile=`echo $LSB_DJOB_HOSTFILE`\n')
+            f.writelines('NP=`cat $hostfile|wc -l`\n')
+
+            f.writelines("for idx in {"+str(start)+".."+str(start+each_num[idx]-1)+"}"+"\ndo\n")
+            f.writelines('cd '+job_name+'${idx}\n')
+            if execute_line:
+                f.writelines(execute_line+"\n")
+            else:
+                f.writelines(json_f['job']['prepend']+'\n')
+                f.writelines(json_f['job']['exec']+'\n')
+                f.writelines(json_f['job']['append']+'\n')
+            f.writelines('cd ..\ndone\n')
+        start += each_num[idx]
 
 def write_incar(incar_file=None,kw={}):
     if path.isfile('POTCAR'):
@@ -87,8 +127,8 @@ def clean_parse(kw,key,def_val):
     return val,kw
 
 def prep_single_vasp(poscar='POSCAR',kw={}):
-    node_name,kw = clean_parse(kw,'node_name','short_q')
-    cpu_num,kw = clean_parse(kw,'cpu_num',24)
+    node_name,kw = clean_parse(kw,'node_name','short')
+    cpu_num,kw = clean_parse(kw,'cpu_num',40)
     node_num,kw = clean_parse(kw,'node_num',1)
     job_name,kw = clean_parse(kw,'job_name','task')
     if path.isdir(job_name):
@@ -104,23 +144,26 @@ def prep_single_vasp(poscar='POSCAR',kw={}):
     chdir('..')
 
 def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
-    node_name,kw = clean_parse(kw,'node_name','short_q')
-    cpu_num,kw = clean_parse(kw,'cpu_num',24)
+    node_name,kw = clean_parse(kw,'node_name','short')
+    cpu_num,kw = clean_parse(kw,'cpu_num',40)
     node_num,kw = clean_parse(kw,'node_num',1)
     job_name,kw = clean_parse(kw,'job_name','task')
     _kw = kw.copy()
     if job_list is  None:
         job_list = range(start_job_num,end_job_num+1)
     for idx,ii in enumerate(job_list):
-        if path.isdir(job_name+str(ii)):
-            rmtree(job_name+str(ii))
-        makedirs(job_name+str(ii))
-        copy2(path.join('./POSCAR'+str(ii)),path.join(job_name+str(ii),'POSCAR'))
-        chdir(job_name+str(ii))
+        if path.isdir(job_name+str(idx)):
+            rmtree(job_name+str(idx))
+        makedirs(job_name+str(idx))
+        copy2(path.join('./POSCAR'+str(ii)),path.join(job_name+str(idx),'POSCAR'))
+        chdir(job_name+str(idx))
         kw = write_potcar(kw=kw)
         kw = write_kpoints(kw=kw)
         kw = write_incar(kw=kw)
         write_job_file(node_name=node_name,
-        node_num=node_num,cpu_num=cpu_num,job_name=job_name+str(ii))
+        node_num=node_num,cpu_num=cpu_num,job_name=job_name+str(idx))
         kw = _kw.copy()
         chdir('..')
+
+if __name__ == '__main__':
+    write_multi_job_files(node_name="short_q",cpu_num=48,node_num=2,job_name="task",start=7,end=91,n_job=15)

@@ -26,14 +26,14 @@ reciprocal lattice vector proportional to its length.
 
 
 2. 指定gamma中心和kppa设置k点
-==============================
+===============
 
 例子::
 
     $ pyvasp prep_single_vasp POSCAR -a style=gamma,kppa=5000
 
 3. 指定mesh设置k点
-===================
+===============
 
 例子::
 
@@ -45,7 +45,7 @@ reciprocal lattice vector proportional to its length.
     $ pyvasp prep_single_vasp POSCAR -a style=monkhorst,kpts=5,6,7
 
 4. 指定设置线性的k点
-===================
+===============
 
 只需要设置 ``style=band`` 或者 ``style=line`` 就可以了, 生成的高对称点是调用 `seekpath`_
 的, num_kpt是用于指定两个高对称点之间插入的k点的数目, 默认是16个.

@@ -11,7 +11,7 @@
 
 
 计算能带, 态密度
-===============
+============
 下面是计算能带的例子, 相信如果你读完前面的文档应该是可以看得懂的::
 
     #!/bin/bash
@@ -36,7 +36,7 @@
     pyvasp run_single_vasp stru_relax
     pyvasp prep_single_vasp stru_relax/CONTCAR -a kppa=4000,job_name=scf,NSW=0,LCHARG=True
     pyvasp run_single_vasp scf
-    pyvasp prep_single_vasp scf/CONTCAR -a kppa=8000,ISMEAR=-5,job_name=dos,NSW=0,LORBIT=11
+    pyvasp prep_single_vasp scf/CONTCAR -a kppa=8000,ISMEAR=-5,job_name=dos,NSW=0
     cp scf/CHG* dos/
     pyvasp run_single_vasp dos
 
@@ -68,7 +68,7 @@ pyvasp get_grd_state::
 
 
 计算缺陷形成能
-==============
+============
 
 1.1 基础知识：
 ---------
