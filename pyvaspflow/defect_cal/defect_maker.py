@@ -135,7 +135,7 @@ class DefectMaker:
                 idx += 1
 
 
-    def get_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1],ip=""):
+    def get_point_defect(self,symprec=1e-3,doped_out='all',doped_in=['Vac'],num=[1]):
         cell = self.no_defect_cell
         cg = ConfigurationGenerator(cell, symprec)
         sites = _get_sites(list(cell.atoms), doped_out=doped_out, doped_in=doped_in)
