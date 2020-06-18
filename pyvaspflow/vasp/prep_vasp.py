@@ -7,6 +7,7 @@ from os import path,makedirs,chdir,listdir
 from shutil import rmtree,copy2
 from sagar.io.vasp import read_vasp
 from pyvaspflow.io.vasp_input import Incar,Kpoints,Potcar
+import sys,progressbar
 
 
 def write_job_file(node_name,cpu_num,node_num,job_name):
@@ -111,16 +112,19 @@ def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
     _kw = kw.copy()
     if job_list is  None:
         job_list = range(start_job_num,end_job_num+1)
-    for idx,ii in enumerate(job_list):
-        if path.isdir(job_name+str(ii)):
-            rmtree(job_name+str(ii))
-        makedirs(job_name+str(ii))
-        copy2(path.join('./POSCAR'+str(ii)),path.join(job_name+str(ii),'POSCAR'))
-        chdir(job_name+str(ii))
-        kw = write_potcar(kw=kw)
-        kw = write_kpoints(kw=kw)
-        kw = write_incar(kw=kw)
-        write_job_file(node_name=node_name,
-        node_num=node_num,cpu_num=cpu_num,job_name=job_name+str(ii))
-        kw = _kw.copy()
-        chdir('..')
+    toolbar_width = end_job_num - start_job_num + 1
+    with progressbar.ProgressBar(max_value=toolbar_width) as bar:
+        for idx,ii in enumerate(job_list):
+            if path.isdir(job_name+str(ii)):
+                rmtree(job_name+str(ii))
+            makedirs(job_name+str(ii))
+            copy2(path.join('./POSCAR'+str(ii)),path.join(job_name+str(ii),'POSCAR'))
+            chdir(job_name+str(ii))
+            kw = write_potcar(kw=kw)
+            kw = write_kpoints(kw=kw)
+            kw = write_incar(kw=kw)
+            write_job_file(node_name=node_name,
+            node_num=node_num,cpu_num=cpu_num,job_name=job_name+str(ii))
+            kw = _kw.copy()
+            chdir('..')
+            bar.update(idx)

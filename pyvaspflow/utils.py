@@ -1,7 +1,10 @@
 import numpy as np
 from sagar.toolkit.mathtool import refine_positions
 from sagar.molecule.structure import Molecule
+from sagar.crystal.utils import non_dup_hnfs, snf
 from sagar.io.vasp import  write_vasp, read_vasp
+from sagar.toolkit.derivetool import remove_redundant
+from sagar.crystal.structure import Cell
 from sagar.element.base import periodic_table_dict as ptd
 from sagar.toolkit.mathtool import is_int_np_array
 from sagar.crystal.derive import PermutationGroup as PG
@@ -554,3 +557,29 @@ def add_log_shell_file(shell_file,log_dir,main_pid):
         else:
             new_lines.append(line)
     return new_lines
+
+
+def get_max_volume(pcell, sites, max_volume, min_volume=1, dimension=3, symprec=1e-5):
+    for volume in range(min_volume, max_volume + 1):
+        hnfs = non_dup_hnfs(pcell, volume, dimension, symprec)
+        dict_trans = {}  # 记录已经产生过的snf，相同snf的平移操作相同。
+        for h in hnfs:
+            hfpg = PG(pcell, h)
+            perms = hfpg.get_symmetry_perms(symprec)
+
+            if dimension == 2:
+                supercell = pcell.extend(h)._get_niggli_2D()
+            else:
+                supercell = pcell.extend(h)._get_niggli_3D()
+
+            _sites = np.repeat(sites, volume, axis=0)
+
+            for mol, _ in remove_redundant(supercell.positions, _sites, perms):
+                c = Cell(supercell.lattice, mol[0], mol[1])
+                if c.is_primitive(symprec):
+                    yield c
+
+if __name__ == '__main__':
+    cell = read_vasp("/home/hecc/Desktop/Al_prim.vasp")
+    for idx,c in enumerate(get_max_volume(cell,[(13,42)],12,min_volume=2)):
+        write_poscar(c,folder="/home/hecc/Desktop/fcc",idx=idx)
