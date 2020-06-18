@@ -234,7 +234,14 @@ def get_point_defect(poscar,doped_in,doped_out,num,symprec):
     """
     DM = DefectMaker(no_defect=poscar)
     doped_out,doped_in,num = doped_out.split(','),doped_in.split(','),num.split(',')
-    DM.get_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=[int(i) for i in num])
+    try:
+        num = [int(i) for i in num]
+    except:
+        if num[0].lower() == "all":
+            num = None
+        else:
+            raise ValueError(num+" is not supported here")
+    DM.get_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=num)
 
 
 @cli.command('get_mole_point_defect',short_help="Get purity POSCAR of molecule")
