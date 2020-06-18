@@ -93,6 +93,7 @@ def get_number_of_running_shell_files(shell_file,main_pid):
     que_res = p.stdout.readlines()
     p.stdout.close()
     pid_res = [i  for i in que_res if 'bash '+shell_file in i.decode("utf-8") and str(main_pid) in i.decode("utf-8") ]
+    p.kill()
     return len(pid_res)
 
 def write_job_file(job_name,node_name,cpu_num,node_num):
