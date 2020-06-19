@@ -17,7 +17,7 @@ def write_job_file(node_name,cpu_num,node_num,job_name):
         f.writelines('#BSUB -J '+job_name+'\n')
         f.writelines('#BSUB -q '+node_name +' -n '+str(int(cpu_num))+'\n\n')
         f.writelines('#BSUB -e %J.err\n#BSUB -o %J.out\n')
-        f.writelines('#BSUB -R "span[ptile=40]"\n') 
+        f.writelines('#BSUB -R "span[ptile=40]"\n')
         f.writelines('hostfile=`echo $LSB_DJOB_HOSTFILE`\n')
         f.writelines('NP=`cat $hostfile|wc -l`\n')
         f.writelines(json_f['job']['prepend']+'\n')
@@ -28,16 +28,18 @@ def write_multi_job_files(node_name,cpu_num,node_num,job_name,start,end,n_job,ex
     json_f = read_json()
     each = (end - start+1) // n_job
     if each * n_job == end - start+1:
-        each -= 1
-    each_num = [each]*(n_job - 1)
-    last_num = end-start + 1 - sum(each_num)
-    if last_num > each:
-        for i in range(last_num-each):
-            each_num[i] += 1
-        each_num.append(each)
+        each_num = [each]*n_job
     else:
-        each_num.append(last_num)
-    
+        each_num = [each]*(n_job - 1)
+        last_num = end-start + 1 - sum(each_num)
+
+        if last_num > each:
+            for i in range(last_num-each):
+                each_num[i] += 1
+            each_num.append(each)
+        else:
+            each_num.append(last_num)
+
     for idx in range(n_job):
         with open('job_'+str(idx)+'.lsf','w') as f:
             f.writelines('#!/bin/bash \n')
@@ -170,4 +172,4 @@ def prep_multi_vasp(start_job_num=0,end_job_num=0,job_list=None,kw={}):
             bar.update(idx)
 
 if __name__ == '__main__':
-    write_multi_job_files(node_name="short_q",cpu_num=48,node_num=2,job_name="task",start=7,end=91,n_job=15)
+    write_multi_job_files(node_name="short_q",cpu_num=48,node_num=2,job_name="task",start=0,end=14,n_job=3)
