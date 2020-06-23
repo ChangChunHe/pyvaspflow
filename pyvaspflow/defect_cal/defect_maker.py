@@ -193,28 +193,30 @@ class DefectMaker:
         cg = ConfigurationGenerator(cell, symprec)
         doped_in = get_symbol(np.setdiff1d(range(1,56),np.unique(cell.atoms))[0])
         sites = _get_sites(list(cell.atoms), doped_out=magnetic_atom, doped_in=[doped_in])
-        confs = cg.cons_specific_cell(sites, e_num=None, symprec=symprec)
         n = len(cell.atoms)
-        magmon = []
+        magmom = []
         magnetic_atom_idx = np.where(cell.atoms==s2n(magnetic_atom[0]))[0].astype("int")
         atoms_type = get_identity_atoms(cell,symprec)
         unique_atoms_type = np.unique(atoms_type)
-        for c, _deg in confs:
-            tmp_magmon = np.zeros((n,))
-            tmp_magmon[magnetic_atom_idx] = 1
-            mag_idx = np.where(c.atoms==s2n(doped_in[0]))[0]
-            tmp_magmon[mag_idx] = -1
-            if magmon_identity:
-                flag = True
-                for i in unique_atoms_type:
-                    if len(np.unique(tmp_magmon[np.where(atoms_type==i)[0]])) != 1:
-                        flag = False
-                        break
-                if flag:
-                    magmon.append(tmp_magmon.tolist())
-            else:
-                magmon.append(tmp_magmon.tolist())
-        np.savetxt("INCAR-magmon",magmon,fmt='%2d')
+        for num in range(len(magnetic_atom_idx)//2+1):
+            confs = cg.cons_specific_cell(sites, e_num=[len(magnetic_atom_idx)-num,num], symprec=symprec)
+            for c,_def in confs:
+                tmp_magmom = np.zeros((n,))
+                tmp_magmom[magnetic_atom_idx] = magmon
+                mag_idx = [np.where(np.linalg.norm(cell.positions-c.positions[_idx],axis=1)<0.01)[0][0] \
+                for _idx in np.where(c.atoms==s2n(doped_in[0]))[0]]
+                tmp_magmom[mag_idx] = -magmon
+                if magmon_identity:
+                    flag = True
+                    for i in unique_atoms_type:
+                        if len(np.unique(tmp_magmom[np.where(atoms_type==i)[0]])) != 1:
+                            flag = False
+                            break
+                    if flag:
+                        magmom.append(tmp_magmom.tolist())
+                else:
+                    magmom.append(tmp_magmom.tolist())
+        np.savetxt("INCAR-magmon",magmom,fmt='%2d')
 
 # def _get_sites(atoms,doped_out,doped_in):
 #     doped_in = [s2n(i) for i in doped_in]
