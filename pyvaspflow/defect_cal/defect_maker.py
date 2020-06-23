@@ -10,9 +10,10 @@ import numpy as np
 from sagar.crystal.derive import ConfigurationGenerator
 from sagar.io.vasp import read_vasp,_read_string
 from sagar.crystal.structure import symbol2number as s2n
+from sagar.element.base import get_symbol
 from sagar.molecule.derive import ConfigurationGenerator as mole_CG
 from sagar.molecule.structure import Molecule
-from pyvaspflow.utils import generate_all_basis, refine_points,write_poscar
+from pyvaspflow.utils import generate_all_basis, refine_points,write_poscar,get_identity_atoms
 from itertools import combinations,chain
 from sagar.crystal.structure import Cell
 from shutil import rmtree
@@ -187,14 +188,33 @@ class DefectMaker:
             idx += 1
         np.savetxt(os.path.join(folder,"deg.txt"),deg,fmt='%d')
 
-# def _get_sites(atoms,doped_out,doped_in):
-#     doped_in = [s2n(i) for i in doped_in]
-#     if doped_out == 'all':
-#         return  [tuple([atom]+doped_in)  for atom in atoms]
-#     else:
-#         doped_out = s2n(doped_out)
-#         _ins = tuple([doped_out]+doped_in)
-#         return [_ins if atom == doped_out else (atom,) for atom in atoms]
+    def get_magnetic_config(self,magnetic_atom,magmon=1,magmon_identity=False,symprec=1e-3):
+        cell = self.no_defect_cell
+        cg = ConfigurationGenerator(cell, symprec)
+        doped_in = get_symbol(np.setdiff1d(range(1,56),np.unique(cell.atoms))[0])
+        sites = _get_sites(list(cell.atoms), doped_out=magnetic_atom, doped_in=[doped_in])
+        confs = cg.cons_specific_cell(sites, e_num=None, symprec=symprec)
+        n = len(cell.atoms)
+        magmon = []
+        magnetic_atom_idx = np.where(cell.atoms==s2n(magnetic_atom[0]))[0].astype("int")
+        atoms_type = get_identity_atoms(cell,symprec)
+        unique_atoms_type = np.unique(atoms_type)
+        for c, _deg in confs:
+            tmp_magmon = np.zeros((n,))
+            tmp_magmon[magnetic_atom_idx] = 1
+            mag_idx = np.where(c.atoms==s2n(doped_in[0]))[0]
+            tmp_magmon[mag_idx] = -1
+            if magmon_identity:
+                flag = True
+                for i in unique_atoms_type:
+                    if len(np.unique(tmp_magmon[np.where(atoms_type==i)[0]])) != 1:
+                        flag = False
+                        break
+                if flag:
+                    magmon.append(tmp_magmon.tolist())
+            else:
+                magmon.append(tmp_magmon.tolist())
+        np.savetxt("INCAR-magmon",magmon,fmt='%2d')
 
 def _get_sites(atoms,doped_out,doped_in):
     doped_in = [s2n(i) for i in doped_in]
@@ -209,5 +229,5 @@ def _get_sites(atoms,doped_out,doped_in):
         return [_ins if atom == doped_out else (atom,) for atom in atoms]
 
 if __name__ == '__main__':
-    dm = DefectMaker('/home/hecc/Downloads/POSCAR')
-    dm.get_mole_point_defect(symprec=0.1,doped_out='C',doped_in=['Vac'],num=[2])
+    dm = DefectMaker('/home/hecc/Desktop/Fe3GeTe2/POSCAR')
+    dm.get_magnetic_config(magnetic_atom=["Fe"],symprec=1e-3,magmon_identity=True)

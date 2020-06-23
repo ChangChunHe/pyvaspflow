@@ -541,3 +541,13 @@ def get_perms(cell,str_type='crystal',symprec=1e-3):
         mol = Molecule(pos,cell.atoms)
         perms_table = mol.get_symmetry_permutation(symprec)
     return perms_table
+
+def get_identity_atoms(cell,symprec,style="crystal"):
+    atom_number = cell.atoms
+    if style == "crystal":
+        equ_atom = cell.get_symmetry(symprec)['equivalent_atoms']
+        atom_uniq_type = np.unique(equ_atom)
+        atom_type = np.zeros(np.shape(equ_atom))
+        for idx,ea in enumerate(equ_atom):
+            atom_type[idx] = np.where(atom_uniq_type==ea)[0]
+    return atom_type
