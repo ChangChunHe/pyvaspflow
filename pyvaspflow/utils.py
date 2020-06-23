@@ -579,6 +579,16 @@ def get_max_volume(pcell, sites, max_volume, min_volume=1, dimension=3, symprec=
                 if c.is_primitive(symprec):
                     yield c
 
+def get_identity_atoms(cell,symprec,style="crystal"):
+    atom_number = cell.atoms
+    if style == "crystal":
+        equ_atom = cell.get_symmetry(symprec)['equivalent_atoms']
+        atom_uniq_type = np.unique(equ_atom)
+        atom_type = np.zeros(np.shape(equ_atom))
+        for idx,ea in enumerate(equ_atom):
+            atom_type[idx] = np.where(atom_uniq_type==ea)[0]
+    return atom_type
+    
 if __name__ == '__main__':
     cell = read_vasp("/home/hecc/Desktop/Al_prim.vasp")
     for idx,c in enumerate(get_max_volume(cell,[(13,42)],12,min_volume=2)):

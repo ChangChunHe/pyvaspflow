@@ -244,6 +244,31 @@ def get_point_defect(poscar,doped_in,doped_out,num,symprec):
     DM.get_point_defect(doped_in=doped_in,doped_out=doped_out,symprec=symprec,num=num)
 
 
+@cli.command('get_magnetic_config',short_help="Get magnetic configurations")
+@click.argument('poscar', metavar='<primitive_cell_file>',
+                type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
+                autocompletion=get_poscar_files)
+@click.option('--magnetic_atom', '-ma', default='all', type=str, nargs=1,
+help='specify a magnetic atom')
+@click.option('--symprec', '-s', default='1e-3', type=float,help='system precision')
+@click.option('--magmon', '-m', default=1, type=int,help='magmon')
+@click.option('--magmon_identity', '-mi', default=False, type=bool,help='equivalent atoms with equivalent spin')
+def get_magnetic_config(poscar,magnetic_atom,magmon,magmon_identity,symprec):
+    """
+    argument:
+    poscar, the  path of your initial POSCAR
+    Optional parameter:
+    magnetic_atom, specify a magnetic atom
+    magmon, magmon
+    magmon_identity, the equivalent atoms will have equivalent spins. (True or False)
+    sympre: system precision
+    Example:
+    pyvasp get_magnetic_config POSCAR -ma Fe -m 3 -mi True
+    """
+    DM = DefectMaker(no_defect=poscar)
+    DM.get_magnetic_config([magnetic_atom],magmon,magmon_identity,symprec)
+
+
 @cli.command('get_mole_point_defect',short_help="Get purity POSCAR of molecule")
 @click.argument('poscar', metavar='<primitive_cell_file>',
                 type=click.Path(exists=True, resolve_path=True, readable=True, file_okay=True),
