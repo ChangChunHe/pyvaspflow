@@ -431,8 +431,8 @@ class Kpoints:
         is_2d = is_2d_structure(structure)
 
         if type(is_2d) is tuple:
-            print('This structure will be treated as a two dimensional structure here',
-            'so the mesh of  one direction will be set to 1')
+            # print('This structure will be treated as a two dimensional structure here',
+            # 'so the mesh of  one direction will be set to 1')
             vac_idx = is_2d[1]
             atom_idx = np.setdiff1d(range(3),vac_idx)
             mult = (ngrid * lengths[atom_idx[0]] * lengths[atom_idx[1]]) ** (1 / 2)
@@ -471,8 +471,8 @@ class Kpoints:
         lengths = np.linalg.norm(latt,axis=1)
         is_2d = is_2d_structure(structure)
         if type(is_2d) is tuple:
-            print('This structure will be treated as a two dimensional structure here',
-            'so the mesh of  one direction will be set to 1 or 2')
+            # print('This structure will be treated as a two dimensional structure here',
+            # 'so the mesh of  one direction will be set to 1 or 2')
             vac_idx = is_2d[1]
             atom_idx = np.setdiff1d(range(3),vac_idx)
             mult = (ngrid * lengths[atom_idx[0]] * lengths[atom_idx[1]]) ** (1 / 2)
