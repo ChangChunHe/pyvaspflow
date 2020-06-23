@@ -101,12 +101,12 @@ def ewald(wd,number):
     outcar = os.path.join(wd,'OUTCAR')
     click.echo(': '.join(get_ele_sta(outcar, number)))
 
-@cli.command('cpu',short_help="Get cpu time of current system")
-@click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
-type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
-def cpu(wd):
-    EV = ExtractValue(wd)
-    click.echo(EV.get_cpu_time())
+# @cli.command('cpu',short_help="Get cpu time of current system")
+# @click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
+# type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
+# def cpu(wd):
+#     EV = ExtractValue(wd)
+#     click.echo(EV.get_cpu_time())
 
 
 def get_gap(EV,vo,co):
