@@ -12,7 +12,7 @@ from pyvaspflow.utils import is_2d_structure
 class Incar(dict):
 
     def __init__(self, params=None):
-        self.update({'ISIF':2,'ISTART':0,'ICHARG':2,'NSW':50,'IBRION':2,
+        self.update({'ISIF':3,'ISTART':0,'ICHARG':2,'NSW':50,'IBRION':2,
         'EDIFF':1E-5,'EDIFFG':-0.01,'ISMEAR':0,'NPAR':4,'LREAL':'Auto',
         'LWAVE':'F','LCHARG':'F'})
         if params:
