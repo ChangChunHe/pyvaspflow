@@ -8,6 +8,7 @@ from os import path
 import numpy as np
 from enum import Enum
 from pyvaspflow.utils import is_2d_structure
+import itertools
 
 class Incar(dict):
 
@@ -50,7 +51,7 @@ class Incar(dict):
         for k in keys:
             if k == "MAGMOM" and isinstance(self[k], list):
                 value = []
-                if (isinstance(self[k][0], list) or isinstance(self[k][0], Magmom)) and \
+                if (isinstance(self[k][0], list) ) and \
                         (self.get("LSORBIT") or self.get("LNONCOLLINEAR")):
                     value.append(" ".join(str(i) for j in self[k] for i in j))
                 elif self.get("LSORBIT") or self.get("LNONCOLLINEAR"):
