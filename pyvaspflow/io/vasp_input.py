@@ -8,6 +8,7 @@ from os import path
 import numpy as np
 from enum import Enum
 from pyvaspflow.utils import is_2d_structure
+import itertools
 
 class Incar(dict):
 
@@ -50,7 +51,7 @@ class Incar(dict):
         for k in keys:
             if k == "MAGMOM" and isinstance(self[k], list):
                 value = []
-                if (isinstance(self[k][0], list) or isinstance(self[k][0], Magmom)) and \
+                if (isinstance(self[k][0], list) ) and \
                         (self.get("LSORBIT") or self.get("LNONCOLLINEAR")):
                     value.append(" ".join(str(i) for j in self[k] for i in j))
                 elif self.get("LSORBIT") or self.get("LNONCOLLINEAR"):
@@ -431,8 +432,8 @@ class Kpoints:
         is_2d = is_2d_structure(structure)
 
         if type(is_2d) is tuple:
-            # print('This structure will be treated as a two dimensional structure here',
-            # 'so the mesh of  one direction will be set to 1')
+            print('This structure will be treated as a two dimensional structure here',
+            'so the mesh of  one direction will be set to 1')
             vac_idx = is_2d[1]
             atom_idx = np.setdiff1d(range(3),vac_idx)
             mult = (ngrid * lengths[atom_idx[0]] * lengths[atom_idx[1]]) ** (1 / 2)
@@ -471,8 +472,8 @@ class Kpoints:
         lengths = np.linalg.norm(latt,axis=1)
         is_2d = is_2d_structure(structure)
         if type(is_2d) is tuple:
-            # print('This structure will be treated as a two dimensional structure here',
-            # 'so the mesh of  one direction will be set to 1 or 2')
+            print('This structure will be treated as a two dimensional structure here',
+            'so the mesh of  one direction will be set to 1 or 2')
             vac_idx = is_2d[1]
             atom_idx = np.setdiff1d(range(3),vac_idx)
             mult = (ngrid * lengths[atom_idx[0]] * lengths[atom_idx[1]]) ** (1 / 2)
