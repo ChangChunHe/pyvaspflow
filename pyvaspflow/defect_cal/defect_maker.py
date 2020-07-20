@@ -79,8 +79,8 @@ class DefectMaker:
                     tmp = d[comb_list][:,comb_list]
                     tmp = np.triu(tmp)
                     tmp = sorted(tmp[tmp>0])
-                    if (np.std(tmp[0:4]) < 0.2 or np.std(tmp[1:5]) < 0.2 or
-                    np.std(tmp[2:]) < 0.2) and np.std(tmp) < 0.5:
+                    if (np.std(tmp[0:4]) < 0.1 or np.std(tmp[1:5]) < 0.1 or
+                    np.std(tmp[2:]) < 0.1) and np.std(tmp) < 0.5:
                         third_tetra.append(comb_list)
         all_tetra = []
         if len(first_tetra) != 0:
@@ -193,28 +193,54 @@ class DefectMaker:
         cg = ConfigurationGenerator(cell, symprec)
         doped_in = get_symbol(np.setdiff1d(range(1,56),np.unique(cell.atoms))[0])
         sites = _get_sites(list(cell.atoms), doped_out=magnetic_atom, doped_in=[doped_in])
-        confs = cg.cons_specific_cell(sites, e_num=None, symprec=symprec)
         n = len(cell.atoms)
-        magmon = []
+        magmom = []
         magnetic_atom_idx = np.where(cell.atoms==s2n(magnetic_atom[0]))[0].astype("int")
         atoms_type = get_identity_atoms(cell,symprec)
         unique_atoms_type = np.unique(atoms_type)
-        for c, _deg in confs:
-            tmp_magmon = np.zeros((n,))
-            tmp_magmon[magnetic_atom_idx] = 1
-            mag_idx = np.where(c.atoms==s2n(doped_in[0]))[0]
-            tmp_magmon[mag_idx] = -1
-            if magmon_identity:
-                flag = True
-                for i in unique_atoms_type:
-                    if len(np.unique(tmp_magmon[np.where(atoms_type==i)[0]])) != 1:
-                        flag = False
-                        break
-                if flag:
-                    magmon.append(tmp_magmon.tolist())
-            else:
-                magmon.append(tmp_magmon.tolist())
-        np.savetxt("INCAR-magmon",magmon,fmt='%2d')
+        for num in range(len(magnetic_atom_idx)//2+1):
+            confs = cg.cons_specific_cell(sites, e_num=[len(magnetic_atom_idx)-num,num], symprec=symprec)
+            for c,_def in confs:
+                tmp_magmom = np.zeros((n,))
+                tmp_magmom[magnetic_atom_idx] = magmon
+                mag_idx = [np.where(np.linalg.norm(cell.positions-c.positions[_idx],axis=1)<0.01)[0][0] \
+                for _idx in np.where(c.atoms==s2n(doped_in[0]))[0]]
+                tmp_magmom[mag_idx] = -magmon
+                if magmon_identity:
+                    flag = True
+                    for i in unique_atoms_type:
+                        if len(np.unique(tmp_magmom[np.where(atoms_type==i)[0]])) != 1:
+                            flag = False
+                            break
+                    if flag:
+                        magmom.append(tmp_magmom.tolist())
+                else:
+                    magmom.append(tmp_magmom.tolist())
+        # remove the equivalent AFM -1 1/1 -1
+        final_magmom = set()
+        final_magmom.add(tuple(magmom[0]))
+        for idx in range(1,len(magmom)):
+            mag = np.array(magmom[idx]).astype("int")
+            if tuple(mag) in final_magmom:
+                continue
+            idx_up = np.where(mag==magmon)[0].astype("int")
+            idx_down = np.where(mag==-magmon)[0].astype("int")
+            mag[idx_up] = -magmon
+            mag[idx_down] = magmon
+            if tuple(mag) in final_magmom:
+                continue
+            final_magmom.add(tuple(mag))
+        final_magmom = np.array([list(i) for i in final_magmom])
+        np.savetxt("INCAR-magmon",final_magmom,fmt='%2d')
+
+# def _get_sites(atoms,doped_out,doped_in):
+#     doped_in = [s2n(i) for i in doped_in]
+#     if doped_out == 'all':
+#         return  [tuple([atom]+doped_in)  for atom in atoms]
+#     else:
+#         doped_out = s2n(doped_out)
+#         _ins = tuple([doped_out]+doped_in)
+#         return [_ins if atom == doped_out else (atom,) for atom in atoms]
 
 def _get_sites(atoms,doped_out,doped_in):
     doped_in = [s2n(i) for i in doped_in]
@@ -229,5 +255,5 @@ def _get_sites(atoms,doped_out,doped_in):
         return [_ins if atom == doped_out else (atom,) for atom in atoms]
 
 if __name__ == '__main__':
-    dm = DefectMaker('/home/hecc/Desktop/Fe3GeTe2/POSCAR')
-    dm.get_magnetic_config(magnetic_atom=["Fe"],symprec=1e-3,magmon_identity=True)
+    dm = DefectMaker('/home/hecc/Downloads/POSCAR')
+    dm.get_mole_point_defect(symprec=0.1,doped_out='C',doped_in=['Vac'],num=[2])
