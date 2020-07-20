@@ -216,7 +216,22 @@ class DefectMaker:
                         magmom.append(tmp_magmom.tolist())
                 else:
                     magmom.append(tmp_magmom.tolist())
-        np.savetxt("INCAR-magmon",magmom,fmt='%2d')
+        # remove the equivalent AFM -1 1/1 -1
+        final_magmom = set()
+        final_magmom.add(tuple(magmom[0]))
+        for idx in range(1,len(magmom)):
+            mag = np.array(magmom[idx]).astype("int")
+            if tuple(mag) in final_magmom:
+                continue
+            idx_up = np.where(mag==magmon)[0].astype("int")
+            idx_down = np.where(mag==-magmon)[0].astype("int")
+            mag[idx_up] = -magmon
+            mag[idx_down] = magmon
+            if tuple(mag) in final_magmom:
+                continue
+            final_magmom.add(tuple(mag))
+        final_magmom = np.array([list(i) for i in final_magmom])
+        np.savetxt("INCAR-magmon",final_magmom,fmt='%2d')
 
 # def _get_sites(atoms,doped_out,doped_in):
 #     doped_in = [s2n(i) for i in doped_in]
