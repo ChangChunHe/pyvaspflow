@@ -18,6 +18,8 @@ def write_job_file(node_name,cpu_num,node_num,job_name):
         f.writelines('#SBATCH -p '+node_name+' -N '+ str(int(node_num)) +' -n '+str(int(cpu_num))+'\n\n')
         f.writelines(json_f['job']['prepend']+'\n')
         f.writelines(json_f['job']['exec']+'\n')
+        if "append" in json_f["job"]:
+            f.writelines(json_f['job']['append']+'\n')
 
 def write_incar(incar_file=None,kw={}):
     if path.isfile('POTCAR'):

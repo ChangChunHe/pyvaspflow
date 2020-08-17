@@ -257,7 +257,7 @@ class Potcar(list):
                 from os.path import isfile, join
                 possible = [dir for dir in  listdir(json_f['potcar_path'][self.functional]) if map.split('_')[0] in dir]
                 raise FileNotFoundError('Not found supported POTCAR file'
-                      +' you can change your map to:'+ ' '.join(possible))
+                      +' you can set sym_potcar_map='+ ','.join(possible))
         with open(filename, 'w') as outfile:
             for fname in all_pot_file:
                 outfile.write(zread(fname))
