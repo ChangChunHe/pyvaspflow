@@ -26,6 +26,7 @@
            "job":
                  {"prepend": "module load vasp/5.4.4-impi-mkl",
                   "exec": "mpirun -n ${SLURM_NPROCS} vasp_std"
+                  "append":"exit"
                  }
     }
 
@@ -39,7 +40,9 @@ potcar_path
 
 job
 ===============
-job所对应的部分是生成 ``job.sh`` 文件, 这里prep所对应的是运行程序前需要先加载的模块, exec对应的是执行的代码.
+job所对应的部分是生成 ``job.sh`` 文件, 这里 `prepend` 所对应的是运行程序前需要
+先加载的模块, `exec` 对应的是执行的代码, `append` 对应程序执行完以后需要执行的代码.
+
 如果你需要运行gamma版本, 你可以将 ``vasp_std`` 改成 ``vasp_gam`` .
 
 该文件请放置在$HOME/.config/pyvaspflow/conf.json, 当然你可以可以放在当前文件夹, 我们会优先读取当前文件夹是否有配置文件, 如果没有才会到$HOME/.config/pyvaspflow/conf.json下面找. 所以你可以在$HOME/.config/pyvaspflow/conf.json下面设置一个常用的配置文件, 对与特殊的需要可以拷贝一份放在当前文件夹作为特殊用处.
