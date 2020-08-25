@@ -438,6 +438,8 @@ def read_json():
     return json_f
 
 def get_kw(attribute):
+    if attribute[-1] == ",":
+        attribute = attribute[:-1]
     kw = {}
     if attribute:
         attribute = attribute.split('=')
@@ -588,7 +590,7 @@ def get_identity_atoms(cell,symprec,style="crystal"):
         for idx,ea in enumerate(equ_atom):
             atom_type[idx] = np.where(atom_uniq_type==ea)[0]
     return atom_type
-    
+
 if __name__ == '__main__':
     cell = read_vasp("/home/hecc/Desktop/Al_prim.vasp")
     for idx,c in enumerate(get_max_volume(cell,[(13,42)],12,min_volume=2)):

@@ -127,9 +127,7 @@ def _submit_job(job_name,cpu_num):
 def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None):
     if not main_pid:
         main_pid = os.getpid()
-        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
-    else:
-        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
+    job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(main_pid))
     logging.basicConfig(level=logging.INFO,
         format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
         datefmt='%a, %d %b %Y %H:%M:%S',
