@@ -438,10 +438,10 @@ def read_json():
     return json_f
 
 def get_kw(attribute):
-    if attribute[-1] == ",":
-        attribute = attribute[:-1]
     kw = {}
     if attribute:
+        if attribute[-1] == ",":
+            attribute = attribute[:-1]
         attribute = attribute.split('=')
         n = len(attribute)
         if len(attribute[1].split(',')) == 2 :
