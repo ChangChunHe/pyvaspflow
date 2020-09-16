@@ -1,5 +1,4 @@
-Defect-Formation-Calculation
-
+Pyvaspflow
 
 .. image:: https://travis-ci.com/ChangChunHe/pyvaspflow.svg?branch=master
     :target: https://travis-ci.com/ChangChunHe/pyvaspflow
