@@ -140,8 +140,8 @@ def run_single_vasp(job_name,is_login_node=False,cpu_num=24,cwd="",main_pid=None
     else:
         logging.info(job_name+" calculation has submitted at calculation node")
         job_id = submit_job(job_name)
-        pid = os.getpid()
-        job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
+        # pid = os.getpid()
+        # job_id_file = os.path.join(os.path.expanduser("~"),'.config','pyvaspflow',str(pid))
         with open(job_id_file,'a') as f:
             f.writelines(job_id+"\n")
         while True:
