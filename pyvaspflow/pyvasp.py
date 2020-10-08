@@ -708,7 +708,8 @@ def test_encut(poscar,start,end,step,attribute,is_login_node):
 @click.option('--step','-t', default=300,type=int)
 @click.option('--attribute','-a', default='',type=str)
 @click.option('--is_login_node','-i',default=False,type=bool)
-def test_kpts(poscar,start,end,step,attribute,is_login_node):
+@click.option('--run','-r',default=True,type=bool)
+def test_kpts(poscar,start,end,step,attribute,is_login_node,run):
     '''
     Example:
 
@@ -721,7 +722,7 @@ def test_kpts(poscar,start,end,step,attribute,is_login_node):
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step,'is_login_node':is_login_node}
     kw.update(us.get_kw(attribute))
-    tp.test_kpts(kw=kw)
+    tp.test_kpts(kw=kw,run=run)
 
 
 @cli.command('diff_pos',short_help="judge two poscar are the same structures or not")

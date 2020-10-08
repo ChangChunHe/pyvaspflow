@@ -298,7 +298,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                     f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
-            sleep(60)
+            sleep(10)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     else:
@@ -323,7 +323,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
                     f.writelines(_job_id+"\n")
                 idx += 1
                 sleep(5)
-            sleep(60)
+            sleep(10)
             if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
                 break
     os.remove(job_id_file)

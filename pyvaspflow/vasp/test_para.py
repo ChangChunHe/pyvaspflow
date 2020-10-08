@@ -49,7 +49,7 @@ class TestParameter():
                 f.writelines(str(line[0])+'\t'+str(line[1])+'\t'+str(line[2])+'\n')
 
 
-    def test_kpts(self,kw={}):
+    def test_kpts(self,kw={},run=True):
         start,end,step = kw.get('start'),kw.get('end'),kw.get('step')
         is_login_node,kw = run_vasp.clean_parse(kw,'is_login_node',False)
         kw.pop('start');kw.pop('end');kw.pop('step')
@@ -68,16 +68,17 @@ class TestParameter():
                 _kw.update({'kppa':kppa,'style':'auto','job_name':'test_kpts'+str(idx),'NSW':0})
             prep_vasp.prep_single_vasp(poscar=self.poscar,kw=_kw)
             idx += 1
-        for i in range(idx):
-            run_vasp.run_single_vasp(job_name='test_kpts'+str(i),is_login_node=is_login_node)
-        kpts_res = []
-        for ii in range(len(kppa_list)):
-            EV = ExtractValue(data_folder='test_kpts'+str(ii))
-            kpts_res.append([kppa_list[ii],EV.get_energy(),EV.get_cpu_time()])
-        with open('test_kpts.txt','w') as f:
-            f.writelines('KPTS\tEnergy\tcpu_time\n')
-            for line in kpts_res:
-                f.writelines(str(line[0])+'\t'+str(line[1])+'\t'+str(line[2])+'\n')
+        if run:
+            for i in range(idx):
+                run_vasp.run_single_vasp(job_name='test_kpts'+str(i),is_login_node=is_login_node)
+            kpts_res = []
+            for ii in range(len(kppa_list)):
+                EV = ExtractValue(data_folder='test_kpts'+str(ii))
+                kpts_res.append([kppa_list[ii],EV.get_energy(),EV.get_cpu_time()])
+            with open('test_kpts.txt','w') as f:
+                f.writelines('KPTS\tEnergy\tcpu_time\n')
+                for line in kpts_res:
+                    f.writelines(str(line[0])+'\t'+str(line[1])+'\t'+str(line[2])+'\n')
 
 
 if __name__ == '__main__':
