@@ -744,8 +744,6 @@ class Kpoints:
 
 
 if __name__ == '__main__':
-    from sagar.io.vasp import read_vasp
-    c = read_vasp('/home/hecc/Documents/python-package/Defect-Formation-Calculation/pyvaspflow/examples/POSCAR')
-    kpoints = Kpoints()
-    kpoints.automatic_density(structure=c,kppa=3000)
-    kpoints.write_file()
+    mag = np.loadtxt("mag")
+    incar = Incar(params={"MAGMOM":mag.tolist()})
+    incar.write_file()

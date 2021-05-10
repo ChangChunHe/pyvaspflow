@@ -133,6 +133,7 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
     with open(job_id_file,'w') as f:
         pass
     submit_job_idx = 0
+<<<<<<< HEAD
     start_job_num,end_job_num,par_job_num = int(start_job_num),int(end_job_num),int(par_job_num)
     jobid_pool = []
     idx = start_job_num
@@ -149,6 +150,39 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
         logging.info(str(inqueue_num)+" in queue")
         if inqueue_num < par_job_num and idx < end_job_num+1:
             _job_id,submit_job_idx = schedule.schedule_type.submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
+=======
+    if job_list is not None:
+        start_job_num,end_job_num,par_job_num = 0,len(job_list)-1,int(par_job_num)
+        jobid_pool = []
+        idx = 0
+        for ii in range(min(par_job_num,end_job_num)):
+            _job_id,submit_job_idx = submit_job_without_job(job_name+str(job_list[ii]),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
+            jobid_pool.append(_job_id)
+            with open(job_id_file,'a') as f:
+                f.writelines(_job_id+"\n")
+            idx += 1
+        if idx == end_job_num+1:
+            return
+        while True:
+            inqueue_num = job_inqueue_num(jobid_pool)
+            logging.info(str(inqueue_num)+" in queue")
+            if inqueue_num < par_job_num and idx < end_job_num+1:
+                _job_id,submit_job_idx = submit_job_without_job(job_name + str(job_list[idx]),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
+                jobid_pool.append(_job_id)
+                with open(job_id_file,'a') as f:
+                    f.writelines(_job_id+"\n")
+                idx += 1
+                sleep(5)
+            sleep(10)
+            if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
+                break
+    else:
+        start_job_num,end_job_num,par_job_num = int(start_job_num),int(end_job_num),int(par_job_num)
+        jobid_pool = []
+        idx = start_job_num
+        for ii in range(min(par_job_num,end_job_num-start_job_num)):
+            _job_id,submit_job_idx = submit_job_without_job(job_name+str(ii+start_job_num),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
+>>>>>>> cb9930189acabd296560ce332b28b1f9483bbcd9
             jobid_pool.append(_job_id)
             with open(job_id_file,'a') as f:
                 f.writelines(_job_id+"\n")
@@ -157,6 +191,23 @@ def run_multi_vasp_without_job(job_name='task',end_job_num=1,node_name="short_q"
         sleep(5)
         if idx == end_job_num+1 and schedule.schedule_type.num_of_job_inqueue(jobid_pool) == 0:
             return
+<<<<<<< HEAD
+=======
+        while True:
+            inqueue_num = job_inqueue_num(jobid_pool)
+            logging.info(str(inqueue_num)+" in queue")
+            if inqueue_num < par_job_num and idx < end_job_num+1:
+                _job_id,submit_job_idx = submit_job_without_job(job_name + str(idx),node_name,cpu_num,node_num=1,submit_job_idx=submit_job_idx)
+                jobid_pool.append(_job_id)
+                with open(job_id_file,'a') as f:
+                    f.writelines(_job_id+"\n")
+                idx += 1
+                sleep(5)
+            sleep(10)
+            if idx == end_job_num+1 and job_inqueue_num(jobid_pool) == 0:
+                break
+    os.remove(job_id_file)
+>>>>>>> cb9930189acabd296560ce332b28b1f9483bbcd9
 
 
 def run_multi_vasp_with_shell(work_name,shell_file,end_job_num=1,start_job_num=0,par_job_num=4):

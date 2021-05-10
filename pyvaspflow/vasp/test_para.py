@@ -68,8 +68,11 @@ class TestParameter():
                 _kw.update({'kppa':kppa,'style':'auto','job_name':'test_kpts'+str(idx),'NSW':0})
             prep_vasp.prep_single_vasp(poscar=self.poscar,kw=_kw)
             idx += 1
+<<<<<<< HEAD
         np.savetxt("kppa_list",kppa_list,fmt="%d")
         np.savetxt("kpts_list",kpts_list,fmt="%d")
+=======
+>>>>>>> cb9930189acabd296560ce332b28b1f9483bbcd9
         if run:
             for i in range(idx):
                 run_vasp.run_single_vasp(job_name='test_kpts'+str(i),is_login_node=is_login_node)
