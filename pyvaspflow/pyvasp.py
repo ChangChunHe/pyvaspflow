@@ -101,13 +101,6 @@ def ewald(wd,number):
     outcar = os.path.join(wd,'OUTCAR')
     click.echo(': '.join(get_ele_sta(outcar, number)))
 
-# @cli.command('cpu',short_help="Get cpu time of current system")
-# @click.option('--wd','-w',default='.',help='your work direcroty',show_default=True,
-# type=click.Path(exists=True,resolve_path=True),autocompletion=get_dir_name)
-# def cpu(wd):
-#     EV = ExtractValue(wd)
-#     click.echo(EV.get_cpu_time())
-
 
 def get_gap(EV,vo,co):
     gap_res = EV.get_gap(vo,co)
@@ -425,11 +418,10 @@ def prep_single_vasp(poscar,attribute):
 
 @cli.command('run_single_vasp',short_help="run single vasp calculation")
 @click.argument('job_name', metavar='<single_vasp_dir>',nargs=1,autocompletion=get_dir_name)
-@click.option('--is_login_node','-i',default=False,type=bool)
 @click.option('--cpu_num','-n',default=24,type=int)
 @click.option('--cwd','-d',default="",nargs=1,type=str)
 @click.option('--main_pid','-m',default=None,nargs=1,type=str)
-def run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid):
+def run_single_vasp(job_name,cpu_num,cwd,main_pid):
     '''
     Example:
 
@@ -439,7 +431,7 @@ def run_single_vasp(job_name,is_login_node,cpu_num,cwd,main_pid):
 
     https://pyvaspflow.readthedocs.io/zh_CN/latest/execute.html#execute-single-vasp-task
     '''
-    rsv(job_name=job_name,is_login_node=is_login_node,cpu_num=cpu_num,cwd=cwd,main_pid=main_pid)
+    rsv(job_name=job_name,cpu_num=cpu_num,cwd=cwd,main_pid=main_pid)
 
 
 @cli.command('run_single_vasp_without_job',short_help="run single vasp calculation")
@@ -497,21 +489,6 @@ def prep_multi_vasp(attribute,start_job_num,end_job_num):
     pmv(start_job_num,int(end_job_num),kw=us.get_kw(attribute))
 
 
-@cli.command('prep_multi_vasp_from_file',short_help="Prepare necessary files for multiple vasp calculation")
-@click.argument('job_list_file', metavar='<job list file>',nargs=1)
-@click.option('--attribute','-a', default='', type=str)
-def prep_multi_vasp_from_file(attribute,job_list_file):
-    '''
-    Example:
-
-    pyvasp prep_multi_vasp_from_file -a kppa=4000,node_name=super_q,cpu_num=12,job_name=struc_opt job_list_file
-
-    For more help you can refer to
-
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/prepare.html#prep-multi-vasp
-    '''
-    job_list = np.loadtxt(job_list_file,dtype=int)
-    pmv(job_list=job_list,kw=us.get_kw(attribute))
 
 def get_job_name(ctx, args, incomplete):
     dir_names = [i for i in os.listdir() if os.path.isdir(i)]
@@ -708,7 +685,8 @@ def test_encut(poscar,start,end,step,attribute,is_login_node):
 @click.option('--step','-t', default=300,type=int)
 @click.option('--attribute','-a', default='',type=str)
 @click.option('--is_login_node','-i',default=False,type=bool)
-def test_kpts(poscar,start,end,step,attribute,is_login_node):
+@click.option('--run','-r',default=True,type=bool)
+def test_kpts(poscar,start,end,step,attribute,is_login_node,run):
     '''
     Example:
 
@@ -721,51 +699,11 @@ def test_kpts(poscar,start,end,step,attribute,is_login_node):
     tp = test_para.TestParameter(poscar=poscar)
     kw = {'start':start,'end':end,'step':step,'is_login_node':is_login_node}
     kw.update(us.get_kw(attribute))
-    tp.test_kpts(kw=kw)
+    tp.test_kpts(kw=kw,run=run)
 
 
-@cli.command('diff_pos',short_help="judge two poscar are the same structures or not")
-@click.argument('pri_pos', metavar='<primitive_poscar>',nargs=1,autocompletion=get_poscar_files)
-@click.argument('pos1', metavar='<poscar1>',nargs=1,autocompletion=get_poscar_files)
-@click.argument('pos2', metavar='<poscar2>',nargs=1,autocompletion=get_poscar_files)
-@click.option('--symprec','-s',default=1e-3,type=float)
-def diff_pos(pri_pos,pos1,pos2,symprec):
-    '''
-    This command you should support three poscar, the first one is the initial poscar.
-    For example, your have a h-BN plane poscar, you substitute a boron atom by a sulfur atom,
-    so you may have two or more sites to be substituted, then the fisrt parameter
-    is the perfect h-BN plane, the second and third parameter are the two poscar
-    you want to judge they are the same or not. If you get `True` means they are
-    the same, `False` means they are not.
-
-    There is one optional parameter, `symprec`, this is the precision you can
-    specify, the default is 1e-3.
-
-    Exmaple:
-
-    pyvasp diff_pos POSCAR POSCAR1 POSCAR2
-
-    For more help you can refer to
-
-    https://pyvaspflow.readthedocs.io/zh_CN/latest/fetch.html#pyvasp-diff-pos
-    '''
-    click.echo(us.diff_poscar(pri_pos,pos1,pos2,symprec=symprec))
 
 
-@cli.command('get_grd_state',short_help="get the ground state")
-@click.argument('job_name', metavar='<your job name>',nargs=1,autocompletion=get_job_name)
-@click.argument('end_job_num', metavar='<the last number of jobs>',nargs=1,autocompletion=get_run_end_job_num)
-@click.option('--start_job_num','-s',default=0,type=int)
-def get_grd_state(job_name,end_job_num,start_job_num):
-    '''
-    Exmaple:
-
-    pyvasp get_grd_state task 100
-    '''
-    start_job_num,end_job_num = int(start_job_num),int(end_job_num)
-    idx = us.get_grd_state(job_name,start_job_num=start_job_num,
-               end_job_num=end_job_num)
-    click.echo(str(idx+start_job_num))
 
 
 @cli.command('get_def_form_energy',short_help="get defect formation energy")

@@ -12,7 +12,7 @@ from pyvaspflow.io.vasp_out import ExtractValue
 from sagar.element.base import periodic_table_dict as ptd
 from itertools import combinations
 from os import path
-import json
+import configparser
 
 
 def refine_points(tetra,extend_S,C,min_d=1):
@@ -423,20 +423,6 @@ def unlzw(data):
     return bytes(bytearray(put))
 
 
-def read_json():
-    from os import pardir
-    home = path.expanduser("~")
-    wd = path.abspath(pardir)
-    if path.isfile(path.join(wd,'conf.json')):
-        conf_file_path = path.join(wd,'conf.json')
-    elif path.isfile(path.join(home,'.config','pyvaspflow','conf.json')):
-        conf_file_path = path.join(home,'.config','pyvaspflow','conf.json')
-    else:
-        raise FileNotFoundError('You should put conf.json file in your $HOME/.config/pyvaspflow directory or your current directory and we will first check conf.json is under your current direcroty or not')
-    with open(conf_file_path) as f:
-        json_f = json.load(f)
-    return json_f
-
 def get_kw(attribute):
     kw = {}
     if attribute:
@@ -463,28 +449,7 @@ def get_kw(attribute):
             kw['shift'] = tuple(float(i) for i in kw['shift'])
     return kw
 
-def diff_poscar(pri_pos,pos1,pos2,symprec=1e-3):
-    '''
-    To compare two structures are the same or not
-    '''
-    cell1,cell2 = read_vasp(pos1),read_vasp(pos2)
-    if sum(sum((cell1.lattice-cell2.lattice)**2))>0.01:
-        raise ValueError("Two POSCARs do not have the same lattice")
-        if  len(cell1.atoms) != len(cell2.atoms):
-            raise ValueError("Two POSCARs do not have the same atoms number")
-            if sum(np.sort(cell1.atoms)-np.sort(cell2.atoms))>0.001:
-                raise ValueError("Two POSCARs do not have the same atoms")
-    cell = read_vasp(pri_pos)
-    if sum(sum((cell1.lattice-cell.lattice)**2))>0.01:
-        raise ValueError("Two POSCAR do not have the same lattice with the primitive POSCAR")
-    idx_1 = get_idx_in_pri_pos(cell.positions,cell1.positions)
-    idx_2 = get_idx_in_pri_pos(cell.positions,cell2.positions)
-    perms = get_perms(cell,symprec=symprec)
-    serial_1 = _get_min_serial(perms,idx_1)
-    serial_2 = _get_min_serial(perms,idx_2)
-    if sum(serial_1-serial_2) <= 0.001:
-        return True
-    return False
+
 
 def get_idx_in_pri_pos(pri_pos,pos):
     return [np.argmin(np.linalg.norm(p-pri_pos,axis=1)) for p in pos]
@@ -492,23 +457,6 @@ def get_idx_in_pri_pos(pri_pos,pos):
 def _get_min_serial(perms,serial):
     return np.unique(np.sort(perms[:,serial],axis=1),axis=0)[0]
 
-# def get_perms(cell,symprec=1e-3):
-#     latt = cell.lattice
-#     pos = cell.positions
-#     pos = np.dot(pos,latt)
-#     n = pos.shape[0]
-#     pcell = cell.get_primitive_cell()
-#     lat_pcell = pcell.lattice
-#     mat = np.matmul(latt, np.linalg.inv(lat_pcell))
-#     if is_int_np_array(mat):
-#         mat = np.around(mat).astype('intc')
-#     else:
-#         print("cell:\n", lat_cell)
-#         print("primitive cell:\n", lat_pcell)
-#         raise ValueError(
-#         "cell lattice and its primitive cell lattice not convertable")
-#     hfpg = PG(pcell, mat)
-#     return  hfpg.get_symmetry_perms(symprec)
 
 def is_2d_structure(cell):
     pos = cell.positions
@@ -568,14 +516,11 @@ def get_max_volume(pcell, sites, max_volume, min_volume=1, dimension=3, symprec=
         for h in hnfs:
             hfpg = PG(pcell, h)
             perms = hfpg.get_symmetry_perms(symprec)
-
             if dimension == 2:
                 supercell = pcell.extend(h)._get_niggli_2D()
             else:
                 supercell = pcell.extend(h)._get_niggli_3D()
-
             _sites = np.repeat(sites, volume, axis=0)
-
             for mol, _ in remove_redundant(supercell.positions, _sites, perms):
                 c = Cell(supercell.lattice, mol[0], mol[1])
                 if c.is_primitive(symprec):
@@ -591,7 +536,23 @@ def get_identity_atoms(cell,symprec,style="crystal"):
             atom_type[idx] = np.where(atom_uniq_type==ea)[0]
     return atom_type
 
-if __name__ == '__main__':
-    cell = read_vasp("/home/hecc/Desktop/Al_prim.vasp")
-    for idx,c in enumerate(get_max_volume(cell,[(13,42)],12,min_volume=2)):
-        write_poscar(c,folder="/home/hecc/Desktop/fcc",idx=idx)
+
+def read_config():
+    from os import pardir
+    home = path.expanduser("~")
+    wd = path.abspath(pardir)
+    if path.isfile(path.join(wd,'config.ini')):
+        conf_file_path = path.join(wd,'config.ini')
+    elif path.isfile(path.join(home,'.config','pyvaspflow','config.ini')):
+        conf_file_path = path.join(home,'.config','pyvaspflow','config.ini')
+    else:
+        raise FileNotFoundError('cannot found config.ini in $HOME/.config/pyvaspflow or current direcroty')
+    config = configparser.ConfigParser()
+    config.read(conf_file_path)
+    return config
+
+
+def clean_parse(kw,key,def_val):
+    val = kw.get(key,def_val)
+    kw.pop(key,None)
+    return val,kw

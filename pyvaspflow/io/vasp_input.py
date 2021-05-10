@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-from pyvaspflow.utils import str_delimited, clean_lines,zread,read_json
+from pyvaspflow.utils import str_delimited, clean_lines,zread,read_config
 import re,math,json,seekpath
-from os import path
 import numpy as np
 from enum import Enum
 from pyvaspflow.utils import is_2d_structure
@@ -206,7 +205,7 @@ class Potcar(list):
     some functional potcar you want to choose
     """
 
-    def __init__(self,poscar='POSCAR',functional='paw_PBE',sym_potcar_map=None):
+    def __init__(self,poscar='POSCAR',functional='paw_pbe',sym_potcar_map=None):
 
         with open(poscar,'r') as f:
             lines = f.readlines()
@@ -243,8 +242,10 @@ class Potcar(list):
         return res
 
     def write_file(self,filename='POTCAR'):
-        json_f = read_json()
-        potcar_main_dir_path = json_f['potcar_path'][self.functional]
+        from os import listdir,path
+        from os.path import isfile, join
+        config = read_config()
+        potcar_main_dir_path = config['POTCAR_PATH'][self.functional]
         all_pot_file = []
         for map in self.sym_potcar_map:
             pot_path = path.join(potcar_main_dir_path,map)
@@ -253,9 +254,7 @@ class Potcar(list):
             elif path.isfile(path.join(pot_path,'POTCAR.Z')):
                 all_pot_file.append(path.join(pot_path,'POTCAR.Z'))
             else:
-                from os import listdir
-                from os.path import isfile, join
-                possible = [dir for dir in  listdir(json_f['potcar_path'][self.functional]) if map.split('_')[0] in dir]
+                possible = [dir for dir in  listdir(potcar_main_dir_path) if map.split('_')[0] in dir]
                 raise FileNotFoundError('Not found supported POTCAR file'
                       +' you can set sym_potcar_map='+ ','.join(possible))
         with open(filename, 'w') as outfile:

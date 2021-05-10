@@ -3,6 +3,7 @@
 
 
 from distutils.core import setup
+from os import pardir,path,mkdir
 
 #This is a list of files to install, and where
 #(relative to the 'root' dir, where setup.py is)
@@ -20,10 +21,26 @@ setup(name = "pyvaspflow",
     #put them into the package directory - they will be found
     #recursively.)
     packages = ['pyvaspflow','pyvaspflow.io','pyvaspflow.vasp','pyvaspflow.defect_cal'],
-    install_requires=['numpy','sagar','seekpath','psutil','matplotlib','progressbar2'],
+    install_requires=['numpy','sagar','seekpath','psutil','','progressbar2','matplotlib'],
     url="https://github.com/ChangChunHe/pyvaspflow",
     entry_points={
         'console_scripts': [
         'pyvasp = pyvaspflow.pyvasp:cli',
         ]}
 )
+
+
+
+home = path.expanduser("~")
+
+if not path.isdir(path.join(home,'.config')):
+    mkdir(path.join(home,'.config'))
+
+if not path.isdir(path.join(home,'.config','pyvaspflow')):
+    mkdir(path.join(home,'.config','pyvaspflow'))
+
+if not path.isfile(path.join(home,'.config','pyvaspflow','config.ini')):
+    with open("./config.ini","r") as f:
+        lines = f.read()
+    with open(path.join(home,'.config','pyvaspflow','config.ini'),'w') as outfile:
+        outfile.write(lines)
