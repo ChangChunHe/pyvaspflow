@@ -548,8 +548,8 @@ def read_config():
     else:
         config_ini = '''
 [RUN_VASP]
-prepend = source /share/profile.d/intel.sh
-exec = mpiexec.hydra -machinefile $LSB_DJOB_HOSTFILE -np $NP  /share/soft/vasp_intelmpi/bin/vasp5.4.1/vasp_std  > cal.out
+prepend = module load vasp/5.4.4-impi-mkl
+exec = mpirun -n ${SLURM_NPROCS} vasp_std
 append = exit
 
 [POTCAR_PATH]
@@ -573,7 +573,7 @@ node_state = sinfo
 [LSF]
 submission =  bsub < ./job.lsf
 job_queue = bjobs
-node_state = bhost
+node_state = bhost\n
         '''
         home = path.expanduser("~")
 
