@@ -546,7 +546,47 @@ def read_config():
     elif path.isfile(path.join(home,'.config','pyvaspflow','config.ini')):
         conf_file_path = path.join(home,'.config','pyvaspflow','config.ini')
     else:
-        raise FileNotFoundError('cannot found config.ini in $HOME/.config/pyvaspflow or current direcroty')
+        config_ini = '''
+[RUN_VASP]
+prepend = source /share/profile.d/intel.sh
+exec = mpiexec.hydra -machinefile $LSB_DJOB_HOSTFILE -np $NP  /share/soft/vasp_intelmpi/bin/vasp5.4.1/vasp_std  > cal.out
+append = exit
+
+[POTCAR_PATH]
+paw_pbe = /opt/ohpc/pub/apps/vasp/pps/paw_PBE
+paw_lda = /opt/ohpc/pub/apps/vasp/pps/paw_LDA
+paw_pw91 = /opt/ohpc/pub/apps/vasp/pps/paw_PW91
+uspp_lda = /opt/ohpc/pub/apps/vasp/pps/USPP_LDA
+uspp_pw91 = /opt/ohpc/pub/apps/vasp/pps/USPP_PW91
+default_type = paw_pbe
+
+[Task_Schedule]
+default_node_name = short_q
+default_cpu_num = 24
+default_schedule = SLURM
+
+[SLURM]
+submission =  sbatch ./job.sh
+job_queue = squeue
+node_state = sinfo
+
+[LSF]
+submission =  bsub < ./job.lsf
+job_queue = bjobs
+node_state = bhost
+        '''
+        home = path.expanduser("~")
+
+        if not path.isdir(path.join(home,'.config')):
+            mkdir(path.join(home,'.config'))
+
+        if not path.isdir(path.join(home,'.config','pyvaspflow')):
+            mkdir(path.join(home,'.config','pyvaspflow'))
+
+        if not path.isfile(path.join(home,'.config','pyvaspflow','config.ini')):
+            with open(path.join(home,'.config','pyvaspflow','config.ini'),'w') as outfile:
+                outfile.write(config_ini)
+        conf_file_path = path.join(home,'.config','pyvaspflow','config.ini')
     config = configparser.ConfigParser()
     config.read(conf_file_path)
     return config
