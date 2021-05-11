@@ -12,29 +12,45 @@
 
 
 下面是配置文件, 用于指定赝势的位置和`job.sh`文件的书写.
+注意这里为了配置两种不同的任务管理系统, SLURM 和 LSF, 我们设置了 ``default_schedule`` 参数来指定默认的管理系统, 注意只能是 ``LSF`` 或者 ``SLURM``.
 
 .. code-block:: json
 
-    {
-           "potcar_path":
-                         {"paw_PBE":"/opt/ohpc/pub/apps/vasp/pps/paw_PBE",
-                          "paw_LDA":"/opt/ohpc/pub/apps/vasp/pps/paw_LDA",
-                          "paw_PW91":"/opt/ohpc/pub/apps/vasp/pps/paw_PW91",
-                          "USPP_LDA":"/opt/ohpc/pub/apps/vasp/pps/USPP_LDA",
-                          "USPP_PW91":"/opt/ohpc/pub/apps/vasp/pps/USPP_PW91"
-                           },
-           "job":
-                 {"prepend": "module load vasp/5.4.4-impi-mkl",
-                  "exec": "mpirun -n ${SLURM_NPROCS} vasp_std"
-                  "append":"exit"
-                 }
-    }
+[RUN_VASP]
+prepend = module load vasp/5.4.4-impi-mkl
+exec = mpirun -n ${SLURM_NPROCS} vasp_std
+append = exit
+
+[POTCAR_PATH]
+paw_pbe = /opt/ohpc/pub/apps/vasp/pps/paw_PBE
+paw_lda = /opt/ohpc/pub/apps/vasp/pps/paw_LDA
+paw_pw91 = /opt/ohpc/pub/apps/vasp/pps/paw_PW91
+uspp_lda = /opt/ohpc/pub/apps/vasp/pps/USPP_LDA
+uspp_pw91 = /opt/ohpc/pub/apps/vasp/pps/USPP_PW91
+default_type = paw_pbe
+
+[Task_Schedule]
+default_node_name = short_q
+default_cpu_num = 24
+default_schedule = SLURM
+
+[SLURM]
+submission =  sbatch ./job.sh
+job_queue = squeue
+node_state = sinfo
+
+[LSF]
+submission =  bsub < ./job.sh
+job_queue = bjobs
+node_state = bhost
+
+
 
 potcar_path
 ===============
 配置文件需要指定赝势的文件位置以及对应的泛函的位置, 注意到这里的"paw_PBE,paw_LDA"等也即为在命令行中生成赝势所需要指定的"functional".
 
-:code:`pyvasp prep_single_vasp POSCAR -a functional=paw_PBE`
+:code:`pyvasp prep_single_vasp POSCAR -a functional=paw_pbe`
 
 这里指定的"paw_PBE"也即为说明程序会自动向“/opt/ohpc/pub/apps/vasp/pps/paw_PBE”中寻找对应的赝势文件.
 
