@@ -37,7 +37,7 @@ def refine_points(tetra,extend_S,C,min_d=1):
 
 
 def write_poscar(cell,folder='.',idx=0,comment=""):
-    filename = '{:s}{:d}'.format('POSCAR'+comment, idx)
+    filename = '{:s}{:s}'.format('POSCAR'+comment, str(idx))
     file = path.join(folder, filename)
     write_vasp(cell,file,suffix='')
 
@@ -538,9 +538,9 @@ def get_identity_atoms(cell,symprec,style="crystal"):
 
 
 def read_config():
-    from os import pardir
+    from os import pardir,getcwd
     home = path.expanduser("~")
-    wd = path.abspath(pardir)
+    wd = getcwd()
     if path.isfile(path.join(wd,'config.ini')):
         conf_file_path = path.join(wd,'config.ini')
     elif path.isfile(path.join(home,'.config','pyvaspflow','config.ini')):
