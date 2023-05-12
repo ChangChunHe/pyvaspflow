@@ -52,7 +52,7 @@ reciprocal lattice vector proportional to its length.
 
 例子::
 
-    $ pyvasp prep_single_vasp POSCAR -a style=line,num_kpt=20
+    $ pyvasp prep_single_vasp POSCAR -a style=line,num_kpts=20
 
 
 
@@ -60,6 +60,6 @@ reciprocal lattice vector proportional to its length.
 最后 我们也提供了了一个单独生成 ``KPOINTS`` 的命令接口::
 
 
-    $ pyvasp kpoints -a style=line,num_kpt=20
+    $ pyvasp kpoints -a style=line,num_kpts=20
 
 .. _seekpath: https://github.com/giovannipizzi/seekpath
