@@ -1,4 +1,4 @@
-codecov:
-  token: 69176a37-9f11-4cf7-a91e-d99ced25b6ce
+codecov: 
+  token: 79d92264-f12a-443d-b842-caa414b32f55
 fixes:
    - "pyvaspflow/test/::test/"
